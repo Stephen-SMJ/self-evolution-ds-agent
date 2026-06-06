@@ -7,54 +7,56 @@ import time
 # Configuration
 DOMAINS = {
     "Tabular": [
-        "titanic",
-        "house-prices-advanced-regression-techniques",
-        "spaceship-titanic"
+        "titanic", "house-prices-advanced-regression-techniques", "spaceship-titanic",
+        "santander-customer-transaction-prediction", "competitive-data-science-predict-future-sales",
+        "prudential-life-insurance-assessment", "porto-seguro-safe-driver-prediction",
+        "home-credit-default-risk", "bike-sharing-demand", "otto-group-product-classification-challenge"
     ],
     "NLP": [
-        "nlp-getting-started",
-        "feedback-prize-english-language-learning",
-        "commonlitreadabilityprize"
+        "nlp-getting-started", "feedback-prize-english-language-learning", "commonlitreadabilityprize",
+        "jigsaw-toxic-comment-classification-challenge", "quora-question-pairs",
+        "sentiment-analysis-on-movie-reviews", "word2vec-nlp-tutorial", "bag-of-words-meets-bags-of-popcorn",
+        "google-quest-challenge", "natural-language-processing-with-disaster-tweets"
     ],
     "CV": [
-        "digit-recognizer",
-        "dogs-vs-cats-redux-kernels-edition",
-        "cassava-leaf-disease-classification"
+        "digit-recognizer", "dogs-vs-cats-redux-kernels-edition", "cassava-leaf-disease-classification",
+        "tgs-salt-identification-challenge", "severstal-steel-defect-detection",
+        "state-farm-distracted-driver-detection", "imaterialist-challenge-fashion-2018",
+        "painter-by-numbers", "understanding_cloud_organization", "humpback-whale-identification"
     ],
     "Time-Series": [
-        "store-sales-time-series-forecasting",
-        "tabular-playground-series-jan-2022",
-        "amp-parkinsons-disease-progression-prediction"
+        "store-sales-time-series-forecasting", "tabular-playground-series-jan-2022",
+        "amp-parkinsons-disease-progression-prediction", "g-research-crypto-forecasting",
+        "ubiquant-market-prediction", "m5-forecasting-accuracy",
+        "walmart-recruiting-store-sales-forecasting", "rossmann-store-sales",
+        "web-traffic-time-series-forecasting"
     ],
     "Audio": [
-        "birdclef-2023",
-        "birdclef-2022",
-        "freesound-audio-tagging-2019"
+        "birdclef-2023", "birdclef-2022", "freesound-audio-tagging-2019",
+        "birdclef-2021", "rfcx-species-audio-detection", "birdsong-recognition",
+        "heartbeat-sounds"
     ],
     "RL": [
-        "lux-ai-2022-season-2",
-        "kore-2022",
-        "santa-2022"
+        "kore-2022", "santa-2022", "halite", "google-football", "connectx",
+        "lux-ai-2021", "hungry-geese"
     ],
     "RecSys": [
-        "h-and-m-personalized-fashion-recommendations",
-        "otto-recommender-system",
-        "santander-product-recommendation",
-        "elo-merchant-category-recommendation",
-        "expedia-hotel-recommendations"
+        "h-and-m-personalized-fashion-recommendations", "otto-recommender-system",
+        "santander-product-recommendation", "elo-merchant-category-recommendation",
+        "expedia-hotel-recommendations", "predict-west-nile-virus",
+        "instacart-market-basket-analysis", "talkingdata-adtracking-fraud-detection"
     ],
     "GenAI": [
-        "stable-diffusion-image-to-prompts",
-        "llm-prompt-recovery",
-        "llm-detect-ai-generated-text",
-        "kaggle-llm-science-exam",
-        "llms-you-cant-please-them-all",
-        "drawing-with-llms"
+        "stable-diffusion-image-to-prompts", "llm-prompt-recovery",
+        "llm-detect-ai-generated-text", "kaggle-llm-science-exam",
+        "llms-you-cant-please-them-all", "drawing-with-llms",
+        "feedback-prize-effectiveness", "feedback-prize-2021"
     ],
     "Medical": [
-        "rsna-breast-cancer-detection",
-        "histopathologic-cancer-detection",
-        "siim-isic-melanoma-classification"
+        "rsna-breast-cancer-detection", "histopathologic-cancer-detection",
+        "siim-isic-melanoma-classification", "rsna-pneumonia-detection-challenge",
+        "osic-pulmonary-fibrosis-progression", "aptos2019-blindness-detection",
+        "rsna-intracranial-hemorrhage-detection", "prostate-cancer-grade-assessment"
     ]
 }
 
@@ -63,8 +65,7 @@ TARGET_PERCENTILES = [0.0, 0.1, 0.2, 0.4, 0.7]
 def run_command(cmd):
     result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
     if result.returncode != 0:
-        print(f"Error running command: {cmd}")
-        print(result.stderr)
+        # print(f"Error running command: {cmd}")
         return None
     return result.stdout
 
@@ -73,34 +74,35 @@ def get_leaderboard(competition):
     run_command(f"python3 -m kaggle competitions leaderboard -c {competition} --download")
     zip_files = glob.glob(f"{competition}.zip")
     if not zip_files:
-        # Sometimes it might name it differently or it's already unzipped
         pass
     else:
         run_command(f"unzip -o {competition}.zip")
     
     csv_files = glob.glob(f"*-publicleaderboard-*.csv")
     if not csv_files:
-        # Try a more generic search
         csv_files = glob.glob(f"{competition}*.csv")
     
     if csv_files:
-        # Pick the most recent one if multiple
         csv_files.sort(key=os.path.getmtime, reverse=True)
-        df = pd.read_csv(csv_files[0])
-        # Cleanup
-        for f in csv_files:
-            if os.path.exists(f): os.remove(f)
-        if os.path.exists(f"{competition}.zip"): os.remove(f"{competition}.zip")
-        return df
+        try:
+            df = pd.read_csv(csv_files[0])
+            for f in csv_files:
+                if os.path.exists(f): os.remove(f)
+            if os.path.exists(f"{competition}.zip"): os.remove(f"{competition}.zip")
+            return df
+        except Exception:
+            return None
     return None
 
 def get_kernels(competition):
     print(f"Fetching kernels for {competition}...")
-    # Get top 200 kernels to have a better chance of matching ranks
-    output = run_command(f"python3 -m kaggle kernels list --competition {competition} --csv --page-size 100")
+    output = run_command(f"python3 -m kaggle kernels list --competition {competition} --csv --page-size 500")
     if output:
         from io import StringIO
-        return pd.read_csv(StringIO(output))
+        try:
+            return pd.read_csv(StringIO(output))
+        except Exception:
+            return None
     return None
 
 def main():
