@@ -10,13 +10,15 @@ DOMAINS = {
         "titanic", "house-prices-advanced-regression-techniques", "spaceship-titanic",
         "santander-customer-transaction-prediction", "competitive-data-science-predict-future-sales",
         "prudential-life-insurance-assessment", "porto-seguro-safe-driver-prediction",
-        "home-credit-default-risk", "bike-sharing-demand", "otto-group-product-classification-challenge"
+        "home-credit-default-risk", "bike-sharing-demand", "otto-group-product-classification-challenge",
+        "forest-cover-type-prediction", "ghouls-goblins-and-ghosts-boo", "tabular-playground-series-dec-2021"
     ],
     "NLP": [
         "nlp-getting-started", "feedback-prize-english-language-learning", "commonlitreadabilityprize",
         "jigsaw-toxic-comment-classification-challenge", "quora-question-pairs",
         "sentiment-analysis-on-movie-reviews", "word2vec-nlp-tutorial", "bag-of-words-meets-bags-of-popcorn",
-        "google-quest-challenge", "natural-language-processing-with-disaster-tweets"
+        "google-quest-challenge", "natural-language-processing-with-disaster-tweets",
+        "jigsaw-unintended-bias-in-toxicity-classification", "tweet-sentiment-extraction"
     ],
     "CV": [
         "digit-recognizer", "dogs-vs-cats-redux-kernels-edition", "cassava-leaf-disease-classification",
@@ -34,7 +36,7 @@ DOMAINS = {
     "Audio": [
         "birdclef-2023", "birdclef-2022", "freesound-audio-tagging-2019",
         "birdclef-2021", "rfcx-species-audio-detection", "birdsong-recognition",
-        "heartbeat-sounds"
+        "heartbeat-sounds", "birdclef-2024", "esc50-event-classification"
     ],
     "RL": [
         "kore-2022", "santa-2022", "halite", "google-football", "connectx",
@@ -44,19 +46,23 @@ DOMAINS = {
         "h-and-m-personalized-fashion-recommendations", "otto-recommender-system",
         "santander-product-recommendation", "elo-merchant-category-recommendation",
         "expedia-hotel-recommendations", "predict-west-nile-virus",
-        "instacart-market-basket-analysis", "talkingdata-adtracking-fraud-detection"
+        "instacart-market-basket-analysis", "talkingdata-adtracking-fraud-detection",
+        "outbrain-click-prediction", "avazu-ctr-prediction", "recruit-restaurant-visitor-forecasting"
     ],
     "GenAI": [
         "stable-diffusion-image-to-prompts", "llm-prompt-recovery",
         "llm-detect-ai-generated-text", "kaggle-llm-science-exam",
         "llms-you-cant-please-them-all", "drawing-with-llms",
-        "feedback-prize-effectiveness", "feedback-prize-2021"
+        "feedback-prize-effectiveness", "feedback-prize-2021",
+        "google-ai4code", "learning-equality-curriculum-recommendations"
     ],
     "Medical": [
         "rsna-breast-cancer-detection", "histopathologic-cancer-detection",
         "siim-isic-melanoma-classification", "rsna-pneumonia-detection-challenge",
         "osic-pulmonary-fibrosis-progression", "aptos2019-blindness-detection",
-        "rsna-intracranial-hemorrhage-detection", "prostate-cancer-grade-assessment"
+        "rsna-intracranial-hemorrhage-detection", "prostate-cancer-grade-assessment",
+        "hubmap-kidney-segmentation-connectivity", "sartorius-cell-instance-segmentation",
+        "uw-madison-gi-tract-image-segmentation", "pangea-liver-segmentation"
     ]
 }
 
@@ -157,7 +163,7 @@ def main():
                     merged['rank_diff'] = (merged['Rank'] - target_rank).abs()
                     best_match = merged.sort_values('rank_diff').iloc[0]
                     
-                    if best_match['rank_diff'] < max(50, total_teams * 0.05): # Allow some slack
+                    if best_match['rank_diff'] < max(100, total_teams * 0.1): # Increased slack
                         kernel_ref = best_match['ref']
                         actual_rank = best_match['Rank']
                         target_path = os.path.join(comp_dir, f"rank{actual_rank}_{percentile_label}")

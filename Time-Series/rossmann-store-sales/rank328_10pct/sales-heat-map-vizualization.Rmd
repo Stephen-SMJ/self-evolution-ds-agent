@@ -1,0 +1,104 @@
+---
+title: "Sales Heat Maps"
+author: "Stuart Cary"
+output: html_document
+---
+
+This analysis seeks to aid in finding days in which many stores exhibit abnormally high or low sales relative to the average sales for that particular day and store.
+
+###Step 1: Read in the data
+
+```{r}
+#load required packages
+library(data.table)
+library(dplyr)
+library(reshape2)
+library(ggplot2)
+library(scales)
+
+data <- fread("../input/train.csv")
+#data <- fread("train.csv")
+
+```
+
+###Step 2: Prepare Data for analysis and graphing
+
+For this analysis we only care about days when sales are greater than zero
+
+```{r}
+data <- data[Sales > 0]
+```
+
+To get the z-score we need to calculate the mean and standard deviation of sales. I chose to calculate the mean and standard deviation by store and day.
+```{r}
+zSales <- data[,.(meanSales = mean(Sales), sdSales = sd(Sales)), by=.(Store,DayOfWeek)]
+#order by Store and DayofWeek
+zSales <- zSales[order(Store,DayOfWeek)]
+```
+
+Now we need to merge this sales information so that we will see the mean and standard deviation of sales for each observation
+```{r}
+data <- merge(data,zSales,by=c("Store","DayOfWeek"))
+head(data)
+```
+
+Now that the data is merged we can calculate the z-score for every day
+
+```{r}
+data$zScore <- (data$Sales - data$meanSales) / data$sdSales
+head(data)
+summary(data$zScore)
+```
+
+From the summary we can see that the z-scores range from -5.63 to 9.061. For purposes of this analysis I chose to break the z-scores into bins from -3 to 3 in increments of 0.5, and also included buckets to catch the outliers (otherwise there would be NA values)
+
+```{r}
+data$zScoreBin <- cut(data$zScore,breaks = c(-6,-3,-2.5,-2,-1.5,-1,-0.5,0,0.5,1,1.5,2,2.5,3,10))
+data <- data[order(data$Date)]
+```
+
+Now we can create a table that shows for each day, what percentage of stores fell into each z-score bin
+```{r}
+#first order by date
+data <- data[order(data$Date)]
+#this rounds the percentage to two decimal places, and converts the table into a data frame
+propTable <- as.data.frame.matrix(round(prop.table(table(data$Date,data$zScoreBin),1),2))
+head(propTable)
+```
+
+###Step 3: Plot the data
+The analysis could easily stop here, as one could review the table above using whatever method they prefer. However I decided to create heat maps to make the data more vizually appealing. In order to do this using ggplot we need to "melt" the data into the appropriate format.
+```{r}
+propTable$Date <- as.Date(rownames(propTable))
+t <- melt(propTable,id="Date")
+#convert value to a numeric variable so that it plots correctly
+t$value <- as.numeric(t$value)
+```
+
+In order to make the charts easier to view, I created a separate chart for each month. In order to do this I needed to create a new variable that provided only the month and year. Then I was able to create a loop that creates a chart for each month.
+
+###Analysis
+What stands out? It looks to me like certain month end dates often have abnormally high sales. In addition, the week before Christmas has abnormally high sales. Much of the rest appears to be noise, however there is certainly room for further analysis. Feel free to comment on what stands out to you.
+
+```{r}
+t$monthYear <- paste(format(t$Date, "%m"),format(t$Date, "%Y"))
+for(i in unique(t$monthYear)){
+        #subset the data to plot
+        temp <- subset(t,t$monthYear == i)
+        #create the plot with bins on x-axis and dates on y-axis
+        g <- ggplot(temp, aes(variable, Date)) + 
+                #make it a heat map style using geom_tile, making the fill equal to the percentage of observations in each bucket
+                geom_tile(aes(fill = value),colour = "white") + 
+                #change the heat map colors to go from white to steelblue
+                scale_fill_gradient(low = "white",high = "steelblue") +
+                #edit the y-axis to show a label for each date in the specified format (requires "scales" package)
+                scale_y_date(labels = date_format("%m-%d-%y"),breaks = date_breaks("day")) +
+                #change the color of the text to white so that we don't see all of the 0 values on the chart, which add a lot of noise
+                geom_text(aes(label = value),colour= "white",size=2) +
+                #rotate the x-axis labels so that they don't overlap
+                theme(axis.text.x=element_text(angle=-45,hjust=0,vjust=1)) +
+                #add axis labels
+                labs(x = "Z-Score Bin",fill = "% of \n Observations")
+        print(g)      
+}
+```
