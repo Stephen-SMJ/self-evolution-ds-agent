@@ -1,0 +1,208 @@
+{
+  "domain": "RL",
+  "competition": "santa-2022",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 607,
+      "quality": "usable",
+      "score": 31,
+      "reasons": "bad_keyword",
+      "source": {
+        "path": "RL/santa-2022/rank607_70pct/santa-2022-the-christmas-card-conundrum.ipynb",
+        "file_name": "santa-2022-the-christmas-card-conundrum.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 23,
+        "code_cell_count": 21,
+        "markdown_cell_count": 2,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "**What are you trying to do in this notebook?**\n\nMy job is to determine the most optimal way to craft this year’s Christmas card, by selecting the most efficient path of both moving the robotic arm and changing the print color to craft this year’s image. Each link of the printer arm can be moved independently each step, but I'll also need to account for the time needed to change the printing color.\n\n**Why are you trying it?**\n\nTo create a sequence of arm configurations covering every point on the image that minimizes the total movement of the arm and also the change in color from point to point.\n\nThe position of the arm is the sum of these displacement vectors and indicates the location of the tip of the arm. The base of the arm (the origin of the first vector) is at , which is the midpoint of the image.\n\nThe arm can be reconfigured step-by-step by rotating any or all of the links by 1 unit, incurring a total reconfiguration cost equal to the square root of the number of links changed. Additionally, it incurs a color cost equal to the sum of the absolute differences in the color components from one step to the next and multiplied by a scaling factor of 3.0.\n\nThe task is to find a sequence of configurations with positions at every point in the solution image having a minimal cost."
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\n# For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "df = pd.read_csv('/kaggle/input/santa-2022/image.csv')"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "    flag = False\n        if flag:\n        flag = not flag"
+          },
+          {
+            "cell_index": 21,
+            "cell_type": "code",
+            "snippet": "submission.to_csv('submission.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 331,
+      "quality": "strong",
+      "score": 49,
+      "reasons": "",
+      "source": {
+        "path": "RL/santa-2022/rank331_40pct/ddqn-lstm-reinforcement-learning.ipynb",
+        "file_name": "ddqn-lstm-reinforcement-learning.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 15,
+        "code_cell_count": 14,
+        "markdown_cell_count": 1,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "The problem being addressed is a variation of the Traveling Salesman Problem (TSP), which involves finding the shortest route that visits a given set of locations and returns to the starting point. This problem is being solved using a reinforcement learning approach, in which an agent learns to interact with its environment in order to maximize a reward. In this case, the reward is the minimization of the distance traveled. The agent learns through trial and error, receiving rewards for actions that lead to desirable outcomes and penalties for actions that do not. As the agent gathers more experience, it is able to improve its decision-making and eventually find the optimal solution to the problem.\n\nThe environment in which the problem is being solved is large, requiring a significant amount of time to train, with an estimated 300,000 steps(1 episode) taking approximately 24 hours to complete on a Kaggle GPU (P100). However, it is suggested that better results may be achieved by training for 10-20 episodes, though this is uncertain. The provided implementation of the problem is described as being easy to understand and well-commented."
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "import torch\nimport torch.nn as nn\nimport torch.optim as optim\nimport torch.nn.functional as F\nsub = pd.read_csv(p+'sample_submission.csv')\ndf_image = pd.read_csv(p+'image.csv')"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "class CNNModel(nn.Module):\n        super(CNNModel, self).__init__()\n        x = torch.rand(1,4,257,257)\n        out = torch.prod(torch.tensor(x.shape))\n        torch.cuda.empty_cache()\n        x = torch.rand(1,2,9)\n        out = torch.prod(torch.tensor(x.shape))\n        torch.cuda.empty_cache()\n        x = torch.cat((x1, x2), dim=1)"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "        self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')\n        # flag for using Double DQN variation\n            image_state = image_state.to(dtype = torch.float32,device = device)\n            config_state = config_state.to(dtype = torch.float32,device = device)\n            action = torch.argmax(q_values).item()\n        image_states_tensor = torch.cat(tuple([t[0] for t in transitions]), dim=0).to(device = agent.device,dtype = torch.float32)\n        config_states_tensor = torch.cat(tuple([t[1] for t in transitions]), dim=0).to(device = agent.device,dtype = torch.float32)\n        new_image_states_tensor = torch.cat(tuple([t[5] for t in transitions]), dim=0).to(device = agent.device,dtype = torch.float32)\n        new_config_states_tensor = torch.cat(tuple([t[6] for t in transitions]), dim=0).to(device = agent.device,dtype = torch.float32)\n        actions_tensor = torch.tensor(actions ,dtype = torch.int64).unsqueeze(-1)\n        rewards_tensor = torch.tensor(rewards ,dtype = torch.float32).unsqueeze(-1)\n        dones_tensor = torch.tensor(dones,dtype = torch.float32).unsqueeze(-1)\n            next_actions_tensor = torch.argmax(q_eval_target,dim=0).unsqueeze(-1).data.cpu()\n            action_q_values = torch.gather(input = q_next_target ,dim=0 ,index = actions_tensor)\n        action_q_values = torch.gather(input = q_eval ,dim=0 ,index = actions_tensor)\n        torch.cuda.empty_cache()"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "    # convert the image array to a PyTorch tensor\n    img = torch.tensor(img)\n    config_ten = torch.tensor(config_arr)"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "        # If the number of unique filled coordinates is greater than or equal to 66049 or the step count is greater than 250000, the done flag is set to True"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "torch.cuda.empty_cache()"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')\nonline_net = CNNModel(n_actions,256).to(device)\ntarget_net = CNNModel(n_actions,256).to(device)"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "    image_states = torch.cat([image_state for _ in range(3)], dim=0).reshape(3,4,257,257)\n    config_states = torch.cat([config_state for _ in range(3)], dim=0).reshape(3,2,9)\n    score = 0\n    prev_score = 0\n        new_image_states = torch.cat((image_states[1:,:,:,:] ,new_image_state.view(-1,4,257,257)))[:,:,:,:].to(torch.float32)\n        new_config_states = torch.cat((config_states[1:,:,:] ,new_config_state.view(-1,2,9)))[:,:,:].to(torch.float32)\n        score += reward\n            reward_buffer.append(score)\n            print(f\"step: {env.step_count}   reward: {score + prev_score}  epsilon: {agent.epsilon} Filled Points: {len(env.filled_coordinates)-prev_filled_points}\")\n            prev_score = -score\n            torch.save(online_net, 'online_net.pt')\n            torch.save(target_net, 'target_net.pt')\n    print(score)\n    torch.save(online_net, 'online_net.pt')\n    torch.save(target_net, 'target_net.pt')"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "import torch\ntorch.save(online_net, 'online_net.pt')\ntorch.save(target_net, 'target_net.pt')\n# online_net = torch.load('online_net.pt')\n# target_net = torch.load('target_net.pt')"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 186,
+      "quality": "usable",
+      "score": 43,
+      "reasons": "",
+      "source": {
+        "path": "RL/santa-2022/rank186_20pct/santa-december.ipynb",
+        "file_name": "santa-december.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 36,
+        "code_cell_count": 35,
+        "markdown_cell_count": 1,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "sub = pd.read_csv(p+'sample_submission.csv')\ndf_image = pd.read_csv(p+'image.csv')"
+          },
+          {
+            "cell_index": 33,
+            "cell_type": "code",
+            "snippet": "flag = False\n        if not flag:\n        flag = not flag\n    flag = not flag"
+          },
+          {
+            "cell_index": 35,
+            "cell_type": "code",
+            "snippet": "submission.to_csv('submission.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 84,
+      "quality": "usable",
+      "score": 25,
+      "reasons": "bad_keyword",
+      "source": {
+        "path": "RL/santa-2022/rank84_10pct/greedy-search-hill-climbing-random-explore.ipynb",
+        "file_name": "greedy-search-hill-climbing-random-explore.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 18,
+        "code_cell_count": 10,
+        "markdown_cell_count": 8,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "# Reference\nI have referred to many existing notebooks. I would like to thank everyone.\n- https://www.kaggle.com/code/ryanholbrook/getting-started-with-santa-2022\n- https://www.kaggle.com/code/crodoc/82409-improved-baseline-santa-2022\n- https://www.kaggle.com/code/nicupetridean/further-analysis-of-costs-points-ordering\n- https://www.kaggle.com/code/snufkin77/further-point-order-improvements-tsp-start\n- https://www.kaggle.com/code/elvenmonk/santa-2022-lower-bound-approximation-73078"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "df_image = pd.read_csv(data_dir / 'image.csv')"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "        flag = False # available go next step\n                flag = True\n        if not flag:"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "        flag = False # available go next step\n                flag = True\n        if not flag:"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 1,
+      "quality": "usable",
+      "score": 26,
+      "reasons": "",
+      "source": {
+        "path": "RL/santa-2022/rank1_1st/lower-bound-using-minimum-spanning-tree.ipynb",
+        "file_name": "lower-bound-using-minimum-spanning-tree.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 6,
+        "code_cell_count": 5,
+        "markdown_cell_count": 1,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "df_image = pd.read_csv('../input/santa-2022/image.csv')"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,438 @@
+{
+  "domain": "Audio",
+  "competition": "birdclef-2021",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 398,
+      "quality": "strong",
+      "score": 67,
+      "reasons": "",
+      "source": {
+        "path": "Audio/birdclef-2021/rank398_70pct/clean-fast-simple-bird-identifier-20210502.ipynb",
+        "file_name": "clean-fast-simple-bird-identifier-20210502.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 33,
+        "code_cell_count": 24,
+        "markdown_cell_count": 9,
+        "snippets": [
+          {
+            "cell_index": 2,
+            "cell_type": "markdown",
+            "snippet": "* The inference is based on these [resnest50 weights](https://www.kaggle.com/kneroma/kkiller-birdclef-models-public). Please, don't forget upvoting the dataset to make it more visible for others\n* The inference pipeline is optimized as much as I can in order to reduce execution time"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "import torch\nfrom torch import nn\nfrom  torch.utils.data import Dataset, DataLoader\nfrom resnest.torch import resnest50"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "DEVICE = torch.device(\"cuda\" if torch.cuda.is_available() else \"cpu\")\nSAMPLE_SUB_PATH = \"../input/birdclef-2021/sample_submission.csv\"\n    # SAMPLE_SUB_PATH = \"../input/birdclef-2021/sample_submission.csv\""
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "        V = np.clip(X, _min, _max)"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "        image = np.stack([image, image, image])\n        images = np.stack(images)"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "df_train = pd.read_csv(\"../input/birdclef-2021/train_metadata.csv\")"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "    dummy_device = torch.device(\"cpu\")\n    d = torch.load(checkpoint_path, map_location=dummy_device)"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "    Path(\"../input/kkiller-birdclef-models-public/birdclef_resnest50_fold0_epoch_10_f1_val_06471_20210417161101.pth\"),"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "@torch.no_grad()\n    o = (-out).argsort(1)"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "    with torch.no_grad():\n            xb = torch.from_numpy(test_data[idx]).to(DEVICE)\n                o = torch.sigmoid(o)"
+          },
+          {
+            "cell_index": 25,
+            "cell_type": "code",
+            "snippet": "        sample_sub = pd.read_csv(SAMPLE_SUB_PATH, usecols=[\"row_id\"])\n        sub = sample_sub.merge(sub, on=\"row_id\", how=\"left\")"
+          },
+          {
+            "cell_index": 27,
+            "cell_type": "code",
+            "snippet": "sub.to_csv(\"submission.csv\", index=False)"
+          },
+          {
+            "cell_index": 28,
+            "cell_type": "markdown",
+            "snippet": "# Small validation"
+          },
+          {
+            "cell_index": 29,
+            "cell_type": "code",
+            "snippet": "def get_metrics(s_true, s_pred):"
+          },
+          {
+            "cell_index": 30,
+            "cell_type": "code",
+            "snippet": "    sub_target = pd.read_csv(TARGET_PATH)\n    sub_target = sub_target.merge(sub, how=\"left\", on=\"row_id\")\n    df_metrics = pd.DataFrame([get_metrics(s_true, s_pred) for s_true, s_pred in zip(sub_target.birds_x, sub_target.birds_y)])\n    print(df_metrics.mean())"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 295,
+      "quality": "usable",
+      "score": 43,
+      "reasons": "",
+      "source": {
+        "path": "Audio/birdclef-2021/rank295_40pct/birdclef-21-22-23-data-cleaning.ipynb",
+        "file_name": "birdclef-21-22-23-data-cleaning.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 44,
+        "code_cell_count": 29,
+        "markdown_cell_count": 15,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "- A csv file with the 2023 dataset reduced to 'primary_label', 'secondary_labels', 'type', 'filename','filepath'.  File path is relative to the kaggle input folder.\nAll the file names in both csv files are now unique, and in the same format. I have removed 6,686 cases where there was overlap between competitions, plus a remaining 7 cases where the same file name existed in more than one class folder.\nYou could link the datasets from all three years, and use these two CSV files to create your training and validation splits, for pretraining on all the data and finetuning on the 2023 dataset, all in the same format."
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "data_folder = Path('/kaggle/input')  #modify to suit\nout_folder = Path('/kaggle/working')\ntrain_21 = data_folder / 'birdclef-2021' / 'train_short_audio'\ntrain_22 =  data_folder / 'birdclef-2022' / 'train_audio'\ntrain_23 = data_folder / 'birdclef-2023' / 'train_audio'\ntrain_21_csv = data_folder / 'birdclef-2021' / 'train_metadata.csv'\ntrain_22_csv = data_folder / 'birdclef-2022' / 'train_metadata.csv'\ntrain_23_csv = data_folder / 'birdclef-2023' / 'train_metadata.csv'\nout_csv_all_pth = out_folder / 'train_21_22_23.csv'\nout_csv_23_pth = out_folder / 'train_23.csv'"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "unique_names_w_folder = set([str(k.parent.name) + '/' + str(k.name) for (k,v) in all_sfiles.items()])\nprint(f'Unique file names including folder name: {len(unique_names_w_folder)}')"
+          },
+          {
+            "cell_index": 32,
+            "cell_type": "code",
+            "snippet": "print(f'{all_sf_len - len(all_sfiles)} items were removed because they were the same file name in different class folders')"
+          },
+          {
+            "cell_index": 34,
+            "cell_type": "code",
+            "snippet": "df_23 = pd.read_csv(train_23_csv,  usecols=in_csv_fields, dtype=csv_datatypes, index_col=None)\ndf_22 = pd.read_csv(train_22_csv,  usecols=in_csv_fields, dtype=csv_datatypes, index_col=None)\ndf_21 = pd.read_csv(train_21_csv,  usecols=in_csv_fields, dtype=csv_datatypes, index_col=None)"
+          },
+          {
+            "cell_index": 43,
+            "cell_type": "code",
+            "snippet": "df_23.to_csv(out_csv_23_pth, index=False)\nall_dfs.to_csv(out_csv_all_pth, index=False)"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 130,
+      "quality": "usable",
+      "score": 43,
+      "reasons": "",
+      "source": {
+        "path": "Audio/birdclef-2021/rank130_20pct/birdclef-2020-2025-all-training-extra-npy-dataset.ipynb",
+        "file_name": "birdclef-2020-2025-all-training-extra-npy-dataset.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 21,
+        "code_cell_count": 19,
+        "markdown_cell_count": 2,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "# Credits goes to [@cpmpml](https://www.kaggle.com/cpmpml), its a copy of his notebook for 2025 [BirdCLEF 2024 3rd solution](https://github.com/jfpuget/birdclef-2024/)"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv('/kaggle/input/birdclef-2025/train.csv')"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "train_20 = pd.read_csv('/kaggle/input/birdsong-recognition/train.csv')"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "train_21 = pd.read_csv('/kaggle/input/birdclef-2021/train_metadata.csv')"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "train_22 = pd.read_csv('/kaggle/input/birdclef-2022/train_metadata.csv')"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "train_23 = pd.read_csv('/kaggle/input/birdclef-2023/train_metadata.csv')"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "train_24 = pd.read_csv('/kaggle/input/birdclef-2024/train_metadata.csv')"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "all_train['rank'] = all_train.groupby('primary_label').source.rank(method='first', ascending=False)"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "all_train.to_csv('/datasets/all_train.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 34,
+      "quality": "strong",
+      "score": 73,
+      "reasons": "",
+      "source": {
+        "path": "Audio/birdclef-2021/rank34_10pct/birdclef23-pretraining-is-all-you-need-train.ipynb",
+        "file_name": "birdclef23-pretraining-is-all-you-need-train.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 109,
+        "code_cell_count": 50,
+        "markdown_cell_count": 59,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "markdown",
+            "snippet": "In this notebook, we will explore how to identify bird calls using TensorFlow. Specifically, this notebook will cover:\n* How to use tf.data for audio processing tasks and reading .ogg files in TensorFlow\n* How to extract spectrogram features from raw audio on TPU/GPU, which reduces CPU bottleneck significantly, speeding up the process by ~$4 \\times$ on **P100 GPU** compared to the [previous notebook](https://www.kaggle.com/code/awsaf49/birdclef23-effnet-fsr-cutmixup-train).\n* Unlike the previous tutorial, this notebook will perform spectrogram augmentation such as `TimeFreqMask` and `Normalization` on **GPU/TPU** and perform `CutMix` and `MixUp` with audio data on **CPU**.\n* This notebook demonstrates how **pre-training on the BirdCLEF - 2020, 2021, 2022 & Xeno-Canto Extend** dataset can improve transfer learning performance. CNN backbones, like `EfficientNet`, struggle with spectrogram data even with ImageNet pre-trained weights as they are not fimilar with audio data. Pre-training on an audio dataset, like BirdCLEF, can mitigate this issue and can yield a ~$5\\%$ improvement in local validation and ~$2\\%$ improvement in leaderboard."
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "# # Tensorflow for tpu-vm\n# !pip install -q /lib/wheels/tensorflow-2.9.1-cp38-cp38-linux_x86_64.whl\n# # Tensorflow utilities\n!pip install -q tensorflow-addons==0.19.0\n!pip install -q tensorflow-probability==0.19.0\n!pip install -q tensorflow-io==0.32.0"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "markdown",
+            "snippet": "In this notebook to make the code as compact as possible `tensorflow_extra` library. This library contains all the necessary layers that will do ops like `MelSpectrogram`, `TimeFreqMask`, `ZScoreMinMax` on GPU/TPU. You are welcome to check the [source code](https://github.com/awsaf49/tensorflow_extra).\n> **Note**: `tensorflow_extra` library is not any offical library  from TensorFlow rather a custom library built by me to ease the workflow.\nAdditionally, this notebook will use [this library](https://github.com/awsaf49/efficientnet-spec) for `EfficientNet` models with **Filter Stride Reduction (FSR)**."
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "!pip install -qU tensorflow_extra --no-deps\n# efficientnet with filter stride reduction (FSR)\n!pip install -qU git+https://github.com/awsaf49/efficientnet-spec"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "# Import tensorflow\nimport tensorflow as tf\n# Import required tensorflow modules\nimport tensorflow_io as tfio\nimport tensorflow_addons as tfa\nimport tensorflow_probability as tfp\nimport tensorflow.keras.backend as K"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "    comment = 'EfficientNetB1|No-FSR|t=10s|128x384|cutmix'\n    # Inference batch size, test time augmentation, and drop remainder\n    tta = 1\n    # Number of epochs, model name, and number of folds\n    model_name = 'EfficientNetB1'\n    num_fold = 5\n    # Selected folds for training and evaluation\n    selected_folds = [0]\n    # Learning rate, optimizer, and scheduler\n    scheduler = 'cos'\n    # Data augmentation parameters\n    augment=True\n    # Audio Augmentation Settings\n    audio_augment_prob = 0.5\n    mixup_prob = 0.65\n    mixup_alpha = 0.5\n    cutmix_prob = 0.65\n    cutmix_alpha = 2.5\n    timeshift_prob = 0.0"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "tf.keras.utils.set_random_seed(CFG.seed)"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "markdown",
+            "snippet": "# WandB 🪄\n<img src=\"https://camo.githubusercontent.com/dd842f7b0be57140e68b2ab9cb007992acd131c48284eaf6b1aca758bfea358b/68747470733a2f2f692e696d6775722e636f6d2f52557469567a482e706e67\" width=\"400\" alt=\"Weights & Biases\" />\n\nTo track model's training I'll be using **Weights & Biases** tool. Weights & Biases (W&B) is MLOps platform for tracking our experiemnts. We can use it to Build better models faster with experiment tracking, dataset versioning, and model management. Specifically for this notebook, we can do error analysis to check in which audio files models are struggling as we can also log **audio** file in WandB."
+          },
+          {
+            "cell_index": 26,
+            "cell_type": "code",
+            "snippet": "df_23 = pd.read_csv(f'{BASE_PATH3}/train_metadata.csv')"
+          },
+          {
+            "cell_index": 28,
+            "cell_type": "code",
+            "snippet": "df_20 = pd.read_csv(f'{BASE_PATH0}/train.csv')\ndf_xam = pd.read_csv(f'{BASE_PATH4}/train_extended.csv')\ndf_xnz = pd.read_csv(f'{BASE_PATH5}/train_extended.csv')\ndf_21 = pd.read_csv(f'{BASE_PATH1}/train_metadata.csv')\ndf_22 = pd.read_csv(f'{BASE_PATH2}/train_metadata.csv')\n# Merge 2021 and 2022 for pretraining"
+          },
+          {
+            "cell_index": 43,
+            "cell_type": "code",
+            "snippet": "from sklearn.model_selection import StratifiedKFold\n# Initialize the StratifiedKFold object with 5 splits and shuffle the data\nskf1 = StratifiedKFold(n_splits=25, shuffle=True, random_state=CFG.seed)\nskf2 = StratifiedKFold(n_splits=CFG.num_fold, shuffle=True, random_state=CFG.seed)\n# Create a new column in the dataframe to store the fold number for each row\ndf_pre[\"fold\"] = -1\ndf_23[\"fold\"] = -1\nfor fold, (train_idx, val_idx) in enumerate(skf1.split(df_pre, df_pre['primary_label'])):\n    df_pre.loc[val_idx, 'fold'] = fold\nfor fold, (train_idx, val_idx) in enumerate(skf2.split(df_23, df_23['primary_label'])):\n    df_23.loc[val_idx, 'fold'] = fold"
+          },
+          {
+            "cell_index": 45,
+            "cell_type": "code",
+            "snippet": "    # Add a new column to select samples for cross validation\n    # identify the classes that have less than the threshold number of samples\n    # identify the classes that have less than the threshold number of samples"
+          },
+          {
+            "cell_index": 49,
+            "cell_type": "code",
+            "snippet": "plt.axhline(y=up_thr, color='g', linestyle='--', label='up threshold')\nplt.axhline(y=400, color='r', linestyle='--', label='down threshold')\nplt.axhline(y=up_thr, color='g', linestyle='--', label='up threshold')"
+          },
+          {
+            "cell_index": 55,
+            "cell_type": "code",
+            "snippet": "import tensorflow_extra as tfe\n# Randomly shift audio -> any sound at <t> time may get shifted to <t+shift> time\ndef TimeShift(audio, prob=0.5):\n    # Randomly apply time shift with probability `prob`\n        # Calculate random shift value\n        shift = random_int(shape=[], minval=0, maxval=tf.shape(audio)[0])\n        # Randomly set the shift to be negative with 50% probability\n            shift = -shift\n        # Roll the audio signal by the shift value\n        audio = tf.roll(audio, shift, axis=0)\n        GN = tf.keras.layers.GaussianNoise(stddev=std)\n# Applies augmentation to Audio Signal\n    # Apply time shift and Gaussian noise to the audio signal\n    audio = TimeShift(audio, prob=CFG.timeshift_prob)\n# CutMix & MixUp\nmixup_layer = tfe.layers.MixUp(alpha=CFG.mixup_alpha, prob=CFG.mixup_prob)\ncutmix_layer = tfe.layers.CutMix(alpha=CFG.cutmix_alpha, prob=CFG.cutmix_prob)\ndef CutMixUp(audios, labels):\n    audios, labels = mixup_layer(audios, labels, training=True)\n    audios, labels = cutmix_layer(audios, labels, training=True)"
+          },
+          {
+            "cell_index": 60,
+            "cell_type": "code",
+            "snippet": "# Applies augmentation to audio\ndef audio_augmenter(with_labels=True, dim=CFG.audio_len, CFG=CFG):\n    def augment(audio, dim=dim):\n        if random_float() <= CFG.audio_augment_prob:\n    def augment_with_labels(audio, label):\n        return augment(audio), label\n    return augment_with_labels if with_labels else augment"
+          },
+          {
+            "cell_index": 61,
+            "cell_type": "markdown",
+            "snippet": "* We can build complex input pipelines from simple, reusable pieces using`tf.data` API . For example, the pipeline for an audio model might aggregate data from files in a distributed file system, apply random transformation/augmentation to each audio, and merge randomly selected audios into a batch for training.\nCheck out this [doc](https://www.tensorflow.org/guide/data) if you want to learn more about `tf.data`."
+          },
+          {
+            "cell_index": 62,
+            "cell_type": "code",
+            "snippet": "                  audio_decode_fn=None, audio_augment_fn=None,\n                  augment=True, repeat=True, shuffle=1024):\n    Creates a TensorFlow dataset from the given paths and labels.\n        audio_augment_fn (function): A function to augment the audio file.\n        augment (bool): Whether to augment the dataset or not.\n        ds (tf.data.Dataset): A TensorFlow dataset.\n    # Set default audio augmentation function if not provided\n    if audio_augment_fn is None:\n        audio_augment_fn = audio_augmenter(labels is not None,\n    # Set TensorFlow AUTOTUNE option\n    # Create TensorFlow dataset from slices\n    # Create TensorFlow dataset options\n    # Apply audio augmentation to the dataset if augment is True\n    ds = ds.map(audio_augment_fn, num_parallel_calls=AUTO) if augment else ds\n    # Apply MixUp & CutMix regularization to the dataset\n    if augment and labels is not None:\n        ds = ds.map(CutMixUp,num_parallel_calls=AUTO)"
+          },
+          {
+            "cell_index": 64,
+            "cell_type": "code",
+            "snippet": "    plt.title('Fold %i - Training Plot'%(fold+1),size=18)"
+          },
+          {
+            "cell_index": 66,
+            "cell_type": "code",
+            "snippet": "                   augment=True, cache=False)"
+          },
+          {
+            "cell_index": 68,
+            "cell_type": "code",
+            "snippet": "                   augment=True, cache=False)"
+          },
+          {
+            "cell_index": 70,
+            "cell_type": "code",
+            "snippet": "                   augment=True, cache=False)"
+          },
+          {
+            "cell_index": 72,
+            "cell_type": "code",
+            "snippet": "                   augment=True, cache=False)"
+          },
+          {
+            "cell_index": 74,
+            "cell_type": "code",
+            "snippet": "                   augment=True, cache=False)"
+          },
+          {
+            "cell_index": 75,
+            "cell_type": "markdown",
+            "snippet": "This layers will preprocess audio data before feeding them to model. Specifically, `MelSpectrogram` layer will convert audio data to spectrogram, `TimeFreqMask` layer will apply time and freq masking to spectrogram, `ZScoreMinMax` layer will apply normalization and rescaling to spectrogram data."
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 16,
+      "quality": "strong",
+      "score": 72,
+      "reasons": "",
+      "source": {
+        "path": "Audio/birdclef-2021/rank16_1st/kneroma-secondary-labels.ipynb",
+        "file_name": "kneroma-secondary-labels.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 31,
+        "code_cell_count": 22,
+        "markdown_cell_count": 9,
+        "snippets": [
+          {
+            "cell_index": 2,
+            "cell_type": "markdown",
+            "snippet": "* The inference is based on these [resnest50 weights](https://www.kaggle.com/kneroma/kkiller-birdclef-models-public). Please, don't forget upvoting the dataset to make it more visible for others\n* The inference pipeline is optimized as much as I can in order to reduce execution time"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "import torch\nfrom torch import nn\nfrom  torch.utils.data import Dataset, DataLoader\nfrom resnest.torch import resnest50"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "DEVICE = torch.device(\"cuda\" if torch.cuda.is_available() else \"cpu\")\nSAMPLE_SUB_PATH = \"../input/birdclef-2021/sample_submission.csv\"\n    # SAMPLE_SUB_PATH = \"../input/birdclef-2021/sample_submission.csv\""
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "        V = np.clip(X, _min, _max)"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "        image = np.stack([image, image, image])\n        images = np.stack(images)"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "df_train = pd.read_csv(\"../input/birdclef-2021/train_metadata.csv\")"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "    dummy_device = torch.device(\"cpu\")\n    d = torch.load(checkpoint_path, map_location=dummy_device)"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "    Path(\"../input/kneroma-secondl/secondl-label0.50-birdclef_resnest50_fold0_epoch_11_f1_val_07361_20210521014834.pth\"),"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "@torch.no_grad()\n    o = (-out).argsort(1)"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "    with torch.no_grad():\n            xb = torch.from_numpy(test_data[idx]).to(DEVICE)\n                o = torch.sigmoid(o)"
+          },
+          {
+            "cell_index": 25,
+            "cell_type": "code",
+            "snippet": "        sample_sub = pd.read_csv(SAMPLE_SUB_PATH, usecols=[\"row_id\"])\n        sub = sample_sub.merge(sub, on=\"row_id\", how=\"left\")"
+          },
+          {
+            "cell_index": 27,
+            "cell_type": "code",
+            "snippet": "sub.to_csv(\"submission.csv\", index=False)"
+          },
+          {
+            "cell_index": 28,
+            "cell_type": "markdown",
+            "snippet": "# Small validation"
+          },
+          {
+            "cell_index": 29,
+            "cell_type": "code",
+            "snippet": "def get_metrics(s_true, s_pred):"
+          },
+          {
+            "cell_index": 30,
+            "cell_type": "code",
+            "snippet": "    sub_target = pd.read_csv(TARGET_PATH)\n    sub_target = sub_target.merge(sub, how=\"left\", on=\"row_id\")\n    df_metrics = pd.DataFrame([get_metrics(s_true, s_pred) for s_true, s_pred in zip(sub_target.birds_x, sub_target.birds_y)])\n    print(df_metrics.mean())\n    bo_metrics = pd.DataFrame([get_metrics(s_true, s_pred) for s_true, s_pred in zip(birds_only.birds_x, birds_only.birds_y)])\n    print(bo_metrics.mean())\n    nocall_metrics = pd.DataFrame([get_metrics(s_true, s_pred) for s_true, s_pred in zip(nocall_only.birds_x, nocall_only.birds_y)])\n    print(nocall_metrics.mean())"
+          }
+        ]
+      }
+    }
+  }
+}

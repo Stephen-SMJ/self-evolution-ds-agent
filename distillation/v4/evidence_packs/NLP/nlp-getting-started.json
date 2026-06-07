@@ -1,0 +1,368 @@
+{
+  "domain": "NLP",
+  "competition": "nlp-getting-started",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 557,
+      "quality": "weak",
+      "score": 21,
+      "reasons": "bad_keyword",
+      "source": {
+        "path": "NLP/nlp-getting-started/rank557_70pct/notebook76d50be751.ipynb",
+        "file_name": "notebook76d50be751.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 2,
+        "code_cell_count": 2,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\n# For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory\n# Use the kagglehub client library to attach Kaggle resources like competitions, datasets, and models to your session"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "from sklearn.feature_extraction.text import TfidfVectorizer\n        self.vectorizer = TfidfVectorizer(stop_words='english')\n# 1. Load the data (Kaggle automatically stores it in the input folder)\ntrain_df = pd.read_csv(train_path)\ntest_df = pd.read_csv(test_path)\nsubmission_df.to_csv('submission.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 331,
+      "quality": "strong",
+      "score": 73,
+      "reasons": "",
+      "source": {
+        "path": "NLP/nlp-getting-started/rank331_40pct/disaster-tweets-tf-idf-vs-bilstm-vs-bert.ipynb",
+        "file_name": "disaster-tweets-tf-idf-vs-bilstm-vs-bert.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 26,
+        "code_cell_count": 14,
+        "markdown_cell_count": 12,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "            <span style=\"font-weight: 300; font-size: 24px; color: #a8a29e;\">TF-IDF vs BiLSTM vs BERT</span>\n            Three generations of NLP compared on the same dataset. TF-IDF with keyword n-grams as a baseline, BiLSTM with GloVe embeddings and attention pooling for sequence awareness, and fine-tuned BERT for contextual understanding.\n            <p style=\"color: #a8a29e; font-size: 11px; margin: 4px 0 0; text-transform: uppercase; letter-spacing: 1px;\">Eval Metric</p>"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "os.environ['TOKENIZERS_PARALLELISM'] = 'false'\nos.environ['TF_USE_LEGACY_KERAS'] = '1'\n!pip install -q transformers==4.44.2 2>/dev/null\nfrom sklearn.model_selection import train_test_split, StratifiedKFold, cross_val_score\nfrom sklearn.feature_extraction.text import TfidfVectorizer\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.ensemble import VotingClassifier\nfrom sklearn.calibration import CalibratedClassifierCV\nfrom sklearn.metrics import (f1_score, accuracy_score, precision_score,\n    recall_score, confusion_matrix, classification_report,\n    roc_curve, auc, precision_recall_curve, average_precision_score)\nimport tensorflow as tf\nfrom tensorflow import keras\nfrom tensorflow.keras import layers, callbacks\nfrom tensorflow.keras.preprocessing.text import Tokenizer\nfrom tensorflow.keras.preprocessing.sequence import pad_sequences\nfrom transformers import AutoTokenizer, TFAutoModelForSequenceClassification\nlogging.getLogger('tensorflow').setLevel(logging.ERROR)\ntrain_df = pd.read_csv('/kaggle/input/competitions/nlp-getting-started/train.csv')\ntest_df  = pd.read_csv('/kaggle/input/competitions/nlp-getting-started/test.csv')\nsub_df   = pd.read_csv('/kaggle/input/competitions/nlp-getting-started/sample_submission.csv')"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "dup_conflicting = dup_texts.groupby('text')['target'].nunique()"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "                 .groupby('keyword')['target']\n                 .agg(['mean', 'count'])"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "def word_freq(texts): # score each word by how much it leans toward one class vs the other\nscores = {} # +1 means only in disaster, -1 means only in non-disaster\n        scores[w] = (dr - sr) / (dr + sr + 1e-9)\nranked = sorted(scores.items(), key=lambda x: x[1])\ntop_d = ranked[-15:][::-1]\nax1.set_xlabel('Relative frequency score')\ntop_s = ranked[:15]\nax2.set_xlabel('Relative frequency score')\nax4 = fig.add_subplot(gs[1, 1]) # words with high frequency in both classes but near-zero score — these fail TF-IDF\nambiguous_words = sorted(scores.items(), key=lambda x: abs(x[1]))[:15]\nsorted_idx = np.argsort(amb_freq)[::-1] # sort by total frequency so the most common ambiguous words are on top\nfor i, (freq, score) in enumerate(zip(amb_freq, amb_vals)):\n             f'n={freq}  score={score:+.3f}', va='center', fontsize=8, color='#444')\nax4.spines['right'].set_visible(False) # \"like\", \"people\", \"new\" etc. carry zero signal, this is where BERT should help"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "    \"\"\"Minimal cleaning for BERT.\"\"\"\n        text = f\"{keyword} : {text}\" # prepend keyword, BERT's attention can learn to use it as context\ntrain_df['text_bert'] = train_df.apply(\ntest_df['text_bert'] = test_df.apply(\n    print(f\"  bert  : {row['text_bert'][:90]}\")\nX_bert = train_df['text_bert'].values\nsplits = train_test_split(X_text, X_bert, X_text_kw, y, test_size=0.15, random_state=42, stratify=y) # split all text arrays together so indices stay aligned\nX_train_bert, X_val_bert = splits[2], splits[3]"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "tfidf = TfidfVectorizer(\nX_train_tfidf = tfidf.fit_transform(X_train_kw)\nX_val_tfidf   = tfidf.transform(X_val_kw)\nX_test_tfidf  = tfidf.transform(test_df['text_kw'].values)\nprint(f\"  vocabulary: {len(tfidf.vocabulary_):,} terms\")\nprint(f\"  matrix: {X_train_tfidf.shape}\")\nmodels_tfidf = {\n    'Logistic Regression': LogisticRegression(C=1.0, max_iter=1000, random_state=42),\n    'Linear SVM': CalibratedClassifierCV(\ntfidf_results = {}\nfor name, model in models_tfidf.items():\n    model.fit(X_train_tfidf, y_train)\n    preds = model.predict(X_val_tfidf)\n    probs = model.predict_proba(X_val_tfidf)[:, 1]\n        'f1': f1_score(y_val, preds),\n        'accuracy': accuracy_score(y_val, preds),\n        'precision': precision_score(y_val, preds),\n        'recall': recall_score(y_val, preds),\n    tfidf_results[name] = res\n# ensemble\nensemble = VotingClassifier(\n    estimators=[(k.lower().replace(' ', '_'), v) for k, v in models_tfidf.items()],\nensemble.fit(X_train_tfidf, y_train)\nens_preds = ensemble.predict(X_val_tfidf)\nens_probs = ensemble.predict_proba(X_val_tfidf)[:, 1]\ntfidf_results['Ensemble'] = {\n    'model': ensemble, 'preds': ens_preds, 'probs': ens_probs,\n    'f1': f1_score(y_val, ens_preds),\n    'accuracy': accuracy_score(y_val, ens_preds),\n    'precision': precision_score(y_val, ens_preds),\n    'recall': recall_score(y_val, ens_preds),\nprint(f\"\\n  {'Ensemble':<25s}  {tfidf_results['Ensemble']['f1']:>.4f}  {tfidf_results['Ensemble']['accuracy']:>.4f}  {tfidf_results['Ensemble']['precision']:>.4f}  {tfidf_results['Ensemble']['recall']:>.4f}\")\nbest_name = max(tfidf_results, key=lambda k: tfidf_results[k]['f1'])\n    ('tfidf', TfidfVectorizer(max_features=25000, ngram_range=(1,3), min_df=2, max_df=0.95, sublinear_tf=True, strip_accents='unicode')),\n    ('clf', LogisticRegres\n...[truncated]"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "for ax, (name, res) in zip(axes.flat, tfidf_results.items()):"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "markdown",
+            "snippet": "<a id=\"lstm\"></a>\n<div style=\"\n    margin: 35px auto 15px;\n    padding: 12px 20px;\n    background: #292524;\n    border-radius: 8px;\n    border-left: 3px solid #c67d4a;\">\n    <p style=\"color: #c67d4a; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 3px;\">Section 05</p>\n    <h2 style=\"color: #ffffff; font-size: 22px; font-weight: 600; margin: 0;\">BiLSTM with GloVe and Attention</h2>\n</div>\n\n<div style=\"\n    margin: 0 auto 15px;\n    padding: 18px 24px;\n    background: #faf9f6;\n    border-radius: 10px;\n    border: 1px solid #e8e4de;\">\n    <p style=\"color: #44403c; font-size: 14px; line-height: 1.8; margin: 0;\">\n        TF-IDF throws away word order entirely. \"Man bites dog\" and \"dog bites man\" produce the same vector. An LSTM reads tokens sequentially and maintains a hidden state that accumulates meaning as it moves through the sentence. Bidirectional means two passes, one forward and one backward so every position has context from both sides. GloVe embeddings trained on 2 billion tweets initialize the word vectors so the model starts with real semantic relationships instead of random weights.\n    </p>\n</div>"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "tokenizer_lstm = Tokenizer(num_words=MAX_VOCAB, oov_token='<OOV>')\ntokenizer_lstm.fit_on_texts(X_train_text)\nX_train_seq = pad_sequences(tokenizer_lstm.texts_to_sequences(X_train_text), maxlen=MAX_LEN)\nX_val_seq   = pad_sequences(tokenizer_lstm.texts_to_sequences(X_val_text), maxlen=MAX_LEN)\nX_test_seq  = pad_sequences(tokenizer_lstm.texts_to_sequences(test_df['text_clean'].values), maxlen=MAX_LEN)\nword_index = tokenizer_lstm.word_index\nGLOVE_PATH = '/kaggle/input/datasets/robertyoung/glove-twitter-pickles-27b-25d-50d-100d-200d/glove.twitter.27B.100d.pkl'\n    inp = keras.Input(shape=(MAX_LEN,))\n    x = layers.Lambda(lambda z: tf.keras.backend.sum(z, axis=1))(x)\n    return keras.Model(inp, out, name='BiLSTM_Attention')\n    optimizer=keras.optimizers.Adam(1e-3),\n    metrics=['accuracy']\ntrainable = sum(tf.keras.backend.count_params(w) for w in lstm_model.trainable_weights)\n    validation_data=(X_val_seq, y_val),\n        callbacks.EarlyStopping(monitor='val_loss', patience=5,\n# ── threshold optimization for LSTM too ──\n    f1_t = f1_score(y_val, preds_t)\nlstm_f1 = f1_score(y_val, lstm_preds)\nprint(f\"\\n  BiLSTM val F1={lstm_f1:.4f}  Acc={accuracy_score(y_val, lstm_preds):.4f}\")\nprint(f\"  optimal threshold: {best_lstm_thresh:.2f} (default 0.50 would give F1={f1_score(y_val, (lstm_probs >= 0.5).astype(int)):.4f})\")"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "markdown",
+            "snippet": "<a id=\"bert\"></a>\n    <h2 style=\"color: #ffffff; font-size: 22px; font-weight: 600; margin: 0;\">Fine-tuned BERT</h2>\n    GloVe gives every word one fixed vector regardless of context. \"Fire\" produces the same embedding whether the tweet reports a building burning or someone getting fired from a job. BERT solves this with self-attention where each token's representation is computed from every other token in the sentence simultaneously. The word \"fire\" in \"the building is on fire\" attends to \"building\" and produces a very different embedding than \"fire\" in \"he got fired last week\" which attends to \"got\". The model was pre-trained on billions of words using masked language modeling so it already understands English deeply. Fine-tuning just teaches it what disaster versus not-disaster looks like on top of that existing knowledge."
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "BERT_MODEL = 'bert-base-uncased'\nBERT_MAX_LEN = 64\nBERT_BATCH = 16\nBERT_EPOCHS = 6\nBERT_LR = 1e-5 # 2e-5 was overfitting by epoch 3, halved it\nbert_tokenizer = AutoTokenizer.from_pretrained(BERT_MODEL)\ndef tokenize_bert(texts, max_len=BERT_MAX_LEN):\n    return bert_tokenizer(\ntrain_enc = tokenize_bert(X_train_bert)\nval_enc   = tokenize_bert(X_val_bert)\ntest_enc  = tokenize_bert(test_df['text_bert'].values)\nprint(f\"  model: {BERT_MODEL}\")\nprint(f\"  max length: {BERT_MAX_LEN}  |  batch: {BERT_BATCH}  |  lr: {BERT_LR}\")\nfrom tf_keras.optimizers import Adam as TFKerasAdam # Keras 3 and tf-keras optimizers are incompatible, HuggingFace TF models use tf-keras internally\noptimizer = TFKerasAdam(\n    learning_rate=BERT_LR,\nbert_model = TFAutoModelForSequenceClassification.from_pretrained(BERT_MODEL, num_labels=2)\nbert_model.compile(\n    loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),\n    metrics=['accuracy']\nprint(f\"  parameters: {bert_model.count_params():,}\")\nhistory_bert = bert_model.fit(\n    validation_data=(dict(val_enc), y_val),\n    epochs=BERT_EPOCHS, batch_size=BERT_BATCH,\n        callbacks.EarlyStopping(\n            monitor='val_loss', patience=2, # patience=2 because BERT loss can fluctuate between epochs on 6k samples\n# ── Threshold Optimization ──\nbert_logits = bert_model.predict(dict(val_enc), verbose=0).logits\nbert_probs  = tf.nn.softmax(bert_logits, axis=1).numpy()[:, 1]\n    preds_t = (bert_probs >= t).astype(int)\n    f1_t = f1_score(y_val, preds_t)\nbert_preds = (bert_probs >= best_thresh).astype(int)\nbert_f1 = f1_score(y_val, bert_preds)\nprint(f\"\\n  BERT val F1={bert_f1:.4f}  Acc={accuracy_score(y_val, bert_preds):.4f}\")\nprint(f\"  optimal threshold: {best_thresh:.2f} (default 0.50 would give F1={f1_score(y_val, (bert_probs >= 0.5).astype(in\n...[truncated]"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "best_tfidf_name = max(tfidf_results, key=lambda k: tfidf_results[k]['f1'])\nbest_tfidf = tfidf_results[best_tfidf_name]\n    f'TF-IDF ({best_tfidf_name})': best_tfidf,\n        'f1': lstm_f1, 'accuracy': accuracy_score(y_val, lstm_preds),\n        'precision': precision_score(y_val, lstm_preds),\n        'recall': recall_score(y_val, lstm_preds),\n    'BERT': {\n        'preds': bert_preds, 'probs': bert_probs,\n        'f1': bert_f1, 'accuracy': accuracy_score(y_val, bert_preds),\n        'precision': precision_score(y_val, bert_preds),\n        'recall': recall_score(y_val, bert_preds),\nmetrics = ['f1', 'precision', 'recall']\nfor i, (m, lab, col) in enumerate(zip(metrics, labels, colors)):\nax.set_ylabel('Score')"
+          },
+          {
+            "cell_index": 21,
+            "cell_type": "code",
+            "snippet": "    ap = average_precision_score(y_val, res['probs'])"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "    'tfidf': best_tfidf['preds'],\n    'bert': bert_preds,\n    (error_df['tfidf'] != error_df['true']) &\n    (error_df['bert'] != error_df['true'])\nbert_wins = error_df[\n    (error_df['bert'] == error_df['true']) &\n    ((error_df['tfidf'] != error_df['true']) | (error_df['lstm'] != error_df['true']))\ntfidf_only = error_df[\n    (error_df['tfidf'] == error_df['true']) &\n    (error_df['bert'] != error_df['true'])\nprint(f\"  BERT right, others wrong: {len(bert_wins)}\")\nprint(f\"  TF-IDF right, BERT wrong: {len(tfidf_only)}\")"
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "code",
+            "snippet": "if 'BERT' in best_name:\n    test_logits = bert_model.predict(dict(test_enc), verbose=0).logits\n    # use the optimized threshold from validation, not default 0.5\n    print(f\"  using optimized threshold: {best_thresh:.2f}\")\n    test_preds = best_tfidf['model'].predict(X_test_tfidf)\nsub_df.to_csv('submission.csv', index=False)"
+          },
+          {
+            "cell_index": 25,
+            "cell_type": "markdown",
+            "snippet": "        BERT wins because it builds contextual embeddings. The word \"fire\" gets a different representation in \"the building is on fire\" versus \"he got fired\" because self-attention considers the full sentence at once. A few epochs of fine-tuning was enough since the pre-trained weights already encode deep language understanding.\n        Tweets that all three models get wrong are often unclear by nature. Indirect references to emergencies, news headlines missing context and casual use of disaster vocabulary all contribute. These are cases where the text alone does not contain enough information to classify correctly."
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 173,
+      "quality": "strong",
+      "score": 53,
+      "reasons": "",
+      "source": {
+        "path": "NLP/nlp-getting-started/rank173_20pct/83-6-accuracy-bert-nlp.ipynb",
+        "file_name": "83-6-accuracy-bert-nlp.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 15,
+        "code_cell_count": 8,
+        "markdown_cell_count": 7,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "# Natural Language Processing: Transfer Learning with BERT\n### Predicting Disaster Tweets using HuggingFace and PyTorch\nWhere traditional models (like TF-IDF or basic RNNs) struggle to capture grammatical nuance and long-term context, modern NLP relies on the \"Attention Mechanism.\" In this notebook, we utilize **Transfer Learning**. We import **DistilBERT**, a Transformer architecture pre-trained on the English Wikipedia corpus, and fine-tune its classification head exclusively on the Kaggle tweet set using native PyTorch."
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "import torch\nfrom transformers import AutoTokenizer, AutoModelForSequenceClassification"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "if torch.backends.mps.is_available():\n    device = torch.device(\"mps\")\nelif torch.cuda.is_available():\n    device = torch.device(\"cuda\")\n    device = torch.device(\"cpu\")"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "markdown",
+            "snippet": "Twitter text is inherently noisy. Before feeding data into the Transformer, we load the raw strings. Unlike classical NLP approaches, we intentionally **skip aggressive text cleaning** (e.g., removing stop-words or lemmatization). Transformers map semantic relationships using the literal grammar of the sentence; prematurely deleting stop-words destroys the attention-context the model relies on."
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "train_df = pd.read_csv(\"/kaggle/input/competitions/nlp-getting-started/train.csv\")\ntest_df = pd.read_csv(\"/kaggle/input/competitions/nlp-getting-started/test.csv\")"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "markdown",
+            "snippet": "## Chapter 2: The BERT Tokenizer\nPre-trained Transformers utilize massive, immutable vocabularies. To ensure our data aligns with the model's pre-existing knowledge vectors, we must use the exact Tokenizer designed for our specific BERT checkpoint.\nThe tokenizer will convert our raw text into integer IDs, while automatically generating an `attention_mask`. This mask explicitly instructs the AI which tokens contain semantic meaning, and which represent empty padding to be ignored during training."
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "checkpoint = \"distilbert-base-uncased\"\ntokenizer = AutoTokenizer.from_pretrained(checkpoint)\ntrain_encodings = tokenizer(list(X_train_raw), truncation=True, padding=True, max_length=128)\ntest_encodings = tokenizer(list(X_test_raw), truncation=True, padding=True, max_length=128)"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "markdown",
+            "snippet": "## Chapter 3: PyTorch Data Handling\nFor maximum computational efficiency during GPU training, PyTorch requires data to be formally wrapped in a `torch.utils.data.Dataset` subclass."
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "class TweetDataset(torch.utils.data.Dataset):\n        item = {key: torch.tensor(val[idx]) for key, val in self.encodings.items()}\n            item['labels'] = torch.tensor(self.labels[idx])"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "markdown",
+            "snippet": "We now securely download the pre-trained `DistilBERT` architecture. By calling `ForSequenceClassification`, the HuggingFace library automatically removes BERT's original output layer (which was designed for masked language modeling) and attaches a completely blank, randomized 2-neuron classification head (Disaster vs. Safe)."
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "print(f\"DistilBERT successfully loaded onto {device.type.upper()}!\")"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "markdown",
+            "snippet": "Because we are modifying a pre-trained architectural masterpiece, standard Deep Learning hyperparameters would destroy the model. Using a standard learning rate (e.g., `1e-3`) would cause violent mathematical updates that shatter BERT's understanding of English.\nInstead, we use a microscopic learning rate (`2e-5`) to gently \"nudge\" the weights. The HuggingFace `Trainer` API abstracts away the complex PyTorch training loop, handling evaluation and optimization under the hood."
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "from transformers import Trainer, TrainingArguments\nfrom sklearn.metrics import accuracy_score\ndef compute_metrics(eval_pred):\n    return {\"accuracy\": accuracy_score(labels, predictions)}\n    compute_metrics=compute_metrics"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "print(\"Running BERT Inference on Test Data...\")\nbert_predictions = np.argmax(predictions_output.predictions, axis=1)\nsubmission_bert = pd.DataFrame({\n    \"target\": bert_predictions\nsubmission_bert.to_csv(\"submission.csv\", index=False)\nprint(\"BERT Submission saved to 'bert_submission.csv'!\")"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 81,
+      "quality": "strong",
+      "score": 73,
+      "reasons": "",
+      "source": {
+        "path": "NLP/nlp-getting-started/rank81_10pct/nlp-disaster-tweets-roberta-5-fold-top-5.ipynb",
+        "file_name": "nlp-disaster-tweets-roberta-5-fold-top-5.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 29,
+        "code_cell_count": 15,
+        "markdown_cell_count": 14,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "# 🌪️ NLP with Disaster Tweets — RoBERTa 5-Fold Ensemble\n> **Public Score: 0.84125** | Top ~5% on the Leaderboard\nStarting from simple TF-IDF baselines, we progressively improve to a **RoBERTa 5-Fold Ensemble**\nachieving a public score of **0.84125**.\n| Approach | Val F1 | Public Score |\n| DistilBERT (cleaned text) | 0.7787 | — |\n| RoBERTa (raw text) | 0.8262 | 0.83266 |\n| **RoBERTa 5-Fold Ensemble** | **~0.81 avg** | **0.84125** |\n1. **Raw text > cleaned text for BERT** — hashtags like `#wildfire` carry disaster signals\n2. **RoBERTa > DistilBERT** — better pre-training leads to better fine-tuning\n3. **5-Fold Ensemble > Single model** — averaging probabilities reduces variance\n→ DistilBERT Fine-tuning → RoBERTa Fine-tuning → 5-Fold CV Ensemble → Submission"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "!pip install transformers -q\nimport torch\nfrom sklearn.feature_extraction.text import TfidfVectorizer\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import f1_score\nfrom sklearn.model_selection import cross_val_score, StratifiedKFold\nfrom torch.utils.data import Dataset, DataLoader, random_split\nfrom torch.optim import AdamW\nfrom transformers import (DistilBertTokenizer, DistilBertForSequenceClassification,\n                          RobertaTokenizer, RobertaForSequenceClassification,\ndevice = torch.device('cuda' if torch.cuda.is_available() else 'cpu')\nif torch.cuda.is_available():\n    print(f\"GPU: {torch.cuda.get_device_name(0)}\")"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv('/kaggle/input/competitions/nlp-getting-started/train.csv')\ntest = pd.read_csv('/kaggle/input/competitions/nlp-getting-started/test.csv')"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "print(train.groupby('target')[['text_length', 'word_count']].mean().round(2))"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "markdown",
+            "snippet": "> For BERT/RoBERTa, we use **raw text** — the model already understands context,"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "markdown",
+            "snippet": "- Rare but frequent words get high scores → better signal\nThis is why we need BERT later."
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "tfidf = TfidfVectorizer(max_features=10000, ngram_range=(1, 2))\nX_train_tfidf = tfidf.fit_transform(train['clean_text'])\nX_test_tfidf = tfidf.transform(test['clean_text'])\nprint(f\"Feature matrix shape: {X_train_tfidf.shape}\")\nprint(f\"Each tweet is now a vector of {X_train_tfidf.shape[1]} features\")"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "    'Logistic Regression': LogisticRegression(max_iter=1000, C=1.0),\n    scores = cross_val_score(model, X_train_tfidf, train['target'],\n    results[name] = scores.mean()\n    print(f\"{name:<25} F1: {scores.mean():.4f} ± {scores.std():.4f}\")\nscores = list(results.values())\ncolors = ['#2E75B6' if s == max(scores) else '#AED6F1' for s in scores]\nbars = ax.bar(names, scores, color=colors, edgecolor='white')\nax.set_ylabel('F1 Score')\nfor bar, score in zip(bars, scores):\n            f'{score:.4f}', ha='center', fontsize=10)\nprint(f\"\\nBest baseline: Naive Bayes with F1={max(scores):.4f}\")\nprint(\"→ We need BERT to understand context!\")"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "    \"\"\"PyTorch Dataset for tweet tokenizations.\"\"\"\n            item['labels'] = torch.tensor(self.labels[idx], dtype=torch.long)\ndef train_epoch(model, loader, optimizer, scheduler, device):\n        torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)\n        scheduler.step()\n    \"\"\"Evaluate model, return F1 score.\"\"\"\n    with torch.no_grad():\n            predictions = torch.argmax(outputs.logits, dim=1)\n    return f1_score(true_labels, preds)"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "markdown",
+            "snippet": "## 7. DistilBERT Baseline\n### What is BERT?\nBERT (Bidirectional Encoder Representations from Transformers) is a pre-trained\nSame word, different meaning — BERT handles this perfectly.\n### Why DistilBERT?\nDistilBERT is a lighter version of BERT:\n- **40% smaller** and **60% faster** than BERT\n- Retains **97%** of BERT's performance\nWe don't train BERT from scratch — it would require billions of sentences and months of compute."
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "tokenizer_distil = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')\n# We use CLEANED text for DistilBERT (to show the difference with RoBERTa later)\ntrain_enc_distil = tokenizer_distil(\ntest_enc_distil = tokenizer_distil(\ntokens = tokenizer_distil(sample)\nprint(f\"Tokens : {tokenizer_distil.convert_ids_to_tokens(tokens['input_ids'])}\")"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "                                   generator=torch.Generator().manual_seed(42))\nmodel_distil = DistilBertForSequenceClassification.from_pretrained(\n    'distilbert-base-uncased', num_labels=2)\n# Optimizer and scheduler\nscheduler_distil = get_linear_schedule_with_warmup(\nprint(\"Training DistilBERT...\")\n                      optimizer_distil, scheduler_distil, device)\n        torch.save(model_distil.state_dict(), 'best_distilbert.pt')\nprint(f\"\\nDistilBERT Best Val F1: {best_distil_f1:.4f}\")"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "markdown",
+            "snippet": "## 8. RoBERTa — Better Pre-training, Better Results\n### Why RoBERTa over BERT/DistilBERT?\nRoBERTa (Robustly Optimized BERT Pretraining Approach) was trained:\n- On **10x more data** than BERT\n- Without Next Sentence Prediction (which BERT uses but isn't always helpful)\nFor DistilBERT we used cleaned text. Here we switch to **raw text**.\n- `@FEMA` → mention of emergency agency signals disaster\n- `http://emergency.gov` → URL context matters\nBERT-based models are smart enough to ignore noise while preserving signal."
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "# RoBERTa tokenizer - raw text this time!\ntokenizer_roberta = RobertaTokenizer.from_pretrained('roberta-base')\ntrain_enc_roberta = tokenizer_roberta(\ntest_enc_roberta = tokenizer_roberta(\ntrain_ds_roberta = TweetDataset(train_enc_roberta, list(train['target']))\ntest_ds_roberta = TweetDataset(test_enc_roberta)\nval_size = int(0.1 * len(train_ds_roberta))\ntrain_size = len(train_ds_roberta) - val_size\ntrain_sub_r, val_sub_r = random_split(train_ds_roberta, [train_size, val_size],\n                                       generator=torch.Generator().manual_seed(42))\ntrain_loader_roberta = DataLoader(train_sub_r, batch_size=32, shuffle=True)\nval_loader_roberta = DataLoader(val_sub_r, batch_size=32, shuffle=False)\ntest_loader_roberta = DataLoader(test_ds_roberta, batch_size=32, shuffle=False)\nmodel_roberta = RobertaForSequenceClassification.from_pretrained(\n    'roberta-base', num_labels=2)\nmodel_roberta = model_roberta.to(device)\noptimizer_roberta = AdamW(model_roberta.parameters(), lr=2e-5, weight_decay=0.01)\ntotal_steps = len(train_loader_roberta) * epochs\nscheduler_roberta = get_linear_schedule_with_warmup(\n    optimizer_roberta,\nprint(\"Training RoBERTa (raw text)...\")\nbest_roberta_f1 = 0\nroberta_history = []\n    loss = train_epoch(model_roberta, train_loader_roberta,\n                      optimizer_roberta, scheduler_roberta, device)\n    val_f1 = eval_epoch(model_roberta, val_loader_roberta, device)\n    roberta_history.append({'epoch': epoch+1, 'loss': loss, 'val_f1': val_f1})\n    if val_f1 > best_roberta_f1:\n        best_roberta_f1 = val_f1\n        torch.save(model_roberta.state_dict(), 'best_roberta.pt')\n        print(f\"  ✓ Saved! Best F1: {best_roberta_f1:.4f}\")\nprint(f\"\\nRoBERTa Best Val F1: {best_roberta_f1:.4f}\")\nprint(f\"Improvement over DistilBERT: +{best_roberta_f1 -\n...[truncated]"
+          },
+          {
+            "cell_index": 21,
+            "cell_type": "markdown",
+            "snippet": "### Model Progress Visualization"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "roberta_f1s = [h['val_f1'] for h in roberta_history]\naxes[0].plot(epochs_list, distil_f1s, 'o-', label='DistilBERT', color='steelblue')\naxes[0].plot(epochs_list, roberta_f1s, 's-', label='RoBERTa', color='darkorange')\naxes[0].set_ylabel('F1 Score')\n               'DistilBERT\\n(clean)', 'RoBERTa\\n(raw)']\nscores_comp = [0.6035, 0.5537, best_distil_f1, best_roberta_f1]\nbars = axes[1].bar(models_comp, scores_comp, color=colors_comp, edgecolor='white')\naxes[1].set_ylabel('Val F1 Score')\nfor bar, score in zip(bars, scores_comp):\n                f'{score:.4f}', ha='center', fontsize=10, fontweight='bold')"
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "markdown",
+            "snippet": "## 9. 5-Fold Cross-Validation Ensemble\n### Why Ensemble?\ndepending on which samples end up in validation.\n**5-Fold CV Ensemble:**\n1. Split data into 5 equal folds\n2. Train a separate model on each fold (4 folds train, 1 fold val)\nThis reduces variance and typically improves public score by **0.005-0.015**."
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "code",
+            "snippet": "skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)\nfold_scores = []\nfor fold, (train_idx, val_idx) in enumerate(skf.split(train, train['target'])):\n    print(f\"FOLD {fold+1}/5\")\n    train_fold = train.iloc[train_idx]\n    val_fold = train.iloc[val_idx]\n    train_fold_enc = tokenizer_roberta(\n        list(train_fold['text']), max_length=160,\n    val_fold_enc = tokenizer_roberta(\n        list(val_fold['text']), max_length=160,\n    train_fold_ds = TweetDataset(train_fold_enc, list(train_fold['target']))\n    val_fold_ds = TweetDataset(val_fold_enc, list(val_fold['target']))\n    train_fold_loader = DataLoader(train_fold_ds, batch_size=32, shuffle=True)\n    val_fold_loader = DataLoader(val_fold_ds, batch_size=32, shuffle=False)\n    fold_model = RobertaForSequenceClassification.from_pretrained(\n        'roberta-base', num_labels=2)\n    fold_model = fold_model.to(device)\n    fold_optimizer = AdamW(fold_model.parameters(), lr=2e-5, weight_decay=0.01)\n    total_steps = len(train_fold_loader) * 3\n    fold_scheduler = get_linear_schedule_with_warmup(\n        fold_optimizer,\n    best_fold_f1 = 0\n        loss = train_epoch(fold_model, train_fold_loader,\n                          fold_optimizer, fold_scheduler, device)\n        val_f1 = eval_epoch(fold_model, val_fold_loader, device)\n        if val_f1 > best_fold_f1:\n            best_fold_f1 = val_f1\n            torch.save(fold_model.state_dict(), f'fold_{fold+1}.pt')\n    fold_scores.append(best_fold_f1)\n    print(f\"  Fold {fold+1} Best F1: {best_fold_f1:.4f}\")\n    fold_model.load_state_dict(torch.load(f'fold_{fold+1}.pt'))\n    fold_model.eval()\n    fold_preds = []\n    with torch.no_grad():\n        for batch in test_loader_roberta:\n            outputs = fold_model(input_ids=input_ids, attention_mask=attention_mask)\n       \n...[truncated]"
+          },
+          {
+            "cell_index": 26,
+            "cell_type": "code",
+            "snippet": "# Average probabilities from 5 folds\nsubmission.to_csv('submission.csv', index=False)"
+          },
+          {
+            "cell_index": 27,
+            "cell_type": "code",
+            "snippet": "# Visualize fold results\n# Fold scores\naxes[0].bar([f'Fold {i+1}' for i in range(5)], fold_scores,\naxes[0].axhline(y=np.mean(fold_scores), color='red', linestyle='--',\n                label=f'Mean: {np.mean(fold_scores):.4f}')\naxes[0].set_title('F1 Score per Fold', fontsize=12, fontweight='bold')\naxes[0].set_ylabel('F1 Score')\nfor i, score in enumerate(fold_scores):\n    axes[0].text(i, score + 0.003, f'{score:.4f}', ha='center', fontsize=10)\n    'DistilBERT': best_distil_f1,\n    'RoBERTa\\nSingle': best_roberta_f1,\n    'RoBERTa\\n5-Fold': np.mean(fold_scores)\naxes[1].set_ylabel('F1 Score')\nfor bar, score in zip(bars, final_comparison.values()):\n                f'{score:.4f}', ha='center', fontsize=10, fontweight='bold')"
+          },
+          {
+            "cell_index": 28,
+            "cell_type": "markdown",
+            "snippet": "| **BERT Fine-tuning** | Transfer learning: use pre-trained knowledge for new tasks |\n| **Raw vs Cleaned Text** | For BERT models, raw text preserves more signal |\n| **RoBERTa > DistilBERT** | Better pre-training → better fine-tuning results |\n| **5-Fold Ensemble** | Averaging probabilities reduces variance, improves generalization |\n### Score Progression\n| Version | Approach | Public Score |\n| v2 | DistilBERT (cleaned text) | ~0.78 |\n| v3 | RoBERTa (raw text) | 0.83266 |\n| **v4** | **RoBERTa 5-Fold Ensemble** | **0.84125** |\n- Try `roberta-large` (more parameters, higher ceiling)\n- Try DeBERTa — currently state-of-the-art for NLP classification\n- Pseudo-labeling: use high-confidence test predictions as additional training data"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 7,
+      "quality": "reject",
+      "score": 1,
+      "reasons": "too_short",
+      "source": {
+        "path": "NLP/nlp-getting-started/rank7_1st/disaster-tweets-classification-with-distilbert.ipynb",
+        "file_name": "disaster-tweets-classification-with-distilbert.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 1,
+        "code_cell_count": 1,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import tensorflow as tf\nimport keras\nimport keras_nlp\ndf_test = pd.read_csv(\"/kaggle/input/competitions/nlp-getting-started/test.csv\")\nsample_submission = pd.read_csv(\"/kaggle/input/competitions/nlp-getting-started/sample_submission.csv\")\nmodel = keras.models.load_model(\"/kaggle/input/models/jek1wantaufik/buddy/keras/nlp/1/output/distilbert_model.keras\", compile=False)\nsample_submission[\"target\"] = np.argmax(preds, axis=1)\nsample_submission.to_csv(\"/kaggle/working/submission.csv\", index=False)"
+          }
+        ]
+      }
+    }
+  }
+}

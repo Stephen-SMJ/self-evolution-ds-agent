@@ -1,0 +1,21 @@
+{
+  "id": "jialunhe/map-k-demo",
+  "id_no": 12268724,
+  "title": "MAP@K demo",
+  "code_file": "map-k-demo.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "keywords": [],
+  "dataset_sources": [],
+  "kernel_sources": [],
+  "competition_sources": [
+    "expedia-hotel-recommendations"
+  ],
+  "model_sources": [],
+  "docker_image": "gcr.io/kaggle-images/python@sha256:ce73f7ad7ce990372ba55ac971aac15cac398423f437bb8032f1f82c7819c46c",
+  "machine_shape": "None"
+}

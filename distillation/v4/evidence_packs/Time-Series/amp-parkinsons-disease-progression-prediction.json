@@ -1,0 +1,358 @@
+{
+  "domain": "Time-Series",
+  "competition": "amp-parkinsons-disease-progression-prediction",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 1297,
+      "quality": "usable",
+      "score": 29,
+      "reasons": "bad_keyword",
+      "source": {
+        "path": "Time-Series/amp-parkinsons-disease-progression-prediction/rank1297_70pct/predicting-updrs-4.ipynb",
+        "file_name": "predicting-updrs-4.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 17,
+        "code_cell_count": 17,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\n# For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv(\"/kaggle/input/amp-parkinsons-disease-progression-prediction/train_clinical_data.csv\")"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "for (test, test_peptides, test_proteins, sample_submission) in iter_test:"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 710,
+      "quality": "usable",
+      "score": 43,
+      "reasons": "bad_keyword",
+      "source": {
+        "path": "Time-Series/amp-parkinsons-disease-progression-prediction/rank710_40pct/uom-cs3111-23-group07-final-submission.ipynb",
+        "file_name": "uom-cs3111-23-group07-final-submission.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 12,
+        "code_cell_count": 11,
+        "markdown_cell_count": 1,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\n# For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "    Calculates the Symmetric Mean Absolute Percentage Error (SMAPE) with an offset of 1.\n    metric = np.zeros(len(y_true_plus_1))\n    metric[mask_not_zeros] = numerator[mask_not_zeros] / denominator[mask_not_zeros]\n    return 100 * np.nanmean(metric)"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "train_clinical_data = pd.read_csv('/kaggle/input/amp-parkinsons-disease-progression-prediction/train_clinical_data.csv')\nsupplemental_clinical_data = pd.read_csv('/kaggle/input/amp-parkinsons-disease-progression-prediction/supplemental_clinical_data.csv')"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "medians = train_clinical_all.groupby('visit_month')[['updrs_1', 'updrs_2', 'updrs_3', 'updrs_4']].median()"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "merged_df = pd.merge(train_clinical_all, medians, on='visit_month', suffixes=('_df1', '_df2'))\nmerged_df"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "merged_df['updrs_1'] = merged_df['updrs_1_df1'].fillna(merged_df['updrs_1_df2'])\nmerged_df['updrs_2'] = merged_df['updrs_2_df1'].fillna(merged_df['updrs_2_df2'])\nmerged_df['updrs_3'] = merged_df['updrs_3_df1'].fillna(merged_df['updrs_3_df2'])\nmerged_df['updrs_4'] = merged_df['updrs_4_df1'].fillna(merged_df['updrs_4_df2'])\nmerged_df = merged_df.drop(['updrs_1_df2', 'updrs_2_df2', 'updrs_3_df2', 'updrs_4_df2'], axis=1)\nmerged_df = merged_df.drop(['updrs_1_df1', 'updrs_2_df1', 'updrs_3_df1', 'updrs_4_df1'], axis=1)\nmerged_df"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "train_clinical_all = merged_df[~merged_df.visit_month.isin([3, 5, 9])]"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "    train_shift = train_clinical_all[['patient_id', 'visit_month', 'pred_month', 'updrs_1', 'updrs_2', 'updrs_3', 'updrs_4']].copy()\n    train_shift['visit_month'] -= plus_month\n    train_shift.rename(columns={f'updrs_{i}': f'updrs_{i}_plus_{plus_month}' for i in range(1, 5)}, inplace=True)\n    train_shift.rename(columns={'pred_month': f'pred_month_plus_{plus_month}'}, inplace=True)\n    train_clinical_all = train_clinical_all.merge(train_shift, how='left', on=['patient_id', 'visit_month'])"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "#     if target == 'updrs_1': pred_month = pred_month.clip(36, None)\n    if target == 'updrs_4': pred_month = pred_month.clip(36, None)\n    metric = smape_plus_1(\n    return metric"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "for test_clinical_data, test_peptides, test_proteins, sample_submission in iter_test:\n    sample_submission['patient_id'] = sample_submission['prediction_id'].map(lambda x: int(x.split('_')[0]))\n    sample_submission['visit_month'] = sample_submission['prediction_id'].map(lambda x: int(x.split('_')[1]))\n    sample_submission['target_name'] = sample_submission['prediction_id'].map(lambda x: 'updrs_' + x.split('_')[3])\n    sample_submission['plus_month'] = sample_submission['prediction_id'].map(lambda x: int(x.split('_')[5]))\n    sample_submission['pred_month'] = sample_submission['visit_month'] + sample_submission['plus_month']\n        mask_target = sample_submission['target_name'] == target\n        sample_submission.loc[mask_target, 'rating'] = calculate_predicitons(\n            pred_month=sample_submission.loc[mask_target, 'pred_month'],\n    env.predict(sample_submission[['prediction_id', 'rating']])"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 232,
+      "quality": "strong",
+      "score": 73,
+      "reasons": "",
+      "source": {
+        "path": "Time-Series/amp-parkinsons-disease-progression-prediction/rank232_20pct/pdpp-2-stage-model.ipynb",
+        "file_name": "pdpp-2-stage-model.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 24,
+        "code_cell_count": 16,
+        "markdown_cell_count": 8,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "Unfortunately I did not select this submission: it would have placed me top 22 with a score of 69.2 the CV score being 61.9 in 5 fold"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "    metric = np.zeros(len(y_true_plus_1))\n    metric[mask_not_zeros] = numerator[mask_not_zeros] / denominator[mask_not_zeros]\n    return 100 * np.nanmean(metric)"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "train_clinical_data = pd.read_csv('/kaggle/input/amp-parkinsons-disease-progression-prediction/train_clinical_data.csv')\nsupplemental_clinical_data = pd.read_csv('/kaggle/input/amp-parkinsons-disease-progression-prediction/supplemental_clinical_data.csv')"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "    train_shift = train_clinical_all[['patient_id', 'visit_month', 'pred_month', 'updrs_1', 'updrs_2', 'updrs_3', 'updrs_4']].copy()\n    train_shift['visit_month'] -= plus_month\n    train_shift.rename(columns={f'updrs_{i}': f'updrs_{i}_plus_{plus_month}' for i in range(1, 5)}, inplace=True)\n    train_shift.rename(columns={'pred_month': f'pred_month_plus_{plus_month}'}, inplace=True)\n    train_clinical_all = train_clinical_all.merge(train_shift, how='left', on=['patient_id', 'visit_month'])"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "    if target == 'updrs_1': pred_month = pred_month.clip(12, 36)\n    if target == 'updrs_2': pred_month = pred_month.clip(40, None)\n    if target == 'updrs_3': pred_month = pred_month.clip(1, None)\n    if target == 'updrs_4': pred_month = pred_month.clip(55, None)\n    #pred_month = pred_month.clip(None, c_m)\n    metric = smape_plus_1(\n    return metric\nprint(\"OOF SMAPE+1 : {}\".format(smape_plus_1(y_true=np.array(y_to_pred),"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "# eval oof pred\nprint(\"Stage1 oof pred : {}\".format(smape_plus_1(y_gt,preds)))"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "proteins = pd.read_csv('/kaggle/input/amp-parkinsons-disease-progression-prediction/train_proteins.csv')\ntrain_clinical_all = train_clinical_all.merge(\n# fill with last valid :\ntrain_clinical_all[proteins_features.columns] = train_clinical_all.groupby('patient_id')[proteins_features.columns].fillna(method='ffill')"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "from xgboost import XGBRegressor\nfrom sklearn.ensemble import StackingRegressor\nestimators = [('lr', XGBRegressor()),\n    model = StackingRegressor(estimators=estimators,n_jobs=2)\n    # oof pred"
+          },
+          {
+            "cell_index": 21,
+            "cell_type": "code",
+            "snippet": "# eval oof pred\nprint(\"Stage2 oof pred : {}\".format(smape_plus_1(y_gt,preds)))"
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "code",
+            "snippet": "for test_clinical_data, test_peptides, test_proteins, sample_submission in iter_test:\n    sample_submission['patient_id'] = sample_submission['prediction_id'].map(lambda x: int(x.split('_')[0]))\n    sample_submission['visit_month'] = sample_submission['prediction_id'].map(lambda x: int(x.split('_')[1]))\n    sample_submission['target_name'] = sample_submission['prediction_id'].map(lambda x: 'updrs_' + x.split('_')[3])\n    sample_submission['plus_month'] = sample_submission['prediction_id'].map(lambda x: int(x.split('_')[5]))\n    sample_submission['pred_month'] = sample_submission['visit_month'] + sample_submission['plus_month']\n    sample_submission['visit_id'] = sample_submission['patient_id'].astype(str) + '_' + sample_submission['visit_month'].astype(str)\n        mask_target = sample_submission['target_name'] == target\n        sample_submission.loc[mask_target, 'target'] = calculate_predictions(\n            pred_month=sample_submission.loc[mask_target, 'pred_month'],\n    proteins_features_all[proteins_features.columns] = proteins_features_all.groupby('patient_id')[proteins_features.columns].\\\n    proteins_features = proteins_features_all.groupby('patient_id', as_index=False).last()\n    sample_submission = sample_submission.merge(\n        # oof pred\n#         sample_submission.loc[mask_target, 'rating'] = np.round(sample_submission.loc[mask_target, 'rating'])\n    env.predict(sample_submission[['prediction_id', 'rating']])"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 188,
+      "quality": "strong",
+      "score": 55,
+      "reasons": "",
+      "source": {
+        "path": "Time-Series/amp-parkinsons-disease-progression-prediction/rank188_10pct/protein-npx-groups.ipynb",
+        "file_name": "protein-npx-groups.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 27,
+        "code_cell_count": 22,
+        "markdown_cell_count": 5,
+        "snippets": [
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "    metric = np.zeros(len(y_true_plus_1))\n    metric[mask_not_zeros] = numerator[mask_not_zeros] / denominator[mask_not_zeros]\n    return 100 * np.nanmean(metric)"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "train_clinical_all = pd.read_csv('/kaggle/input/amp-parkinsons-disease-progression-prediction/train_clinical_data.csv')\nproteins = pd.read_csv('/kaggle/input/amp-parkinsons-disease-progression-prediction/train_proteins.csv')\ntrain_clinical_all = train_clinical_all.merge(\n# # # Calculate the exponentially weighted sum for each column\n# # # Merge the exponentially weighted sum with the train_clinical_all DataFrame\n# train_clinical_all = train_clinical_all.merge("
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "# train_clinical_all[proteins_features.columns] = train_clinical_all.groupby('patient_id')[proteins_features.columns].\\\n# train_clinical_all[proteins_features.columns] = train_clinical_all.groupby('patient_id')[proteins_features.columns].\\\ntrain_clinical_all[proteins_features.columns] = train_clinical_all.groupby('patient_id')[proteins_features.columns].\\"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "#     # Check if the absolute correlation value is less than a threshold (e.g., 0.5)"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "# # Set a correlation threshold (e.g., 0.7) to determine strong correlation\n# correlation_threshold = 0.2\n# # Select the features with correlation above the threshold\n# strongly_correlated_features = correlation_with_target[correlation_with_target.abs() > correlation_threshold].index.tolist()"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "    train_shift = train_clinical_all[['patient_id', 'visit_month', 'pred_month', 'updrs_1', 'updrs_2', 'updrs_3', 'updrs_4']].copy()\n    train_shift['visit_month'] -= plus_month\n    train_shift.rename(columns={f'updrs_{i}': f'updrs_{i}_plus_{plus_month}' for i in range(1, 5)}, inplace=True)\n    train_shift.rename(columns={'pred_month': f'pred_month_plus_{plus_month}'}, inplace=True)\n    train_clinical_all = train_clinical_all.merge(train_shift, how='left', on=['patient_id', 'visit_month'])"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "        pred_month = pred_month.clip(60, None)"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "def calculate_predicitons_protein(pred_month, protein_shift):\n    return np.round(pred_month_trend + protein_shift)\n    metric = smape_plus_1(\n            protein_shift=x[0]\n    return metric"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "        item[f'{target}_shift'] = find_best_const(train_clinical_all_filtered0, target)"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "        y=f'{target}_shift',"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "        item[f'{target}_shift'] = find_best_const(train_clinical_all_filtered1, target)"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "        y=f'{target}_shift',"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "        item[f'{target}_shift'] = find_best_const(train_clinical_all_filtered2, target)"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "        y=f'{target}_shift',"
+          },
+          {
+            "cell_index": 21,
+            "cell_type": "code",
+            "snippet": "target_to_npx_groups_shift0 = defaultdict(list)\n        item['shift'] = find_best_const(train_clinical_all_filtered0, target)\n        target_to_npx_groups_shift0[target].append(item)"
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "code",
+            "snippet": "target_to_npx_groups_shift1 = defaultdict(list)\n        item['shift'] = find_best_const(train_clinical_all_filtered1, target)\n        target_to_npx_groups_shift1[target].append(item)"
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "code",
+            "snippet": "target_to_npx_groups_shift2 = defaultdict(list)\n        item['shift'] = find_best_const(train_clinical_all_filtered2, target)\n        target_to_npx_groups_shift2[target].append(item)"
+          },
+          {
+            "cell_index": 26,
+            "cell_type": "code",
+            "snippet": "for test_clinical_data, test_peptides, test_proteins, sample_submission in iter_test:\n    sample_submission['patient_id'] = sample_submission['prediction_id'].map(lambda x: int(x.split('_')[0]))\n    sample_submission['visit_month'] = sample_submission['prediction_id'].map(lambda x: int(x.split('_')[1]))\n    sample_submission['target_name'] = sample_submission['prediction_id'].map(lambda x: 'updrs_' + x.split('_')[3])\n    sample_submission['plus_month'] = sample_submission['prediction_id'].map(lambda x: int(x.split('_')[5]))\n    sample_submission['pred_month'] = sample_submission['visit_month'] + sample_submission['plus_month']\n    sample_submission['visit_id'] = sample_submission['patient_id'].astype(str) + '_' + sample_submission['visit_month'].astype(str)\n    proteins_features_all[proteins_features.columns] = proteins_features_all.groupby('patient_id')[proteins_features.columns].\\\n    proteins_features = proteins_features_all.groupby('patient_id', as_index=False).last()\n    sample_submission = sample_submission.merge(\n        mask_target = sample_submission['target_name'] == target\n        sample_submission.loc[mask_target, 'rating'] = calculate_month_trend_predicitons(\n            pred_month=sample_submission.loc[mask_target, 'pred_month'],\n        for item0, item1, item2 in zip(target_to_npx_groups_shift0[target], target_to_npx_groups_shift1[target], target_to_npx_groups_shift2[target]):\n            shift0 = item0['shift']\n            shift1 = item1['shift']\n            shift2 = item2['shift']\n            ((sample_submission[feature0] >= quantile_low_value0) & (sample_submission[feature0] < quantile_high_value0)) |\n            ((sample_submission[feature2] >= quantile_low_value2) & (sample_submission[feature2] < quantile_high_value2)) | ((sample_submission[feature1]\n...[truncated]"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 1,
+      "quality": "strong",
+      "score": 78,
+      "reasons": "",
+      "source": {
+        "path": "Time-Series/amp-parkinsons-disease-progression-prediction/rank1_1st/4th-place-solution-public-54-9-private-60-1.ipynb",
+        "file_name": "4th-place-solution-public-54-9-private-60-1.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 27,
+        "code_cell_count": 20,
+        "markdown_cell_count": 7,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "# 4th Place Solution - AMP Parkinson's Disease\nThis is my 4th place solution to Kaggle's AMP®-Parkinson's Disease Progression Prediction competition. The discussion describing this solution is [here][1]\n\n[1]: https://www.kaggle.com/competitions/amp-parkinsons-disease-progression-prediction/discussion/411398"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "df1 = pd.read_csv('/kaggle/input/amp-parkinsons-disease-progression-prediction/train_clinical_data.csv')"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "df2 = pd.read_csv('/kaggle/input/amp-parkinsons-disease-progression-prediction/train_proteins.csv')"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "markdown",
+            "snippet": "# Feature Engineer\nWe will add \"booleans\" indicating whether a patient visited doctor on visit month `[0,6,12,18,24,36,48,60,72,84]`. These \"booleans\" are descibed in discussion [here][1]\n\n[1]: https://www.kaggle.com/competitions/amp-parkinsons-disease-progression-prediction/discussion/411398"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "# REMOVE DATA BEFORE FIRST BLOOD WORK (because it is not scored by Kaggle)"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "    # IS THIS SCORED??\n    # IS THIS SCORED ??"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "markdown",
+            "snippet": "# Standardize Features\nWe use 11 features. Both SVR and MLP performs better if features are standardized"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "import tensorflow as tf\nimport tensorflow.keras.backend as K"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "    inp = tf.keras.Input(shape=(len(FEATURES2,)))\n    x = tf.keras.layers.Dense(HIDDEN_SIZE,activation=ACT)(inp)\n        x = tf.keras.layers.Dense(HIDDEN_SIZE)(x)\n        x = tf.keras.layers.Activation(ACT)(x)\n    x = tf.keras.layers.Dense(1,activation='linear')(x)\n    model = tf.keras.Model(inputs=[inp], outputs=[x])\n    opt = tf.keras.optimizers.Adam(learning_rate=0.001)\n    loss = tf.keras.losses.MeanAbsoluteError()"
+          },
+          {
+            "cell_index": 21,
+            "cell_type": "code",
+            "snippet": "    for fold in range(5):\n        print('=> Fold',fold+1)\n                #validation_data = (X_valid,y_valid),\n        opt = tf.keras.optimizers.Adam(learning_rate=0.0001)\n        loss = tf.keras.losses.MeanAbsoluteError()\n                #validation_data = (X_valid,y_valid),\n        clf.save_weights(f'MLP_{TAR}_f{fold}.h5')"
+          },
+          {
+            "cell_index": 25,
+            "cell_type": "code",
+            "snippet": "for (test, test_peptides, test_proteins, sample_submission) in iter_test:\n        for fold in range(5):\n            clf.load_weights(f'MLP_{t}_f{fold}.h5')\n                # INFER 5 FOLDS"
+          },
+          {
+            "cell_index": 26,
+            "cell_type": "code",
+            "snippet": "sub = pd.read_csv('submission.csv')"
+          }
+        ]
+      }
+    }
+  }
+}

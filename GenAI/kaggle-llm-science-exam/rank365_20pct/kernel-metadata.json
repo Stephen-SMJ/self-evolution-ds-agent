@@ -1,0 +1,29 @@
+{
+  "id": "junxhuang/retriever-reader-model-with-flexible-sharding",
+  "id_no": 46217398,
+  "title": "Retriever-Reader Model with flexible sharding",
+  "code_file": "retriever-reader-model-with-flexible-sharding.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": true,
+  "keywords": [
+    "gpu"
+  ],
+  "dataset_sources": [
+    "tomokihirose/faiss-gpu-173-python310",
+    "junxhuang/lucene-deps",
+    "simjeg/platypus2-70b-instruct-part1",
+    "simjeg/platypus2-70b-instruct-part2",
+    "corochann/lucene-wikipedia-en"
+  ],
+  "kernel_sources": [],
+  "competition_sources": [
+    "kaggle-llm-science-exam"
+  ],
+  "model_sources": [],
+  "docker_image": "gcr.io/kaggle-private-byod/python@sha256:85f560cfbe1be66639fc12b29d36aa706790633c7ed069ee5aab233920f0daab",
+  "machine_shape": "NvidiaTeslaT4"
+}

@@ -1,0 +1,31 @@
+{
+  "id": "benefactor/dnn-lgbm-ngboost-elasticnet",
+  "id_no": 13800235,
+  "title": "DNN + LGBM + NGBoost + ElasticNet",
+  "code_file": "dnn-lgbm-ngboost-elasticnet.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "keywords": [
+    "lightgbm",
+    "numpy",
+    "pandas",
+    "tensorflow"
+  ],
+  "dataset_sources": [
+    "",
+    "",
+    "",
+    ""
+  ],
+  "kernel_sources": [],
+  "competition_sources": [
+    "osic-pulmonary-fibrosis-progression"
+  ],
+  "model_sources": [],
+  "docker_image": "gcr.io/kaggle-images/python@sha256:cab011406a9fc39585f08905de1680fa76829a370bee3a1c8b4e4416e31677bb",
+  "machine_shape": "None"
+}

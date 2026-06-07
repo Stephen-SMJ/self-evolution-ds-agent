@@ -1,0 +1,378 @@
+{
+  "domain": "Tabular",
+  "competition": "titanic",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 8833,
+      "quality": "strong",
+      "score": 55,
+      "reasons": "bad_keyword",
+      "source": {
+        "path": "Tabular/titanic/rank8833_70pct/titanic-model.ipynb",
+        "file_name": "titanic-model.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 36,
+        "code_cell_count": 36,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\n# For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "from sklearn.linear_model import LogisticRegression\nimport tensorflow as tf\nfrom sklearn.metrics import accuracy_score\nfrom sklearn.metrics import confusion_matrix\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.metrics import classification_report\nfrom xgboost import XGBClassifier"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "test_data = pd.read_csv('/kaggle/input/competitions/titanic/test.csv')\ntrain_data = pd.read_csv('/kaggle/input/competitions/titanic/train.csv')\ngenders = pd.read_csv('/kaggle/input/competitions/titanic/gender_submission.csv')"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "model = LogisticRegression("
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "accuracy = accuracy_score(Y_test,y_pred)"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "from sklearn.metrics import (\n    precision_score,\n    recall_score,\n    f1_score,\n    fbeta_score\nprint(precision_score(Y_test,y_pred))\nprint(recall_score(Y_test,y_pred))\nprint(f1_score(Y_test,y_pred))"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "model = RandomForestClassifier("
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "from sklearn.metrics import (\n    precision_score,\n    recall_score,\n    f1_score,\n    fbeta_score\naccuracy = accuracy_score(Y_test,y_pred)\nprint(precision_score(Y_test,y_pred))\nprint(recall_score(Y_test,y_pred))\nprint(f1_score(Y_test,y_pred))"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "model = XGBClassifier("
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "code",
+            "snippet": "from sklearn.metrics import (\n    precision_score,\n    recall_score,\n    f1_score,\n    fbeta_score\naccuracy = accuracy_score(Y_test,y_pred)\nprint(precision_score(Y_test,y_pred))\nprint(recall_score(Y_test,y_pred))\nprint(f1_score(Y_test,y_pred))"
+          },
+          {
+            "cell_index": 31,
+            "cell_type": "code",
+            "snippet": "model = XGBClassifier("
+          },
+          {
+            "cell_index": 35,
+            "cell_type": "code",
+            "snippet": "submission.to_csv('gender_submission.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 4868,
+      "quality": "strong",
+      "score": 51,
+      "reasons": "",
+      "source": {
+        "path": "Tabular/titanic/rank4868_40pct/gettingstartedwithtitanic.ipynb",
+        "file_name": "gettingstartedwithtitanic.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 4,
+        "code_cell_count": 4,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "train_data = pd.read_csv(\"/kaggle/input/titanic/train.csv\")\ntest_data = pd.read_csv(\"/kaggle/input/titanic/test.csv\")"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "train_data['Age'] = train_data['Age'].fillna(train_data.groupby('Title')['Age'].transform('median'))\ntest_data['Age'] = test_data['Age'].fillna(test_data.groupby('Title')['Age'].transform('median'))"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "from xgboost import XGBClassifier\nmodel = XGBClassifier(\noutput.to_csv('submission.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 2509,
+      "quality": "strong",
+      "score": 55,
+      "reasons": "bad_keyword",
+      "source": {
+        "path": "Tabular/titanic/rank2509_20pct/getting-started-with-titanic.ipynb",
+        "file_name": "getting-started-with-titanic.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 14,
+        "code_cell_count": 14,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\n# For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory\n# Use the kagglehub client library to attach Kaggle resources like competitions, datasets, and models to your session"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "train_data = pd.read_csv(\"/kaggle/input/competitions/titanic/train.csv\")\ntest_data = pd.read_csv(\"/kaggle/input/competitions/titanic/test.csv\")"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "from sklearn.preprocessing import OneHotEncoder\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.metrics import accuracy_score\n    (\"onehot\", OneHotEncoder(handle_unknown=\"ignore\"))\n    transformers=["
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "    (\"classifier\", RandomForestClassifier(\nX_train, X_valid, y_train, y_valid = train_test_split(\npreds = model.predict(X_valid)\naccuracy_score(y_valid, preds)"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "# submission.to_csv(\"submission.csv\", index=False)"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "from sklearn.model_selection import StratifiedKFold, cross_val_score\nfrom sklearn.preprocessing import OneHotEncoder\nfrom sklearn.ensemble import RandomForestClassifier\n    (\"onehot\", OneHotEncoder(handle_unknown=\"ignore\"))\n    transformers=[\n    (\"classifier\", RandomForestClassifier("
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)\nscores = cross_val_score(model, X, y, cv=cv, scoring=\"accuracy\")\nprint(scores)\nprint(\"Média:\", scores.mean())\nprint(\"Desvio:\", scores.std())"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "submission.to_csv(\"submission.csv\", index=False)"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 1500,
+      "quality": "strong",
+      "score": 73,
+      "reasons": "",
+      "source": {
+        "path": "Tabular/titanic/rank1500_10pct/titanic-78-95-accurancy-eda-ensemble-learning.ipynb",
+        "file_name": "titanic-78-95-accurancy-eda-ensemble-learning.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 36,
+        "code_cell_count": 19,
+        "markdown_cell_count": 17,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "markdown",
+            "snippet": "The score improved from 78.22 to 78.95 by adding the logistic model and random forest classifier!"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "markdown",
+            "snippet": "### Comprehensive EDA & Soft-Voting Ensemble Pipeline\n4. Stratified hyperparameter optimization across cross-validated architectures.\n5. Soft-Voting Ensembling integrating tree architectures and geometric classifiers."
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "from sklearn.model_selection import GridSearchCV, train_test_split, StratifiedKFold\nfrom sklearn.preprocessing import StandardScaler, LabelEncoder\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.ensemble import VotingClassifier\nfrom sklearn.metrics import accuracy_score, classification_report, confusion_matrix\nfrom xgboost import XGBClassifier\nfrom lightgbm import LGBMClassifier\ndf_train = pd.read_csv('/kaggle/input/competitions/titanic/train.csv')\ndf_test = pd.read_csv('/kaggle/input/competitions/titanic/test.csv')"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "markdown",
+            "snippet": "## 2. Demographic Exploration & Categorical Encoding (Sex)\n### Analysis & Domain Insights\nEncoding the `Sex` element into binary vectors allows our distance matrices to map demographic dependencies. The resulting bar chart highlights a substantial rift: **the survival probability of female passengers overwhelmingly exceeds that of males**. This empirical finding confirms the traditional \"women and children first\" maritime protocol. We anticipate this feature to carry dominant weight across our models."
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "le = LabelEncoder()\nSex_Survived = df_train.groupby('Sex')['Survived'].mean().reset_index()"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "Age_Survived = df_train.groupby('Age')['Survived'].mean().reset_index()"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "markdown",
+            "snippet": "Replacing missing continuous values with standard parameters (like mean or median) spikes the kurtosis artificially and flattens variances, altering the natural data shape. To protect the original age distribution, we draw random observations directly from the valid subset of training observations, ensuring our models process consistent statistical shapes."
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "title_medians_dict = df_train.groupby('Title')['Age'].median().to_dict()"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "embark_perc = df_train[[\"Embarked\", \"Survived\"]].groupby(['Embarked'], as_index=False).mean()"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "markdown",
+            "snippet": "## 6. Multi-Feature Correlation Diagnosis\n### Matrix Insights\nConstructing a linear correlation matrix shows the deep dependencies within the dataset. We note strong inverse interactions between `Pclass` and `Fare`, indicating that higher class tiers command significantly higher pricing structures. Identifying these interactions helps ensure stable parameter weights across our downstream algorithms."
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "df_plot = pd.read_csv('/kaggle/input/competitions/titanic/test.csv')"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "markdown",
+            "snippet": "- **Family Structures**: Combining `SibSp` and `Parch` into a single `Family` metric lets us evaluate social group dynamics, while the `Alone` flag captures the survival differences between solo passengers and family units."
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "markdown",
+            "snippet": "## 9. Categorical Parsing (Ticket Prefixes & Passenger Classes)\n### Analysis & Structural Formatting\n- **Ticket**: Extracting alpha-numeric ticket prefixes removes individual noise while grouping common booking pathways and localized purchase sources together.\n- **Pclass**: Although stored as numbers, passenger classes are distinct ordinal tiers. We convert `Pclass` into string objects before running `pd.get_dummies` to avoid imposing an artificial linear structure on distance-based models."
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "markdown",
+            "snippet": "## 10. Alignment & Scaling Pipeline\n### Pipeline Stabilization Analysis\nString-parsing can create different column setups if specific ticket categories are missing in either the training or testing splits. We use an explicit structural alignment check via `X.align` to ensure identical data shapes across both sets. Afterward, standard scaling balances continuous measurements (`Age`, `Fare`) to protect distance-sensitive models from feature magnitude imbalances."
+          },
+          {
+            "cell_index": 25,
+            "cell_type": "code",
+            "snippet": "# Split into localized sets for stable testing validation\nskf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)"
+          },
+          {
+            "cell_index": 26,
+            "cell_type": "markdown",
+            "snippet": "We optimize four distinct architectures (XGBoost and LightGBM) using grid search under Stratified K-Fold cross-validation. This setup ensures stable survival proportions across every validation fold."
+          },
+          {
+            "cell_index": 27,
+            "cell_type": "code",
+            "snippet": "from sklearn.preprocessing import LabelEncoder\n        le = LabelEncoder()\n# --- 1. XGBoost ---\nxgb = XGBClassifier(random_state=42, eval_metric='logloss')\nparam_grid_xgb = {\ngrid_search_xgb = GridSearchCV(estimator=xgb, param_grid=param_grid_xgb, cv=skf, scoring='accuracy', n_jobs=-1)\ngrid_search_xgb.fit(X_train, y_train)\nprint(\"\\n--- XGBoost Optimization Matrix ---\")\nprint(\"Best Parameters:\", grid_search_xgb.best_params_)\nprint(f\"Best CV Accuracy Score: {grid_search_xgb.best_score_:.4f}\")\nbest_xgb_model = grid_search_xgb.best_estimator_\nxgb_preds = best_xgb_model.predict(X_test_val)"
+          },
+          {
+            "cell_index": 28,
+            "cell_type": "code",
+            "snippet": "# --- 2. LightGBM ---\nlgb = LGBMClassifier(random_state=42, objective='binary', verbosity=-1)\nprint(\"\\n--- LightGBM Optimization Matrix ---\")\nprint(f\"Best CV Accuracy Score: {grid_search_lgb.best_score_:.4f}\")"
+          },
+          {
+            "cell_index": 29,
+            "cell_type": "code",
+            "snippet": "from sklearn.ensemble import  RandomForestClassifier\nrf = RandomForestClassifier(random_state=42, n_jobs=-1)\nprint(f\"   Best CV Score: {grid_search_rf.best_score_:.4f}\")"
+          },
+          {
+            "cell_index": 30,
+            "cell_type": "code",
+            "snippet": "from sklearn.linear_model import LogisticRegression\nlr = LogisticRegression(random_state=42, max_iter=1000)\nprint(f\"   Best CV Score: {grid_search_lr.best_score_:.4f}\")\nlr_acc = accuracy_score(y_test_val, best_lr_model.predict(X_test_val))"
+          },
+          {
+            "cell_index": 31,
+            "cell_type": "markdown",
+            "snippet": "## 12. Ensemble Consensus (Soft Voting) & Localized Assessment\n### Ensemble Strategy Analysis\nWe combine our optimized models into a soft-voting ensemble. By averaging predicted class probabilities instead of relying on hard voting choices, this approach effectively balances individual model errors. This strategy reduces variance and enhances generalization against unseen test distributions."
+          },
+          {
+            "cell_index": 32,
+            "cell_type": "code",
+            "snippet": "    ('xgb', grid_search_xgb.best_estimator_),\nensemble_model = VotingClassifier(estimators=best_estimators, voting='soft')\nensemble_model.fit(X_train, y_train)\nfinal_preds_ensemble = ensemble_model.predict(X_test_val)\nprint(\"--- Final Localized Validation Metrics (Ensemble) ---\")\nprint(f\"Accuracy Metric: {accuracy_score(y_test_val, final_preds_ensemble):.4f}\")\nprint(classification_report(y_test_val, final_preds_ensemble))\nprint(confusion_matrix(y_test_val, final_preds_ensemble))"
+          },
+          {
+            "cell_index": 34,
+            "cell_type": "code",
+            "snippet": "final_test_predictions = ensemble_model.predict(test_processed[X_train.columns])\ndf_original_test = pd.read_csv('/kaggle/input/competitions/titanic/test.csv')\nsubmission_output.to_csv('submission.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 874,
+      "quality": "strong",
+      "score": 78,
+      "reasons": "",
+      "source": {
+        "path": "Tabular/titanic/rank874_1st/ml-titanic-competition.ipynb",
+        "file_name": "ml-titanic-competition.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 23,
+        "code_cell_count": 18,
+        "markdown_cell_count": 5,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import log_loss, accuracy_score, classification_report"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "markdown",
+            "snippet": "# 01: Exploratory Data Analysis and Features creation\nFirst, let's dive into the data, change them into numerical values, plot some of them and create our own features"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "unprocessed_data = pd.read_csv(\"/kaggle/input/competitions/titanic/train.csv\")"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "markdown",
+            "snippet": "# 02: Processing and scaling of the features\nNow let's process our features and create our training and test sets"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "markdown",
+            "snippet": "# 03: Definition of the model and training\nLet's define the model and analyse the outputs on the training and test set"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "titanic_model = LogisticRegression(\n                     # l2 (Ridge) keeps all features. l1 (Lasso) can zero out some weights."
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "    LogisticRegression(penalty='l2', max_iter=10000, solver='lbfgs', random_state=42),\n    cv=5,           # cross-validation on the dataset divided into 5 (4 for train, 1 for test)"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "print(f\"Accuracy train : {accuracy_score(Y_train, y_pred_train):.4f}\")\nprint(f\"Accuracy val   : {accuracy_score(Y_test,  y_pred_val):.4f}\")"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "markdown",
+            "snippet": "# 04: Predictions on the Titanic survivors\nNow lets's apply our model and predict the survivors of the competition set"
+          },
+          {
+            "cell_index": 21,
+            "cell_type": "code",
+            "snippet": "predictions_data = pd.read_csv(\"/kaggle/input/competitions/titanic/test.csv\")"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "submission.to_csv(\"submission.csv\", index=False)"
+          }
+        ]
+      }
+    }
+  }
+}

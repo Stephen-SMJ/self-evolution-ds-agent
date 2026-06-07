@@ -1,0 +1,77 @@
+{
+  "total_files_scored": 365,
+  "core_files": 185,
+  "core_competitions": 37,
+  "core_files_by_domain": {
+    "Audio": 20,
+    "CV": 20,
+    "GenAI": 20,
+    "Medical": 25,
+    "NLP": 10,
+    "RL": 25,
+    "RecSys": 20,
+    "Tabular": 25,
+    "Time-Series": 20
+  },
+  "core_competitions_by_domain": {
+    "Audio": 4,
+    "CV": 4,
+    "GenAI": 4,
+    "Medical": 5,
+    "NLP": 2,
+    "RL": 5,
+    "RecSys": 4,
+    "Tabular": 5,
+    "Time-Series": 4
+  },
+  "coverage_files": 225,
+  "coverage_competitions": 45,
+  "coverage_files_by_domain": {
+    "Audio": 25,
+    "CV": 25,
+    "GenAI": 25,
+    "Medical": 25,
+    "NLP": 25,
+    "RL": 25,
+    "RecSys": 25,
+    "Tabular": 25,
+    "Time-Series": 25
+  },
+  "coverage_competitions_by_domain": {
+    "Audio": 5,
+    "CV": 5,
+    "GenAI": 5,
+    "Medical": 5,
+    "NLP": 5,
+    "RL": 5,
+    "RecSys": 5,
+    "Tabular": 5,
+    "Time-Series": 5
+  },
+  "coverage_fallback_files": 13,
+  "coverage_weak_files": 16,
+  "coverage_unused_files": 140,
+  "quality_counts_all": {
+    "reject": 24,
+    "strong": 234,
+    "usable": 82,
+    "weak": 25
+  },
+  "quality_counts_core": {
+    "strong": 115,
+    "usable": 57,
+    "weak": 13
+  },
+  "quality_counts_coverage": {
+    "reject": 13,
+    "strong": 133,
+    "usable": 63,
+    "weak": 16
+  },
+  "reject_reason_counts": {
+    "bad_keyword": 67,
+    "submission_only": 4,
+    "thin_ensemble": 4,
+    "too_short": 16
+  }
+}

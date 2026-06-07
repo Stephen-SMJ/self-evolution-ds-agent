@@ -1,0 +1,348 @@
+{
+  "domain": "CV",
+  "competition": "cassava-leaf-disease-classification",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 2727,
+      "quality": "strong",
+      "score": 67,
+      "reasons": "",
+      "source": {
+        "path": "CV/cassava-leaf-disease-classification/rank2727_70pct/cassava-leaf-disease.ipynb",
+        "file_name": "cassava-leaf-disease.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 41,
+        "code_cell_count": 26,
+        "markdown_cell_count": 15,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "import tensorflow as tf\nfrom tensorflow import keras\nfrom tensorflow.keras.preprocessing.image import ImageDataGenerator\nfrom tensorflow.keras.models import Sequential\nfrom tensorflow.keras.optimizers import Adam\nfrom tensorflow.keras.layers import Dense, Dropout\n# from tensorflow.keras.applications import EfficientNetB0\n# from tensorflow.keras.applications import EfficientNetB4\nfrom tensorflow.keras.applications import EfficientNetB5\nfrom keras.callbacks import EarlyStopping\nprint(\"Tensorflow version \" + tf.__version__)"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv(root_path + 'train.csv')"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "datagen = ImageDataGenerator(validation_split=0.2,"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "valid_datagen_flow = datagen.flow_from_dataframe(\n    subset='validation',"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "markdown",
+            "snippet": "Build the Model"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "markdown",
+            "snippet": "# Running the model"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "markdown",
+            "snippet": "    Early stopping, epocs 100\n* Version 9: EfficientNetB0 epocs 10 --> accuracy: 0.7385\n* Version 11-13: EfficientNetB0 epocs 50 --> accuracy: 0.84  validation=0.72\n* Version 14: EfficientNetB0 epocs 20 --> accuracy:?\n* Version 16: Batchsize 32 + flatten +drop+ dense512 +ephocs =10  accuracy: 0.74  validation=0.72\n* Version 17: image size 128x128 accuracy: 0.81  validation=0.79\n* Version 18: image size 256x256 , epoch=6 (<8H) occuracy 0.84 validation=0.8441\n* version 19: image size 128X170 , epoch=6  occuracy=0.787 Valid=0.787\n* version 20: image size 164X164 , epoch=6 , change from B0 to EfficientNetB4\n* version 21: image size 164X164 , epoch=8 , change from B0 to EfficientNetB4 -accuaracy 0.81 validation 0.79\n* Version 22: image size 164X164 , epoch=6 , change from B4 to EfficientNetB5  accuracy 078 valid=0.79\n* version 25: save model file  +epoch=10  accuracy: 0.8186 - val_loss: 0.5699 - val_accuracy: 0.8004  (score 0.772)\n* version 26: 256X256 +epoch=10 loss: 0.4181 - accuracy: 0.8583 - val_loss: 0.4416 - val_accuracy: 0.8537  (score 0.862)\nBase on: https://www.kaggle.com/bununtadiresmenmor/starter-keras-efficientnet?select=sample_submission.csv"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "early_stopping = EarlyStopping(monitor='val_loss', verbose=1, patience=4)"
+          },
+          {
+            "cell_index": 21,
+            "cell_type": "markdown",
+            "snippet": "1. # Model EfficientNetB5"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "model.add(EfficientNetB5(include_top = False, weights = \"imagenet\",\n# model.add(tf.keras.layers.GlobalAveragePooling2D())\nmodel.add(tf.keras.layers.BatchNormalization())\nmodel.add(tf.keras.layers.AveragePooling2D(pool_size=(3, 3)))\nmodel.add(tf.keras.layers.Flatten())\nmodel.add(tf.keras.layers.Dense(512, activation = \"relu\"))\nmodel.add(tf.keras.layers.Dense(64, activation = \"relu\"))\nmodel.add(tf.keras.layers.Dense(5, activation = \"softmax\"))\noptimizer = tf.keras.optimizers.Adam(learning_rate=1e-3)\n            metrics = [\"accuracy\"])\n# from tensorflow.keras.applications import EfficientNetB0\n#     x = img_augmentation(inputs)\n#     outputs = EfficientNetB0(include_top=True, weights=None, classes=NUM_CLASSES)(x)\n#     model = tf.keras.Model(inputs, outputs)\n#         optimizer=\"adam\", loss=\"categorical_crossentropy\", metrics=[\"accuracy\"]\n# hist = model.fit(ds_train, epochs=epochs, validation_data=ds_test, verbose=2)"
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "code",
+            "snippet": "from tensorflow.keras import utils"
+          },
+          {
+            "cell_index": 25,
+            "cell_type": "code",
+            "snippet": "from keras.callbacks import LearningRateScheduler\nlrs = LearningRateScheduler(my_learning_rate)"
+          },
+          {
+            "cell_index": 28,
+            "cell_type": "markdown",
+            "snippet": "# Run and save model"
+          },
+          {
+            "cell_index": 29,
+            "cell_type": "code",
+            "snippet": "                            validation_data = valid_datagen_flow,\n                             callbacks = [early_stopping,lrs])"
+          },
+          {
+            "cell_index": 30,
+            "cell_type": "code",
+            "snippet": "    plt.legend([\"train\", \"validation\"], loc=\"upper left\")"
+          },
+          {
+            "cell_index": 33,
+            "cell_type": "code",
+            "snippet": "# import keras\n# logger = keras.callbacks.TensorBoard("
+          },
+          {
+            "cell_index": 34,
+            "cell_type": "markdown",
+            "snippet": "# Reload the model trained weights"
+          },
+          {
+            "cell_index": 39,
+            "cell_type": "code",
+            "snippet": "import keras\nfinal_model = keras.models.load_model('Cassava_model.h5')\n    image = tf.keras.preprocessing.image.load_img(image_path)"
+          },
+          {
+            "cell_index": 40,
+            "cell_type": "code",
+            "snippet": "submission.to_csv('submission.csv', index = False)"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 1556,
+      "quality": "strong",
+      "score": 67,
+      "reasons": "",
+      "source": {
+        "path": "CV/cassava-leaf-disease-classification/rank1556_40pct/very-simple-notebook-keras-densenet-gpu.ipynb",
+        "file_name": "very-simple-notebook-keras-densenet-gpu.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 23,
+        "code_cell_count": 17,
+        "markdown_cell_count": 6,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "from keras import layers\nfrom keras.applications import DenseNet121, DenseNet169\nfrom keras.callbacks import Callback, ModelCheckpoint\nfrom keras.preprocessing.image import ImageDataGenerator\nfrom keras.models import Sequential\nfrom keras.optimizers import Adam\nfrom sklearn.metrics import accuracy_score\nimport tensorflow as tf"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "train_df = pd.read_csv('../input/cassava-leaf-disease-classification/train.csv')\ntest_df = pd.read_csv('../input/cassava-leaf-disease-classification/sample_submission.csv')"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "    weights='../input/densenet-keras/DenseNet-BC-169-32-no-top.h5',"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "        metrics=['accuracy']"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "    validation_data=(x_val, y_val)"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "test_df.to_csv('submission.csv',index=False)"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 780,
+      "quality": "strong",
+      "score": 61,
+      "reasons": "",
+      "source": {
+        "path": "CV/cassava-leaf-disease-classification/rank780_20pct/efn-resnext-vit-ensemble-inference.ipynb",
+        "file_name": "efn-resnext-vit-ensemble-inference.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 21,
+        "code_cell_count": 10,
+        "markdown_cell_count": 11,
+        "snippets": [
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "from sklearn.model_selection import GroupKFold, StratifiedKFold\nimport torch\nfrom torch import nn\nimport torchvision\nfrom torchvision import transforms\nfrom torch.utils.data import Dataset,DataLoader\nfrom  torch.cuda.amp import autocast, GradScaler\nfrom sklearn.metrics import roc_auc_score, log_loss\nfrom sklearn import metrics\nfrom sklearn.metrics import log_loss\n!pip install ../input/timmpackagelatestwhl/timm-0.3.4-py3-none-any.whl\nimport timm"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "    'model_arch': ['tf_efficientnet_b4_ns','resnext50_32x4d','vit_base_patch16_384'],\n    'weight_path': sorted(os.listdir('../input/cassava-ensemble-model')),\n    'valid_bs': 64,\n    'tta': 2,"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv('../input/cassava-leaf-disease-classification/train.csv')"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "    torch.manual_seed(seed)\n    torch.cuda.manual_seed(seed)\n    torch.backends.cudnn.deterministic = True\n    torch.backends.cudnn.benchmark = True"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "from albumentations import (\n    HorizontalFlip, VerticalFlip, IAAPerspective, ShiftScaleRotate, CLAHE, RandomRotate90,\n    Transpose, ShiftScaleRotate, Blur, OpticalDistortion, GridDistortion, HueSaturationValue,\n    IAASharpen, IAAEmboss, RandomBrightnessContrast, Flip, OneOf, Compose, Normalize, Cutout, CoarseDropout, ShiftScaleRotate, CenterCrop, Resize)\nfrom albumentations.pytorch import ToTensorV2\n            HueSaturationValue(hue_shift_limit=0.2, sat_shift_limit=0.2, val_shift_limit=0.2, p=0.5),\n            HueSaturationValue(hue_shift_limit=0.2, sat_shift_limit=0.2, val_shift_limit=0.2, p=0.5),"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "markdown",
+            "snippet": "# Create Model"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "class EnsembleModel(nn.Module):\n        self.model = timm.create_model(model_arch, pretrained=pretrained)\n        if model_arch == 'tf_efficientnet_b4_ns':"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "        image_preds_all += [torch.softmax(image_preds, 1).detach().cpu().numpy()]"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "        tst_loader = DataLoader(testset, batch_size=CFG['valid_bs'],num_workers=CFG['num_workers'],shuffle=False,pin_memory=False,)\n        device = torch.device(CFG['device'])\n        model = EnsembleModel(model_arch, train.label.nunique()).to(device)\n            model.load_state_dict(torch.load(os.path.join('../input/cassava-ensemble-model',weight))['model'])\n            with torch.no_grad():\n                for _ in range(CFG['tta']):\n                    tst_preds += [CFG['weights'][i]/sum(CFG['weights'])/CFG['tta']*inference_one_epoch(model, tst_loader, device)]\n        torch.cuda.empty_cache()"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "test.to_csv('submission.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 385,
+      "quality": "usable",
+      "score": 27,
+      "reasons": "",
+      "source": {
+        "path": "CV/cassava-leaf-disease-classification/rank385_10pct/analyze-your-model-performance-by-confusion-matrix.ipynb",
+        "file_name": "analyze-your-model-performance-by-confusion-matrix.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 12,
+        "code_cell_count": 10,
+        "markdown_cell_count": 2,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "# Analyze your model performance by confusion matrix"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "df_train = pd.read_csv(\"../input/inference5folds/train_inference_5folds.csv\")"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "# accuracy for 5-fold"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "from sklearn.metrics import confusion_matrix"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "from sklearn.metrics import classification_report"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 1,
+      "quality": "strong",
+      "score": 66,
+      "reasons": "",
+      "source": {
+        "path": "CV/cassava-leaf-disease-classification/rank1_1st/cassava-leaf-disease-resnext50.ipynb",
+        "file_name": "cassava-leaf-disease-resnext50.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 12,
+        "code_cell_count": 11,
+        "markdown_cell_count": 1,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "This is the training notebook of the ResNeXt50 (32x4d) model we used in our final submission which scored ~91.3% on the public and private leaderboard of the Cassava Leaf Disease Classification 2020 competition ([Cassava Leaf Disease Classification](https://www.kaggle.com/c/cassava-leaf-disease-classification/)). You can find a description of our overall approach in this discussion post: [\"1st Place Solution\"](https://www.kaggle.com/c/cassava-leaf-disease-classification/discussion/221957)"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "    n_fold = 5\n    trn_fold = [1,2,3,4,5]"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "sys.path.append('../input/pytorch-image-models/pytorch-image-models-master')\nfrom sklearn.metrics import accuracy_score\nimport torch\nimport torch.nn as nn\nimport torch.nn.functional as F\nfrom torch.optim import Adam, SGD\nimport torchvision.models as models\nfrom torch.nn.parameter import Parameter\nfrom torch.utils.data import DataLoader, Dataset\nfrom torch.optim.lr_scheduler import ReduceLROnPlateau\nfrom albumentations import (Compose, Normalize, Resize, RandomResizedCrop, HorizontalFlip, VerticalFlip, ShiftScaleRotate, Transpose)\nfrom albumentations.pytorch import ToTensorV2\nfrom albumentations import ImageOnlyTransform\nimport timm\ndevice = torch.device('cuda' if torch.cuda.is_available() else 'cpu')"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "def get_score(y_true, y_pred):\n    return accuracy_score(y_true, y_pred)\ndef seed_torch(seed=42):\n    torch.manual_seed(seed)\n    torch.cuda.manual_seed(seed)\n    torch.backends.cudnn.deterministic = True\nseed_torch(seed=CFG.seed)"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "            augmented = self.transform(image=image)\n            image = augmented['image']\n        label = torch.tensor(self.labels[idx]).long()"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "            ShiftScaleRotate(p=0.5),\n    elif data == 'valid':"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "        self.model = timm.create_model(model_name, pretrained=pretrained)"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "def train_fn(train_loader, model, criterion, optimizer, epoch, scheduler, device):\n    scores = AverageMeter()\n        grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), CFG.max_grad_norm)\ndef valid_fn(valid_loader, model, criterion, device):\n    scores = AverageMeter()\n    for step, (images, labels) in enumerate(valid_loader):\n        with torch.no_grad():\n        if step % CFG.print_freq == 0 or step == (len(valid_loader)-1):\n                   step, len(valid_loader), batch_time=batch_time,\n                   remain=timeSince(start, float(step+1)/len(valid_loader)),"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "def train_loop(folds, fold):\n    LOGGER.info(f\"========== fold: {fold} training ==========\")\n    trn_idx = folds[folds['fold'] != fold].index\n    val_idx = folds[folds['fold'] == fold].index\n    train_folds = folds.loc[trn_idx].reset_index(drop=True)\n    valid_folds = folds.loc[val_idx].reset_index(drop=True)\n    train_dataset = TrainDataset(train_folds, transform=get_transforms(data='train'))\n    valid_dataset = TrainDataset(valid_folds, transform=get_transforms(data='valid'))\n    valid_loader = DataLoader(valid_dataset, batch_size=CFG.batch_size,\n    scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=CFG.factor, patience=CFG.patience, verbose=True, eps=CFG.eps)\n    best_score = 0.\n        avg_loss = train_fn(train_loader, model, criterion, optimizer, epoch, scheduler, device)\n        avg_val_loss, preds = valid_fn(valid_loader, model, criterion, device)\n        valid_labels = valid_folds[CFG.target_col].values\n        scheduler.step(avg_val_loss)\n        score = get_score(valid_labels, preds.argmax(1))\n        LOGGER.info(f'Epoch {epoch+1} - Accuracy: {score}')\n        if score > best_score:\n            best_score = score\n            LOGGER.info(f'Epoch {epoch+1} - Save Best Score: {best_score:.4f} Model')\n            torch.save({'model': model.state_dict(), 'preds': preds}, OUTPUT_DIR+f'{CFG.model_name}_fold{fold}_best.pth')\n    check_point = torch.load(OUTPUT_DIR+f'{CFG.model_name}_fold{fold}_best.pth')\n    valid_folds[[str(c) for c in range(5)]] = check_point['preds']\n    valid_folds['preds'] = check_point['preds'].argmax(1)\n    return valid_folds"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "        score = get_score(labels, preds)\n        LOGGER.info(f'Score: {score:<.5f}')\n    oof_df = pd.DataFrame()\n    for fold in range(CFG.n_fold):\n        if fold in CFG.trn_fold:\n            _oof_df = train_loop(folds, fold)\n            oof_df = pd.concat([oof_df, _oof_df])\n            LOGGER.info(f\"========== fold: {fold} result ==========\")\n            get_result(_oof_df)\n    get_result(oof_df)\n    oof_df.to_csv(OUTPUT_DIR+'oof_df.csv', index=False)"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv('../input/cassava-leaf-disease-classification/train.csv')\n# Split into folds for cross validation - we used the same split for all the models we trained!\nfolds = train.merge(\n    pd.read_csv(\"../input/cassava-leaf-disease-resnext/validation_data.csv\")[[\"image_id\", \"fold\"]], on=\"image_id\")"
+          }
+        ]
+      }
+    }
+  }
+}

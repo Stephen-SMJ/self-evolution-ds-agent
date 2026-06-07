@@ -1,0 +1,503 @@
+{
+  "domain": "Medical",
+  "competition": "osic-pulmonary-fibrosis-progression",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 1461,
+      "quality": "strong",
+      "score": 67,
+      "reasons": "",
+      "source": {
+        "path": "Medical/osic-pulmonary-fibrosis-progression/rank1461_70pct/pulmonaryfibrosis-environment-51f0d2.ipynb",
+        "file_name": "pulmonaryfibrosis-environment-51f0d2.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 15,
+        "code_cell_count": 12,
+        "markdown_cell_count": 3,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "import tensorflow as tf\nimport tensorflow.keras.backend as K\nfrom wandb.keras import WandbCallback\nimport keras\nfrom keras.models import Sequential\nfrom pfutils import (get_test_data, get_train_data, get_pseudo_test_data, get_exponential_decay_lr_callback, TTA_on_test,\n                     build_model, get_cosine_annealing_lr_callback, get_fold_indices, DataGenerator, make_lungmask)\n                    Laplace_metric, Laplace_log_likelihood, experimental_loss_function)\nPSEUDO_TEST_PATIENTS = 0"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "    PSEUDO_TEST_PATIENTS = 0"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "#Image Flags\nDROP_OUT_LAYERS = [] # [0,1,2] voor dropout in de eerste 3 lagen"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "# Number of folds. A number between 1 and 176-PSEUDO_TEST_PATIENTS. 176 = 2^4 * 11\nFOLDS = 5"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "#TTA steps and TTA gaussian multiplier\nTTA_STEPS = 1\nTTA_MULTIPLIER = 0\nLEARNING_RATE_SCHEDULER = 'exp' #'exp', 'cos' or None\nMODEL_NAME = \"FinalWithoutTTA\"\n              COSINE_CYCLES = COSINE_CYCLES, MODEL_NAME=MODEL_NAME, LEARNING_RATE_SCHEDULER = LEARNING_RATE_SCHEDULER, PREDICT_SLOPE = PREDICT_SLOPE,\n              DROP_OUT_LAYERS = DROP_OUT_LAYERS, BATCH_SIZE = BATCH_SIZE, GAUSSIAN_NOISE_FVC_CORRELATED = GAUSSIAN_NOISE_FVC_CORRELATED, TTA_STEPS = TTA_STEPS,\n              APPLY_LUNGMASK = APPLY_LUNGMASK, USE_IMAGES = USE_IMAGES, DIM = DIM, IMG_FEATURES = IMG_FEATURES, EFFNET = EFFNET, TTA_MULTIPLIER = TTA_MULTIPLIER)"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "train_data, train_images, train_labels = get_train_data('../input/osic-pulmonary-fibrosis-progression/train.csv', PSEUDO_TEST_PATIENTS, TRAIN_ON_BACKWARD_WEEKS, USE_IMAGES, APPLY_LUNGMASK, DIM)\nif PSEUDO_TEST_PATIENTS > 0:\n    test_data, test_check = get_pseudo_test_data('../input/osic-pulmonary-fibrosis-progression/train.csv', PSEUDO_TEST_PATIENTS, INPUT_NORMALIZATION)"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "tf.keras.utils.plot_model(model)"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "fold_pos = get_fold_indices(FOLDS, train_data)\nprint(fold_pos)"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "for fold in range(FOLDS):\n    train_ID = list(range(fold_pos[0],fold_pos[fold])) + list(range(fold_pos[fold+1],fold_pos[-1]))\n    val_ID = list(range(fold_pos[fold], fold_pos[fold+1]))\n    validation_generator = DataGenerator(val_ID, config, validation = True)\n    sv = tf.keras.callbacks.ModelCheckpoint(\n    'fold-%i.h5'%fold, monitor='val_loss', verbose=0, save_best_only=True,\n    if LEARNING_RATE_SCHEDULER == 'exp':\n    if LEARNING_RATE_SCHEDULER == 'cos':\n    print(fold+1, \"of\", FOLDS)\n        name = MODEL_NAME + '-F{}'.format(fold+1)\n        config.update({'fold': fold+1})\n    history = model.fit(training_generator, validation_data = validation_generator, epochs = EPOCHS,\n    if SUBMIT or PSEUDO_TEST_PATIENTS > 0:\n        model.load_weights('fold-%i.h5'%fold)\n        TTA_test_data = TTA_on_test(test_data.to_numpy(), config)\n        for i in range(TTA_STEPS):\n            predictions.append(model.predict(TTA_test_data[:,:,i], batch_size = 256))"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "    submission.to_csv(\"submission.csv\", index = False)"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "if PSEUDO_TEST_PATIENTS > 0:\n        postprocess = np.abs(predictions)\n            postprocess[:,:,1] = gmean(postprocess[:,:,1], axis = 0)\n            postprocess = np.mean(postprocess, axis = 0)\n            postprocess[:,:,1] = np.power(postprocess[:,:,1],i)\n            postprocess = np.mean(postprocess, axis = 0)\n            postprocess[:,1] = np.power(postprocess[:,1],1/i)\n        FVC_pred = postprocess[:,0]\n        sigma = postprocess[:,1]"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 743,
+      "quality": "strong",
+      "score": 73,
+      "reasons": "",
+      "source": {
+        "path": "Medical/osic-pulmonary-fibrosis-progression/rank743_40pct/pulmonary-fibrosis.ipynb",
+        "file_name": "pulmonary-fibrosis.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 53,
+        "code_cell_count": 47,
+        "markdown_cell_count": 6,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "!pip install ../input/kerasapplications/keras-team-keras-applications-3b180cb -f ./ --no-index\n!pip install ../input/efficientnet/efficientnet-1.1.0/ -f ./ --no-index"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "import tensorflow as tf\nfrom sklearn.model_selection import train_test_split, KFold\nfrom sklearn.metrics import mean_absolute_error\nfrom tensorflow_addons.optimizers import RectifiedAdam\nfrom tensorflow.keras import Model\nimport tensorflow.keras.backend as K\nimport tensorflow.keras.layers as L\nimport tensorflow.keras.models as M\nfrom tensorflow.keras.optimizers import Nadam"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv('../input/osic-pulmonary-fibrosis-progression/train.csv')"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "    c = np.vstack([weeks, np.ones(len(weeks))]).T"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "from tensorflow.keras.utils import Sequence"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "from tensorflow.keras.layers import (\nimport efficientnet.tfkeras as efn\ndef get_efficientnet(model, shape):\n        'b0': efn.EfficientNetB0(input_shape=shape,weights=None,include_top=False),\n        'b1': efn.EfficientNetB1(input_shape=shape,weights=None,include_top=False),\n        'b2': efn.EfficientNetB2(input_shape=shape,weights=None,include_top=False),\n        'b3': efn.EfficientNetB3(input_shape=shape,weights=None,include_top=False),\n        'b4': efn.EfficientNetB4(input_shape=shape,weights=None,include_top=False),\n        'b5': efn.EfficientNetB5(input_shape=shape,weights=None,include_top=False),\n        'b6': efn.EfficientNetB6(input_shape=shape,weights=None,include_top=False),\n        'b7': efn.EfficientNetB7(input_shape=shape,weights=None,include_top=False)\n    base = get_efficientnet(model_class, shape)\n    x2 = tf.keras.layers.GaussianNoise(0.2)(inp2)"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "def score(fvc_true, fvc_pred, sigma):\n    metric = (delta / sigma_clip)*sq2 + np.log(sigma_clip* sq2)\n    return np.mean(metric)"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "    metric = []\n            m.append(score(fvc_true, fvc, percent))\n        metric.append(np.mean(m))\n    q = (np.argmin(metric) + 1)/ 10\n    sub = pd.read_csv('../input/osic-pulmonary-fibrosis-progression/sample_submission.csv')\n    test = pd.read_csv('../input/osic-pulmonary-fibrosis-progression/test.csv')"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "sub[[\"Patient_Week\",\"FVC\",\"Confidence\"]].to_csv(\"submission_img.csv\", index=False)"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "tr = pd.read_csv(f\"{ROOT}/train.csv\")\nchunk = pd.read_csv(f\"{ROOT}/test.csv\")\nsub = pd.read_csv(f\"{ROOT}/sample_submission.csv\")\nsub = sub.merge(chunk.drop('Weeks', axis=1), on=\"Patient\")"
+          },
+          {
+            "cell_index": 25,
+            "cell_type": "code",
+            "snippet": "data['min_week'] = data.groupby('Patient')['min_week'].transform('min')"
+          },
+          {
+            "cell_index": 26,
+            "cell_type": "code",
+            "snippet": "base['nb'] = base.groupby('Patient')['nb'].transform('cumsum')"
+          },
+          {
+            "cell_index": 27,
+            "cell_type": "code",
+            "snippet": "data = data.merge(base, on='Patient', how='left')"
+          },
+          {
+            "cell_index": 32,
+            "cell_type": "code",
+            "snippet": "def score(y_true, y_pred):\n    metric = (delta / sigma_clip)*sq2 + tf.math.log(sigma_clip* sq2)\n    return K.mean(metric)\n        return _lambda * qloss(y_true, y_pred) + (1 - _lambda)*score(y_true, y_pred)\n    model = M.Model(z, preds, name=\"CNN\")\n    model.compile(loss=mloss(0.75), optimizer=tf.keras.optimizers.Adam(lr=0.1, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.01, amsgrad=False), metrics=[score])"
+          },
+          {
+            "cell_index": 35,
+            "cell_type": "code",
+            "snippet": "NFOLD = 5 # originally 5\nkf = KFold(n_splits=NFOLD)"
+          },
+          {
+            "cell_index": 36,
+            "cell_type": "code",
+            "snippet": "    print(f\"FOLD {cnt}\")\n            validation_data=(z[val_idx], y[val_idx]), verbose=0) #\n    pe += net.predict(ze, batch_size=BATCH_SIZE, verbose=0) / NFOLD"
+          },
+          {
+            "cell_index": 46,
+            "cell_type": "code",
+            "snippet": "otest = pd.read_csv('../input/osic-pulmonary-fibrosis-progression/test.csv')"
+          },
+          {
+            "cell_index": 47,
+            "cell_type": "code",
+            "snippet": "subm[[\"Patient_Week\",\"FVC\",\"Confidence\"]].to_csv(\"submission_regression.csv\", index=False)"
+          },
+          {
+            "cell_index": 52,
+            "cell_type": "code",
+            "snippet": "df.to_csv('submission.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 423,
+      "quality": "strong",
+      "score": 73,
+      "reasons": "",
+      "source": {
+        "path": "Medical/osic-pulmonary-fibrosis-progression/rank423_20pct/fibrosis-osic-submission-21.ipynb",
+        "file_name": "fibrosis-osic-submission-21.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 53,
+        "code_cell_count": 47,
+        "markdown_cell_count": 6,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "!pip install ../input/kerasapplications/keras-team-keras-applications-3b180cb -f ./ --no-index\n!pip install ../input/efficientnet/efficientnet-1.1.0/ -f ./ --no-index"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "import tensorflow as tf\nfrom sklearn.model_selection import train_test_split, KFold\nfrom sklearn.metrics import mean_absolute_error\nfrom tensorflow_addons.optimizers import RectifiedAdam\nfrom tensorflow.keras import Model\nimport tensorflow.keras.backend as K\nimport tensorflow.keras.layers as L\nimport tensorflow.keras.models as M\nfrom tensorflow.keras.optimizers import Nadam"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "markdown",
+            "snippet": "## 3. Download data, auxiliary functions and model tuning <a class=\"anchor\" id=\"3\"></a>\n\n[Back to Table of Contents](#0.1)"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv('../input/osic-pulmonary-fibrosis-progression/train.csv')"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "    c = np.vstack([weeks, np.ones(len(weeks))]).T"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "from tensorflow.keras.utils import Sequence"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "from tensorflow.keras.layers import (\nimport efficientnet.tfkeras as efn\ndef get_efficientnet(model, shape):\n        'b0': efn.EfficientNetB0(input_shape=shape,weights=None,include_top=False),\n        'b1': efn.EfficientNetB1(input_shape=shape,weights=None,include_top=False),\n        'b2': efn.EfficientNetB2(input_shape=shape,weights=None,include_top=False),\n        'b3': efn.EfficientNetB3(input_shape=shape,weights=None,include_top=False),\n        'b4': efn.EfficientNetB4(input_shape=shape,weights=None,include_top=False),\n        'b5': efn.EfficientNetB5(input_shape=shape,weights=None,include_top=False),\n        'b6': efn.EfficientNetB6(input_shape=shape,weights=None,include_top=False),\n        'b7': efn.EfficientNetB7(input_shape=shape,weights=None,include_top=False)\n    base = get_efficientnet(model_class, shape)\n    x2 = tf.keras.layers.GaussianNoise(0.2)(inp2)"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "def score(fvc_true, fvc_pred, sigma):\n    metric = (delta / sigma_clip)*sq2 + np.log(sigma_clip* sq2)\n    return np.mean(metric)"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "    metric = []\n            m.append(score(fvc_true, fvc, percent))\n        metric.append(np.mean(m))\n    q = (np.argmin(metric) + 1)/ 10\n    sub = pd.read_csv('../input/osic-pulmonary-fibrosis-progression/sample_submission.csv')\n    test = pd.read_csv('../input/osic-pulmonary-fibrosis-progression/test.csv')"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "sub[[\"Patient_Week\",\"FVC\",\"Confidence\"]].to_csv(\"submission_img.csv\", index=False)"
+          },
+          {
+            "cell_index": 21,
+            "cell_type": "code",
+            "snippet": "tr = pd.read_csv(f\"{ROOT}/train.csv\")\nchunk = pd.read_csv(f\"{ROOT}/test.csv\")\nsub = pd.read_csv(f\"{ROOT}/sample_submission.csv\")\nsub = sub.merge(chunk.drop('Weeks', axis=1), on=\"Patient\")"
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "code",
+            "snippet": "data['min_week'] = data.groupby('Patient')['min_week'].transform('min')"
+          },
+          {
+            "cell_index": 25,
+            "cell_type": "code",
+            "snippet": "base['nb'] = base.groupby('Patient')['nb'].transform('cumsum')"
+          },
+          {
+            "cell_index": 26,
+            "cell_type": "code",
+            "snippet": "data = data.merge(base, on='Patient', how='left')"
+          },
+          {
+            "cell_index": 32,
+            "cell_type": "code",
+            "snippet": "def score(y_true, y_pred):\n    metric = (delta / sigma_clip)*sq2 + tf.math.log(sigma_clip* sq2)\n    return K.mean(metric)\n        return _lambda * qloss(y_true, y_pred) + (1 - _lambda)*score(y_true, y_pred)\n    model = M.Model(z, preds, name=\"CNN\")\n    model.compile(loss=mloss(0.65), optimizer=tf.keras.optimizers.Adam(lr=0.1, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.01, amsgrad=False), metrics=[score])"
+          },
+          {
+            "cell_index": 35,
+            "cell_type": "code",
+            "snippet": "NFOLD = 5 # originally 5\nkf = KFold(n_splits=NFOLD)"
+          },
+          {
+            "cell_index": 36,
+            "cell_type": "code",
+            "snippet": "    print(f\"FOLD {cnt}\")\n            validation_data=(z[val_idx], y[val_idx]), verbose=0) #\n    pe += net.predict(ze, batch_size=BATCH_SIZE, verbose=0) / NFOLD"
+          },
+          {
+            "cell_index": 46,
+            "cell_type": "code",
+            "snippet": "otest = pd.read_csv('../input/osic-pulmonary-fibrosis-progression/test.csv')"
+          },
+          {
+            "cell_index": 47,
+            "cell_type": "code",
+            "snippet": "subm[[\"Patient_Week\",\"FVC\",\"Confidence\"]].to_csv(\"submission_regression.csv\", index=False)"
+          },
+          {
+            "cell_index": 52,
+            "cell_type": "code",
+            "snippet": "df.to_csv('submission.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 209,
+      "quality": "strong",
+      "score": 73,
+      "reasons": "",
+      "source": {
+        "path": "Medical/osic-pulmonary-fibrosis-progression/rank209_10pct/change-in-dropout-and-mloss-values.ipynb",
+        "file_name": "change-in-dropout-and-mloss-values.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 54,
+        "code_cell_count": 47,
+        "markdown_cell_count": 7,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "    - Model that uses images can be found at: https://www.kaggle.com/miklgr500/linear-decay-based-on-resnet-cnn\n- Michael Kazachok's Linear Decay (based on ResNet CNN)\n- Replaced Michael's model with EfficientNets B0, B2, B4"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "!pip install ../input/kerasapplications/keras-team-keras-applications-3b180cb -f ./ --no-index\n!pip install ../input/efficientnet/efficientnet-1.1.0/ -f ./ --no-index"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "import tensorflow as tf\nfrom sklearn.model_selection import train_test_split, KFold\nfrom sklearn.metrics import mean_absolute_error\nfrom tensorflow_addons.optimizers import RectifiedAdam\nfrom tensorflow.keras import Model\nimport tensorflow.keras.backend as K\nimport tensorflow.keras.layers as L\nimport tensorflow.keras.models as M\nfrom tensorflow.keras.optimizers import Nadam"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv('../input/osic-pulmonary-fibrosis-progression/train.csv')"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "    c = np.vstack([weeks, np.ones(len(weeks))]).T"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "from tensorflow.keras.utils import Sequence"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "from tensorflow.keras.layers import (\nimport efficientnet.tfkeras as efn\ndef get_efficientnet(model, shape):\n        'b0': efn.EfficientNetB0(input_shape=shape,weights=None,include_top=False),\n        'b1': efn.EfficientNetB1(input_shape=shape,weights=None,include_top=False),\n        'b2': efn.EfficientNetB2(input_shape=shape,weights=None,include_top=False),\n        'b3': efn.EfficientNetB3(input_shape=shape,weights=None,include_top=False),\n        'b4': efn.EfficientNetB4(input_shape=shape,weights=None,include_top=False),\n        'b5': efn.EfficientNetB5(input_shape=shape,weights=None,include_top=False),\n        'b6': efn.EfficientNetB6(input_shape=shape,weights=None,include_top=False),\n        'b7': efn.EfficientNetB7(input_shape=shape,weights=None,include_top=False)\n    base = get_efficientnet(model_class, shape)\n    x2 = tf.keras.layers.GaussianNoise(0.2)(inp2)"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "def score(fvc_true, fvc_pred, sigma):\n    metric = (delta / sigma_clip)*sq2 + np.log(sigma_clip* sq2)\n    return np.mean(metric)"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "    metric = []\n            m.append(score(fvc_true, fvc, percent))\n        metric.append(np.mean(m))\n    q = (np.argmin(metric) + 1)/ 10\n    sub = pd.read_csv('../input/osic-pulmonary-fibrosis-progression/sample_submission.csv')\n    test = pd.read_csv('../input/osic-pulmonary-fibrosis-progression/test.csv')"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "sub[[\"Patient_Week\",\"FVC\",\"Confidence\"]].to_csv(\"submission_img.csv\", index=False)"
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "code",
+            "snippet": "tr = pd.read_csv(f\"{ROOT}/train.csv\")\nchunk = pd.read_csv(f\"{ROOT}/test.csv\")\nsub = pd.read_csv(f\"{ROOT}/sample_submission.csv\")\nsub = sub.merge(chunk.drop('Weeks', axis=1), on=\"Patient\")"
+          },
+          {
+            "cell_index": 26,
+            "cell_type": "code",
+            "snippet": "data['min_week'] = data.groupby('Patient')['min_week'].transform('min')"
+          },
+          {
+            "cell_index": 27,
+            "cell_type": "code",
+            "snippet": "base['nb'] = base.groupby('Patient')['nb'].transform('cumsum')"
+          },
+          {
+            "cell_index": 28,
+            "cell_type": "code",
+            "snippet": "data = data.merge(base, on='Patient', how='left')"
+          },
+          {
+            "cell_index": 33,
+            "cell_type": "code",
+            "snippet": "def score(y_true, y_pred):\n    metric = (delta / sigma_clip)*sq2 + tf.math.log(sigma_clip* sq2)\n    return K.mean(metric)\n        return _lambda * qloss(y_true, y_pred) + (1 - _lambda)*score(y_true, y_pred)\n    model = M.Model(z, preds, name=\"CNN\")\n    #model.compile(loss=qloss, optimizer=\"adam\", metrics=[score])\n    model.compile(loss=mloss(0.8), optimizer=tf.keras.optimizers.Adam(lr=0.1, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.01, amsgrad=False), metrics=[score])"
+          },
+          {
+            "cell_index": 36,
+            "cell_type": "code",
+            "snippet": "NFOLD = 5 # originally 5\nkf = KFold(n_splits=NFOLD)"
+          },
+          {
+            "cell_index": 37,
+            "cell_type": "code",
+            "snippet": "    print(f\"FOLD {cnt}\")\n            validation_data=(z[val_idx], y[val_idx]), verbose=0) #\n    pe += net.predict(ze, batch_size=BATCH_SIZE, verbose=0) / NFOLD"
+          },
+          {
+            "cell_index": 47,
+            "cell_type": "code",
+            "snippet": "otest = pd.read_csv('../input/osic-pulmonary-fibrosis-progression/test.csv')"
+          },
+          {
+            "cell_index": 48,
+            "cell_type": "code",
+            "snippet": "subm[[\"Patient_Week\",\"FVC\",\"Confidence\"]].to_csv(\"submission_regression.csv\", index=False)"
+          },
+          {
+            "cell_index": 53,
+            "cell_type": "code",
+            "snippet": "df.to_csv('submission.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 567,
+      "quality": "strong",
+      "score": 78,
+      "reasons": "",
+      "source": {
+        "path": "Medical/osic-pulmonary-fibrosis-progression/rank567_1st/dnn-lgbm-ngboost-elasticnet.ipynb",
+        "file_name": "dnn-lgbm-ngboost-elasticnet.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 37,
+        "code_cell_count": 35,
+        "markdown_cell_count": 2,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "from sklearn.metrics import mean_absolute_error\nfrom sklearn.model_selection import KFold, GroupKFold\nfrom sklearn.metrics import make_scorer\nimport lightgbm as lgb\nfrom tqdm.keras import TqdmCallback\nfrom ngboost.scores import MLE"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "import tensorflow as tf\nimport tensorflow.keras.backend as K\nimport tensorflow.keras.layers as L\nimport tensorflow.keras.models as M"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "tr = pd.read_csv(f\"{ROOT}/train.csv\")\nchunk = pd.read_csv(f\"{ROOT}/test.csv\")\nsub = pd.read_csv(f\"{ROOT}/sample_submission.csv\")\nsub = sub.merge(chunk.drop('Weeks', axis=1), on=\"Patient\")"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "data['min_week'] = data.groupby('Patient')['min_week'].transform('min')"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "base['nb'] = base.groupby('Patient')['nb'].transform('cumsum')"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "data = data.merge(base, on='Patient', how='left')"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "    def score(y_true, y_pred):\n        metric = (delta / sigma_clip)*sq2 + tf.math.log(sigma_clip* sq2)\n        return K.mean(metric)\n            return _lambda * qloss(y_true, y_pred) + (1 - _lambda)*score(y_true, y_pred)\n    model = M.Model(z, preds, name=\"CNN\")\n    #model.compile(loss=qloss, optimizer=\"adam\", metrics=[score])\n    model.compile(loss=mloss(delta), optimizer=tf.keras.optimizers.Adam(lr=0.01, beta_1=0.9, beta_2=0.999, epsilon=1e-07, amsgrad=False), metrics=[score])"
+          },
+          {
+            "cell_index": 21,
+            "cell_type": "code",
+            "snippet": "    Calculates the modified Laplace Log Likelihood score for this competition.\n    metric = - np.sqrt(2) * delta / sd_clipped - np.log(np.sqrt(2) * sd_clipped)\n        return metric\n        return np.mean(metric)\nscorer_210 = make_scorer(lambda y_true, y_pred: laplace_log_likelihood(y_true, y_pred, 210))"
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "code",
+            "snippet": "class OSICLossForLGBM:\n    Custom Loss for LightGBM.\n    * Evaluation: return competition metric\n        \"\"\"Return Loss for lightgbm\"\"\"\n        \"\"\"Return Grad and Hess for lightgbm\"\"\""
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "code",
+            "snippet": "NFOLD = 5\ngkf = GroupKFold(n_splits = NFOLD)\nNFOLD_MODELS = NFOLD * MODELS\nval_scores = []\nlr_scheduler = tf.keras.callbacks.ReduceLROnPlateau(\nfold_n = 0\n    fold_n += 1\n    ngb = NGBoost(Base = default_tree_learner, Dist = Normal, Score=MLE, natural_gradient = True, verbose = False).fit(tr[FE3].iloc[tr_idx].values, y[tr_idx])\n            validation_data=(z2[val_idx], y[val_idx]), verbose=0, callbacks = [TqdmCallback(verbose = 0), lr_scheduler])\n    'metric': 'None',\n        \"early_stopping_rounds\": 500,\n    loss = OSICLossForLGBM()\n                       valid_sets = test_data,\n    print(f\"Loss Keras #{fold_n}: {nn_val_loss}\")\n    print(f\"Loss LGBM #{fold_n}: {lgb_val_loss}, {lgb_val_loss_conf}\")\n    pe1 += subm_predict / NFOLD_MODELS"
+          },
+          {
+            "cell_index": 34,
+            "cell_type": "code",
+            "snippet": "otest = pd.read_csv('../input/osic-pulmonary-fibrosis-progression/test.csv')"
+          },
+          {
+            "cell_index": 35,
+            "cell_type": "code",
+            "snippet": "subm[[\"Patient_Week\",\"FVC\",\"Confidence\"]].to_csv(\"submission.csv\", index=False)"
+          }
+        ]
+      }
+    }
+  }
+}

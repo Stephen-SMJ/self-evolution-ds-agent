@@ -1,0 +1,313 @@
+{
+  "domain": "Medical",
+  "competition": "siim-isic-melanoma-classification",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 2311,
+      "quality": "strong",
+      "score": 55,
+      "reasons": "",
+      "source": {
+        "path": "Medical/siim-isic-melanoma-classification/rank2311_70pct/melanoma-using-fastai2.ipynb",
+        "file_name": "melanoma-using-fastai2.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 28,
+        "code_cell_count": 26,
+        "markdown_cell_count": 2,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "# This is a beginner kernel to showcase the use of fastai2 to approach this competition"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "from fastai2.torch_basics import *\nfrom fastai2.metrics import *\nfrom sklearn.metrics import roc_auc_score"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv('/kaggle/input/siim-isic-melanoma-classification/train.csv')"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "from sklearn.model_selection import StratifiedKFold\nskf = StratifiedKFold(n_splits=3,shuffle=True,random_state=42)\nfold = 0\n    fold+= 1\n    print('In fold',fold)\n    print(\"TRAIN LENGTH:\", len(train_index), \"VALIDATION LENGTH:\", len(test_index))\n    df[f'fold_{fold}_valid']=False\n    df.loc[test_index,f'fold_{fold}_valid']=True"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "test = pd.read_csv('/kaggle/input/siim-isic-melanoma-classification/test.csv')"
+          },
+          {
+            "cell_index": 21,
+            "cell_type": "code",
+            "snippet": "ss = pd.read_csv('/kaggle/input/siim-isic-melanoma-classification/sample_submission.csv')"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "#roc_auc=skm_to_fastai(roc_auc_score)\nmetrics = [accuracy,roc_auc]"
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "code",
+            "snippet": "def dataloader(fold):\n    dls = ImageDataLoaders.from_df(df, fn_col='file_name',label_col='target', valid_col=f'fold_{fold}_valid',path='', folder='/', seed=42,batch_tfms = [*tfm, Normalize.from_stats(*imagenet_stats)],bs=32,num_workers=0)"
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "code",
+            "snippet": "fold = 0\nfor fold in range(3):\n    fold+=1\n    print('In fold:',fold)\n    dls=dataloader(fold)\n    learn = cnn_learner(dls,resnet34,metrics=metrics)\n    preds, _ = learn.tta(dl=test_dl)\n    print('Prediction completed in fold: {}'.format(str(fold)))"
+          },
+          {
+            "cell_index": 27,
+            "cell_type": "code",
+            "snippet": "test[['image_name', 'target']].to_csv('Sub.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 1322,
+      "quality": "strong",
+      "score": 61,
+      "reasons": "bad_keyword",
+      "source": {
+        "path": "Medical/siim-isic-melanoma-classification/rank1322_40pct/siim-predictions-xgboost-and-resnet50.ipynb",
+        "file_name": "siim-predictions-xgboost-and-resnet50.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 63,
+        "code_cell_count": 58,
+        "markdown_cell_count": 5,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\n# For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "train=pd.read_csv(\"/kaggle/input/siim-isic-melanoma-classification/train.csv\")"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "from sklearn.preprocessing import LabelEncoder\nlab=LabelEncoder()"
+          },
+          {
+            "cell_index": 26,
+            "cell_type": "code",
+            "snippet": "import keras\ny_train=keras.utils.to_categorical(y_train,num_classes)\ny_test=keras.utils.to_categorical(y_test,num_classes)"
+          },
+          {
+            "cell_index": 27,
+            "cell_type": "code",
+            "snippet": "from keras.models import Sequential,Model\nfrom keras.layers import Dense,Conv2D,MaxPooling2D,Dropout,Flatten,MaxPool2D\nfrom keras.optimizers import RMSprop,Adam\nfrom keras.layers import Activation, Convolution2D, Dropout, Conv2D,AveragePooling2D, BatchNormalization,Flatten,GlobalAveragePooling2D\nfrom keras import layers\nfrom keras.regularizers import l2\nfrom keras.callbacks import ModelCheckpoint,ReduceLROnPlateau\nfrom keras.applications.resnet50 import ResNet50"
+          },
+          {
+            "cell_index": 28,
+            "cell_type": "code",
+            "snippet": "base_model = ResNet50(weights='imagenet',include_top=False, input_shape=(50,50,3))"
+          },
+          {
+            "cell_index": 29,
+            "cell_type": "code",
+            "snippet": "model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])"
+          },
+          {
+            "cell_index": 30,
+            "cell_type": "code",
+            "snippet": "history=model.fit(x_train,y_train,batch_size=128,epochs=20,verbose=1,validation_split=0.33,callbacks=[checkpoint])"
+          },
+          {
+            "cell_index": 31,
+            "cell_type": "code",
+            "snippet": "scores = model.evaluate(x_test, y_test, verbose=1)\nprint('Test loss:', scores[0])\nprint('Test accuracy:', scores[1])"
+          },
+          {
+            "cell_index": 36,
+            "cell_type": "code",
+            "snippet": "a.to_csv(\"benign_malignant.csv\",index=False)"
+          },
+          {
+            "cell_index": 38,
+            "cell_type": "code",
+            "snippet": "from sklearn.preprocessing import LabelEncoder\nla=LabelEncoder()"
+          },
+          {
+            "cell_index": 44,
+            "cell_type": "code",
+            "snippet": "from sklearn.model_selection import train_test_split,KFold,cross_val_score"
+          },
+          {
+            "cell_index": 45,
+            "cell_type": "code",
+            "snippet": "from sklearn.ensemble import GradientBoostingClassifier,RandomForestClassifier,RandomForestRegressor,GradientBoostingRegressor\nfrom xgboost import XGBClassifier,XGBRFRegressor,XGBRegressor\nfrom sklearn.linear_model import LogisticRegression,LinearRegression,SGDRegressor\nfrom lightgbm import LGBMRegressor,LGBMRegressor"
+          },
+          {
+            "cell_index": 46,
+            "cell_type": "code",
+            "snippet": "model=XGBClassifier(n_estimators=1000)\n# kfold=KFold(n_splits=10)\n# res=cross_val_score(model,x,y,cv=kfold)"
+          },
+          {
+            "cell_index": 48,
+            "cell_type": "code",
+            "snippet": "from sklearn.metrics import mean_squared_error,mean_absolute_error,r2_score\nprint(r2_score(yt,yp))"
+          },
+          {
+            "cell_index": 49,
+            "cell_type": "code",
+            "snippet": "sample=pd.read_csv(\"/kaggle/input/siim-isic-melanoma-classification/sample_submission.csv\")"
+          },
+          {
+            "cell_index": 51,
+            "cell_type": "code",
+            "snippet": "test=pd.read_csv(\"/kaggle/input/siim-isic-melanoma-classification/test.csv\")"
+          },
+          {
+            "cell_index": 62,
+            "cell_type": "code",
+            "snippet": "test.to_csv('sub.csv',columns=['image_name','target'],index=False)"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 755,
+      "quality": "usable",
+      "score": 25,
+      "reasons": "",
+      "source": {
+        "path": "Medical/siim-isic-melanoma-classification/rank755_20pct/melanoma-minmax.ipynb",
+        "file_name": "melanoma-minmax.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 5,
+        "code_cell_count": 4,
+        "markdown_cell_count": 1,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "https://www.kaggle.com/solomonk/minmax-ensemble-0-9526-lb?rvi=1\nhttps://www.kaggle.com/truonghoang/stacking-ensemble-on-my-submissions\nhttps://www.kaggle.com/datafan07/analysis-of-melanoma-metadata-and-effnet-ensemble"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "def MinMaxBestBaseStacking(input_folder, best_base, output_path):\n    sub_base = pd.read_csv(best_base)\n    all_files = os.listdir(input_folder)\n    outs = [pd.read_csv(os.path.join(input_folder, f), index_col=0) for f in all_files]\n    # get the data fields ready for stacking\n    # set up cutoff threshold for lower and upper bounds\n    concat_sub[['image_name', 'target']].to_csv(output_path,"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "MinMaxBestBaseStacking('../input/cs0099/', '../input/cs0099/submission.csv', 'submission_6.csv')\n# data1 = pd.read_csv('../input/minmax-ensemble-0-9526-lb/submission.csv')\n# data2 = pd.read_csv('../input/stacking-ensemble-on-my-submissions/submission_mean.csv')"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "# submission.to_csv('submission.csv', index=False, float_format='%.6f')"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 335,
+      "quality": "usable",
+      "score": 37,
+      "reasons": "thin_ensemble",
+      "source": {
+        "path": "Medical/siim-isic-melanoma-classification/rank335_10pct/chris-submission-oof-weighted-ensemble-prlb-0-9427.ipynb",
+        "file_name": "chris-submission-oof-weighted-ensemble-prlb-0-9427.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 9,
+        "code_cell_count": 9,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "## reference: https://www.kaggle.com/ipythonx/optimizing-metrics-out-of-fold-weights-ensemble"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "!ls ../input/melanoma-oof-and-sub"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "from sklearn.metrics import roc_auc_score"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "oof_01  = pd.read_csv('../input/melanoma-oof-and-sub/oof_0.csv')\ntest_01 = pd.read_csv('../input/melanoma-oof-and-sub/sub_0.csv')\noof_01  = oof_01.sort_values(by=['image_name'],\noof_02  = pd.read_csv('../input/melanoma-oof-and-sub/oof_100.csv')\ntest_02 = pd.read_csv('../input/melanoma-oof-and-sub/sub_100.csv')\noof_02  = oof_02.sort_values(by=['image_name'],\noof_03  = pd.read_csv('../input/melanoma-oof-and-sub/oof_105.csv')\ntest_03 = pd.read_csv('../input/melanoma-oof-and-sub/sub_105.csv')\noof_03  = oof_03.sort_values(by=['image_name'],\noof_04  = pd.read_csv('../input/melanoma-oof-and-sub/oof_108.csv')\ntest_04 = pd.read_csv('../input/melanoma-oof-and-sub/sub_108.csv')\noof_04  = oof_04.sort_values(by=['image_name'],\noof_05  = pd.read_csv('../input/melanoma-oof-and-sub/oof_109.csv')\ntest_05 = pd.read_csv('../input/melanoma-oof-and-sub/sub_109.csv')\noof_05  = oof_05.sort_values(by=['image_name'],\noof_06  = pd.read_csv('../input/melanoma-oof-and-sub/oof_11.csv')\ntest_06 = pd.read_csv('../input/melanoma-oof-and-sub/sub_11.csv')\noof_06  = oof_06.sort_values(by=['image_name'],\noof_07  = pd.read_csv('../input/melanoma-oof-and-sub/oof_110.csv')\ntest_07 = pd.read_csv('../input/melanoma-oof-and-sub/sub_110.csv')\noof_07  = oof_07.sort_values(by=['image_name'],\noof_08  = pd.read_csv('../input/melanoma-oof-and-sub/oof_111.csv')\ntest_08 = pd.read_csv('../input/melanoma-oof-and-sub/sub_111.csv')\noof_08  = oof_08.sort_values(by=['image_name'],\noof_09  = pd.read_csv('../input/melanoma-oof-and-sub/oof_113.csv')\ntest_09 = pd.read_csv('../input/melanoma-oof-and-sub/sub_113.csv')\noof_09  = oof_09.sort_values(by=['image_name'],\noof_10  = pd.read_csv('../input/melanoma-oof-and-sub/oof_116.csv')\ntest_10 = pd.read_csv('../input/melanoma-oof-and-sub/sub_116.csv')\noof_10  = oof_10.sort_values(by=['\n...[truncated]"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "blend_train = []\nblend_test = []\n# out of fold prediction\nblend_train.append(oof_01.pred)\nblend_train.append(oof_02.pred)\nblend_train.append(oof_03.pred)\nblend_train.append(oof_04.pred)\nblend_train.append(oof_05.pred)\nblend_train.append(oof_06.pred)\nblend_train.append(oof_07.pred)\nblend_train.append(oof_08.pred)\nblend_train.append(oof_09.pred)\nblend_train.append(oof_10.pred)\nblend_train.append(oof_11.pred)\nblend_train.append(oof_12.pred)\nblend_train.append(oof_13.pred)\nblend_train.append(oof_14.pred)\nblend_train.append(oof_15.pred)\nblend_train.append(oof_16.pred)\nblend_train.append(oof_17.pred)\nblend_train.append(oof_18.pred)\nblend_train.append(oof_19.pred)\nblend_train.append(oof_20.pred)\nblend_train.append(oof_21.pred)\nblend_train.append(oof_22.pred)\nblend_train.append(oof_23.pred)\nblend_train.append(oof_24.pred)\nblend_train.append(oof_25.pred)\nblend_train.append(oof_26.pred)\nblend_train.append(oof_27.pred)\nblend_train.append(oof_28.pred)\nblend_train.append(oof_29.pred)\nblend_train.append(oof_30.pred)\nblend_train.append(oof_31.pred)\nblend_train.append(oof_32.pred)\nblend_train.append(oof_33.pred)\nblend_train.append(oof_34.pred)\nblend_train.append(oof_35.pred)\nblend_train.append(oof_36.pred)\nblend_train.append(oof_37.pred)\nblend_train.append(oof_38.pred)\nblend_train.append(oof_39.pred)\nblend_train = np.array(blend_train)\n# submission scores\nblend_test.append(test_01.target)\nblend_test.append(test_02.target)\nblend_test.append(test_03.target)\nblend_test.append(test_04.target)\nblend_test.append(test_05.target)\nblend_test.append(test_06.target)\nblend_test.append(test_07.target)\nblend_test.append(test_08.target)\nblend_test.append(test_09.target)\nblend_test.append(test_10.target)\nblend_test.append(test_11.target)\nblend_test.append(test_12.target)\nblend_test.append(test_13.targ\n...[truncated]"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "    for weight, prediction in zip(weights, blend_train):\n    return roc_auc_score(np.array(oof_01.target), final_prediction)\nprint('\\n Finding Blending Weights ...')\n    #starting_values = np.random.uniform(size=len(blend_train))\n    starting_values = np.random.uniform(size=len(blend_train)) * 1/len(blend_train)\n    #bounds = [(0, 1)] * len(blend_train)\n    #bounds = [(0, 1/len(blend_train))] * len(blend_train)\n    bounds = [(0, 1/len(blend_train)) for _ in range(len(blend_train))]\n    print('{iter}\\tScore: {score}\\tWeights: {weights}'.format(\n        score=res['fun'],\nblend_score = round(bestSC, 6)"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "print('\\n Ensemble Score: {best_score}'.format(best_score=bestSC))\ntrain_prices = np.zeros(len(blend_train[0]))\ntest_prices  = np.zeros(len(blend_test[0]))\nfor k in range(len(blend_test)):\n    test_prices += blend_test[k] * weights[k]\nfor k in range(len(blend_train)):\n    train_prices += blend_train[k] * weights[k]"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "test_01.to_csv('final_weighted_average_ensemble.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 755,
+      "quality": "usable",
+      "score": 30,
+      "reasons": "",
+      "source": {
+        "path": "Medical/siim-isic-melanoma-classification/rank755_1st/melanoma-minmax.ipynb",
+        "file_name": "melanoma-minmax.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 5,
+        "code_cell_count": 4,
+        "markdown_cell_count": 1,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "https://www.kaggle.com/solomonk/minmax-ensemble-0-9526-lb?rvi=1\nhttps://www.kaggle.com/truonghoang/stacking-ensemble-on-my-submissions\nhttps://www.kaggle.com/datafan07/analysis-of-melanoma-metadata-and-effnet-ensemble"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "def MinMaxBestBaseStacking(input_folder, best_base, output_path):\n    sub_base = pd.read_csv(best_base)\n    all_files = os.listdir(input_folder)\n    outs = [pd.read_csv(os.path.join(input_folder, f), index_col=0) for f in all_files]\n    # get the data fields ready for stacking\n    # set up cutoff threshold for lower and upper bounds\n    concat_sub[['image_name', 'target']].to_csv(output_path,"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "MinMaxBestBaseStacking('../input/cs0099/', '../input/cs0099/submission.csv', 'submission_6.csv')\n# data1 = pd.read_csv('../input/minmax-ensemble-0-9526-lb/submission.csv')\n# data2 = pd.read_csv('../input/stacking-ensemble-on-my-submissions/submission_mean.csv')"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "# submission.to_csv('submission.csv', index=False, float_format='%.6f')"
+          }
+        ]
+      }
+    }
+  }
+}

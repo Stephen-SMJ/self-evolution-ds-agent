@@ -1,0 +1,378 @@
+{
+  "domain": "CV",
+  "competition": "digit-recognizer",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 1063,
+      "quality": "strong",
+      "score": 65,
+      "reasons": "",
+      "source": {
+        "path": "CV/digit-recognizer/rank1063_70pct/digitrecognizer.ipynb",
+        "file_name": "digitrecognizer.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 13,
+        "code_cell_count": 7,
+        "markdown_cell_count": 6,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "import tensorflow as tf\nfrom sklearn.metrics import confusion_matrix\nfrom tensorflow.keras import Sequential\nfrom tensorflow.keras.layers import Dense, Flatten, Input\nfrom tensorflow.keras.losses import SparseCategoricalCrossentropy\nfrom tensorflow.keras.optimizers import Adam\nfrom tensorflow.keras.regularizers import L2\nfrom tensorflow.keras.preprocessing.image import ImageDataGenerator"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv('/kaggle/input/competitions/digit-recognizer/train.csv')"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "# Reshaping is necessary for the Data Augmentation part"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "markdown",
+            "snippet": "## **Data Augmentation and Model Builidng**"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "    width_shift_range=0.1,\n    height_shift_range=0.1\n    Input(shape=(28, 28, 1)), # OG code used to be Flatten(input_shape=(28, 28, 1)) but in newer versions of Tensorflow, a cleaner version exists\n              metrics=['accuracy'])\n                    validation_data=(X_val, y_val))"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "markdown",
+            "snippet": "## **Plotting a confusion matrix to see where exactly is the model going wrong**"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "markdown",
+            "snippet": "## **We observe that the model is getting confused mainly in the 3/8 and 2/7 numbers**"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "test = pd.read_csv('/kaggle/input/competitions/digit-recognizer/test.csv')\nsubmission.to_csv('submission.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 567,
+      "quality": "strong",
+      "score": 55,
+      "reasons": "",
+      "source": {
+        "path": "CV/digit-recognizer/rank567_40pct/sine-multi-scale-cnn-99-1399-params-11-class.ipynb",
+        "file_name": "sine-multi-scale-cnn-99-1399-params-11-class.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 11,
+        "code_cell_count": 11,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import torch\nimport torch.nn as nn\nimport torch.optim as optim\nfrom torch.utils.data import Dataset, DataLoader"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "train_df = pd.read_csv(\"/kaggle/input/competitions/digit-recognizer/train.csv\")\ntest_df  = pd.read_csv(\"/kaggle/input/competitions/digit-recognizer/test.csv\")\n# Augmentation makes exploration space even more vast\nX_train, X_valid = X, X\ny_train, y_valid = y, y"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "import torchvision.transforms.functional as TF\nimport torch.nn.functional as F\ndevice = torch.device('cuda' if torch.cuda.is_available() else 'mps' if torch.backends.mps.is_available() else 'cpu')\n    mat = torch.tensor([[sx * cos, -sy * sin, tx / x.shape[-1]],\n    dx = torch.randn(1, 1, h, w) * alpha\n    dy = torch.randn(1, 1, h, w) * alpha\n    coords = torch.arange(kernel_size).float() - kernel_size // 2\n    gauss = torch.exp(-coords**2 / (2 * sigma**2))\n    grid_y, grid_x = torch.meshgrid(torch.linspace(-1,1,h), torch.linspace(-1,1,w), indexing='ij')\n    grid = torch.stack([grid_x + dx.squeeze() / w, grid_y + dy.squeeze() / h], dim=-1).unsqueeze(0)\n    def __init__(self, X, y=None, augment=False):\n        self.X = torch.tensor(X, dtype=torch.float32).reshape(-1, 1, 28, 28)\n        self.y = torch.tensor(y, dtype=torch.long) if y is not None else None\n        self.augment = augment\n        if self.augment:\n            x = x + torch.randn_like(x) * 0.2"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "sys.path.append('/kaggle/input/models/elvenmonk/sine-multi-scale-cnn-1390-params-mnist-99/pytorch/default/6')\nfrom SinCNN import SinCNN\nmodel = SinCNN().to(device)"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "path = f'/kaggle/input/models/elvenmonk/sine-multi-scale-cnn-1390-params-mnist-99/pytorch/default/6/SinRCNN_{total}.pth'\n    model.load_state_dict(torch.load(path, map_location=device))"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "train_loader = DataLoader(MNISTDataset(X_train, y_train, augment=True), batch_size=512, shuffle=True, num_workers=0)\nvalid_loader = DataLoader(MNISTDataset(X_valid, y_valid), batch_size=512, num_workers=2)\nscheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)\n    scheduler.step()\n    with torch.no_grad():\n            for xb, yb in valid_loader\n    print(f\"Epoch {epoch}: {correct}/{len(X_valid)} ({100*correct/len(X_valid):.2f}%)\")"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "#torch.save(model.state_dict(), path)\nwith torch.no_grad():\npd.DataFrame({'ImageId': range(1, len(preds)+1), 'Label': preds}).to_csv('submission.csv', index=False)"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "with torch.no_grad():\n    for xb, yb in valid_loader:\npreds = torch.cat(all_preds)\nlabels = torch.cat(all_labels)\nimgs = torch.cat(all_imgs)"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "    with torch.no_grad():"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "# label distribution in validation set\naxes[0].hist(y_valid, bins=np.arange(11)-0.5, edgecolor='black')\naxes[0].set_title('Validation label distribution')"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 374,
+      "quality": "strong",
+      "score": 73,
+      "reasons": "",
+      "source": {
+        "path": "CV/digit-recognizer/rank374_20pct/cnn-scratch-vs-lenet-5-digit-classification.ipynb",
+        "file_name": "cnn-scratch-vs-lenet-5-digit-classification.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 39,
+        "code_cell_count": 23,
+        "markdown_cell_count": 16,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "import keras\nfrom tensorflow.keras.models import Sequential\nfrom tensorflow.keras.layers import Dense, Flatten ,Dropout,Conv2D ,MaxPooling2D , BatchNormalization , ReLU,MaxPooling2D,Flatten,AveragePooling2D\nfrom tensorflow.keras.utils import to_categorical\nfrom sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, classification_report\nfrom keras.callbacks import EarlyStopping\nfrom tensorflow.keras.callbacks import ReduceLROnPlateau"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv(\"/kaggle/input/competitions/digit-recognizer/train.csv\")\ntest = pd.read_csv(\"/kaggle/input/competitions/digit-recognizer/test.csv\")"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "markdown",
+            "snippet": "# **3-Splitting Validation**"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "markdown",
+            "snippet": "# **5-CNN Scratch Model Structure**"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "    Conv2D(32 , (3,3),padding=\"valid\",input_shape=(28,28,1)),\n    Conv2D(128 , (3,3),padding=\"valid\",),"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "markdown",
+            "snippet": "# **6-Compiling & CallBacks**"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "    metrics=[\"accuracy\"]"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "early_stop = EarlyStopping("
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "markdown",
+            "snippet": "# **7-Model Training**"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "                 validation_data=(x_val, y_val),"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "# -- Plot training vs validation accuracy --\n# -- Plot training vs validation loss --"
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "markdown",
+            "snippet": "# **9-Test Model With Images**"
+          },
+          {
+            "cell_index": 25,
+            "cell_type": "markdown",
+            "snippet": "# **10-Model Scratch Submission**"
+          },
+          {
+            "cell_index": 26,
+            "cell_type": "code",
+            "snippet": "submission.to_csv(\"submission_CNN.csv\", index=False)"
+          },
+          {
+            "cell_index": 29,
+            "cell_type": "markdown",
+            "snippet": "# **12-LeNet Compiling and CallBacks**"
+          },
+          {
+            "cell_index": 30,
+            "cell_type": "code",
+            "snippet": "    metrics=[\"accuracy\"]"
+          },
+          {
+            "cell_index": 31,
+            "cell_type": "code",
+            "snippet": "early_stop_Le_Net_model = EarlyStopping("
+          },
+          {
+            "cell_index": 33,
+            "cell_type": "code",
+            "snippet": "                 validation_data=(x_val, y_val),"
+          },
+          {
+            "cell_index": 36,
+            "cell_type": "code",
+            "snippet": "# -- Plot training vs validation accuracy --\n# -- Plot training vs validation loss --"
+          },
+          {
+            "cell_index": 38,
+            "cell_type": "code",
+            "snippet": "submission.to_csv(\"submission_LeNet-5.csv\", index=False)"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 164,
+      "quality": "strong",
+      "score": 73,
+      "reasons": "",
+      "source": {
+        "path": "CV/digit-recognizer/rank164_10pct/digit-recognizer-cnn.ipynb",
+        "file_name": "digit-recognizer-cnn.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 27,
+        "code_cell_count": 14,
+        "markdown_cell_count": 13,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "import tensorflow as tf\nfrom tensorflow import keras\nfrom tensorflow.keras import layers\nprint('TensorFlow version:', tf.__version__)"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "# For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "train_df = pd.read_csv('/kaggle/input/competitions/digit-recognizer/train.csv')\ntest_df  = pd.read_csv('/kaggle/input/competitions/digit-recognizer/test.csv')"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "y_cat = keras.utils.to_categorical(y, num_classes=10)\n# Split train / validation (90% / 10%)"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "    model = keras.Sequential(["
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "markdown",
+            "snippet": "## 6. Compilation et callbacks"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "    optimizer=keras.optimizers.Adam(learning_rate=1e-3),\n    metrics=['accuracy']\n    keras.callbacks.ReduceLROnPlateau(\n    keras.callbacks.EarlyStopping("
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "datagen = keras.preprocessing.image.ImageDataGenerator(\n    width_shift_range=0.1,\n    height_shift_range=0.1\nprint('Data augmentation configurée.')"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "    validation_data=(X_val, y_val),"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "ax1.plot(history.history['val_accuracy'], label='Validation')\nax2.plot(history.history['val_loss'], label='Validation')\nprint(f'Meilleure accuracy validation : {val_acc:.4f} ({val_acc*100:.2f}%)')"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "from sklearn.metrics import confusion_matrix, classification_report\nplt.title('Matrice de confusion (validation)')"
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "code",
+            "snippet": "submission.to_csv('submission.csv', index=False)"
+          },
+          {
+            "cell_index": 26,
+            "cell_type": "code",
+            "snippet": "model.save('digit_recognizer_cnn.keras')\nprint('Modèle sauvegardé : digit_recognizer_cnn.keras')"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 8,
+      "quality": "strong",
+      "score": 64,
+      "reasons": "",
+      "source": {
+        "path": "CV/digit-recognizer/rank8_1st/digit-recognizer-cnn-public-mnist-variants.ipynb",
+        "file_name": "digit-recognizer-cnn-public-mnist-variants.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 6,
+        "code_cell_count": 5,
+        "markdown_cell_count": 1,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "# Digit Recognizer: high-score CNN variants\nThis notebook trains two compact CNN variants for Digit Recognizer:\n- public MNIST 70k training source: submitted public score `0.99835`;\n- public MNIST 60k training source: submitted public score `0.99767`.\ngenerated CSV files are CNN predictions, not direct lookup labels."
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "import torch\nfrom torch import nn\nfrom torch.utils.data import DataLoader, TensorDataset\nfrom torchvision.datasets import MNIST\n            if (candidate / 'test.csv').exists() and (candidate / 'sample_submission.csv').exists():\n    WORK_DIR = Path(r'C:/kaggle/digit-recognizer/outputs/notebook_cnn_check')\ndef pick_device() -> torch.device:\n    if torch.cuda.is_available():\n            major, minor = torch.cuda.get_device_capability(0)\n            name = torch.cuda.get_device_name(0)\n                return torch.device('cuda')\n    return torch.device('cpu')"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "    torch.manual_seed(seed)\n    torch.cuda.manual_seed_all(seed)\n    torch.backends.cudnn.benchmark = True\ndef to_tensor(images: np.ndarray) -> torch.Tensor:\n    x = torch.from_numpy(images.astype(np.float32).reshape(-1, 1, 28, 28) / 255.0)\nclass SmallCnn(nn.Module):"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "train_df = pd.read_csv(DATA_DIR / 'train.csv')\ntest_df = pd.read_csv(DATA_DIR / 'test.csv')\nsample = pd.read_csv(DATA_DIR / 'sample_submission.csv')"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "@torch.no_grad()\n    model = SmallCnn().to(DEVICE)\n        TensorDataset(to_tensor(train_x), torch.from_numpy(train_y)),\n        pin_memory=torch.cuda.is_available(),\n    opt = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-4)\n    sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=epochs)\n    out_path = WORK_DIR / f'submission_cnn_{source}.csv'\n    submission.to_csv(out_path, index=False)"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "    print('CPU fallback smoke run; submitted scores in the markdown are from the full local GPU run.')"
+          }
+        ]
+      }
+    }
+  }
+}

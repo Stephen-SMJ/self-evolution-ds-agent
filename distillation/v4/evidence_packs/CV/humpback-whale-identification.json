@@ -1,0 +1,298 @@
+{
+  "domain": "CV",
+  "competition": "humpback-whale-identification",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 1473,
+      "quality": "strong",
+      "score": 59,
+      "reasons": "",
+      "source": {
+        "path": "CV/humpback-whale-identification/rank1473_70pct/fishing-whales.ipynb",
+        "file_name": "fishing-whales.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 78,
+        "code_cell_count": 78,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\n# For example, running this (by clicking run or pressing Shift+Enter) will list the files in the input directory\nfrom keras import models,callbacks,layers,utils,optimizers\nfrom keras.preprocessing.image import ImageDataGenerator\nfrom keras.applications import resnet50'''\nfrom fastai.metrics import error_rate"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "df=pd.read_csv('../input/train.csv')"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "df['total_count'] = df.groupby('Id')['Id'].transform('count')"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "df_grouped = df.groupby('Id').apply(lambda x : x.sample(frac=0.2,random_state=22))"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "df_merged = pd.merge(left=df,right=df_grouped,how='left',on='Image',suffixes=('','_y'))"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "df_merged['is_valid'] = df_merged.Id_y.isnull() != True\ndf_merged.tail(10)"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "df_merged.drop(columns=['Id_y','total_count_y'],inplace=True)\ndf_merged.tail(10)"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "data_src=(ImageItemList.from_df(df=df_merged,path='../input/',folder='train')\n       .split_from_df(col='is_valid')\n       #How to split in train/valid?"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "       .add_test_folder(test_folder='../input/test/')\n       #Data augmentation?"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "learn = create_cnn(data=data,arch=models.resnet50,metrics=error_rate,model_dir='.',path='../working/tmp/',pretrained=True)\n#learn = create_cnn(data=data,arch=models.resnet18,metrics=error_rate,model_dir='.',callback_fns=ShowGraph)"
+          },
+          {
+            "cell_index": 26,
+            "cell_type": "code",
+            "snippet": "#        .add_test_folder(test_folder='../input/test/')\n#        #Data augmentation?"
+          },
+          {
+            "cell_index": 33,
+            "cell_type": "code",
+            "snippet": "len(data.valid_ds)==len(losses)==len(idxs)"
+          },
+          {
+            "cell_index": 37,
+            "cell_type": "code",
+            "snippet": "#preds,y = learn.TTA()"
+          },
+          {
+            "cell_index": 38,
+            "cell_type": "code",
+            "snippet": "#preds_t,y_t = learn.TTA(ds_type=learn.data.train_ds[:100],is_test=True)"
+          },
+          {
+            "cell_index": 39,
+            "cell_type": "code",
+            "snippet": "# #preds_t = np.stack(preds, axis=-1)"
+          },
+          {
+            "cell_index": 45,
+            "cell_type": "code",
+            "snippet": "len(learn.data.train_ds),len(learn.data.valid_ds),len(learn.data.test_ds)"
+          },
+          {
+            "cell_index": 46,
+            "cell_type": "code",
+            "snippet": "len(data.train_ds),len(data.valid_ds), len(data.test_ds)"
+          },
+          {
+            "cell_index": 49,
+            "cell_type": "code",
+            "snippet": "len(data.train_ds),len(data.valid_ds), len(data.test_ds)"
+          },
+          {
+            "cell_index": 53,
+            "cell_type": "code",
+            "snippet": "pred_2=learn.TTA(ds_type=DatasetType.Test)"
+          },
+          {
+            "cell_index": 54,
+            "cell_type": "code",
+            "snippet": "best_5_pred = torch.flip(np.argsort(pred_2[0])[:,-5:],dims=[1])"
+          },
+          {
+            "cell_index": 56,
+            "cell_type": "code",
+            "snippet": "submission.to_csv(\"submission.csv\", index = False)"
+          },
+          {
+            "cell_index": 64,
+            "cell_type": "code",
+            "snippet": "#train_image_gen = ImageDataGenerator(rescale=1/255,horizontal_flip=True,validation_split=val_split,)\n#train_image_gen = ImageDataGenerator(rotation_range=0.3, width_shift_range=0.3, height_shift_range=0.3,shear_range=0.3, horizontal_flip=True, rescale=1/255, preprocessing_function=resnet50.preprocess_input, validation_split=val_split)"
+          },
+          {
+            "cell_index": 65,
+            "cell_type": "code",
+            "snippet": "#val_generator = train_image_gen.flow_from_directory(train_dir,target_size=(Image_width,Image_height),batch_size=batch_size,seed=42,subset='validation',shuffle=True,class_mode='categorical')\n#val_generator=train_image_gen.flow_from_dataframe(dataframe=train_labels,directory='../input/train/',x_col='Image',y_col='Id',seed=42,has_ext=True,class_mode='categorical',target_size=(Image_width,Image_height),subset='validation')"
+          },
+          {
+            "cell_index": 66,
+            "cell_type": "code",
+            "snippet": "#reset50_base_model = resnet50.ResNet50(include_top=False, weights='imagenet')"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 774,
+      "quality": "strong",
+      "score": 67,
+      "reasons": "",
+      "source": {
+        "path": "CV/humpback-whale-identification/rank774_40pct/triplet-loss-from-pretrained-siamese-net-0-76.ipynb",
+        "file_name": "triplet-loss-from-pretrained-siamese-net-0-76.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 15,
+        "code_cell_count": 8,
+        "markdown_cell_count": 7,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "- [Whale Recognition Model with score 0.78563](https://www.kaggle.com/martinpiotte/whale-recognition-model-with-score-0-78563)\n- [tensorflow-triplet-loss](https://github.com/omoindrot/tensorflow-triplet-loss)"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "import tensorflow\ntensorflow.__version__"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "import tensorflow as tf\nfrom tensorflow.python.keras import Input, regularizers\nfrom tensorflow.python.keras import backend as K\nfrom tensorflow.python.keras.layers import Activation, Add, BatchNormalization, Conv2D, GlobalMaxPooling2D, \\\nfrom tensorflow.python.keras.models import Model\nfrom tensorflow.python.ops import control_flow_ops\n    show_embedding, keras_convert_model_to_estimator_ckpt, InitFromPretrainedCheckpointHook, \\\n    return control_flow_ops.merge([\n    Distorting images provides a useful technique for augmenting the data\n        # todo 2.shift\n    Distorting images provides a useful technique for augmenting the data"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "                \"E:/frkhit/Download/AI/pre-trained-model/resnet_v2_50.ckpt\"\n        return os.path.join(self.working_path, \"resnet_v2_50.ckpt\")\n    def download_resnet_v2_50(self):\n            tar_file = \"resnet_v2_50_2017_04_14.tar.gz\"\n            download_big_file(\"http://download.tensorflow.org/models/resnet_v2_50_2017_04_14.tar.gz\",\n        whales = pd.read_csv(raw_path_manager.train_csv)\n        whales = pd.read_csv(self.path_manager.train_csv)\n        boxes = pd.read_csv(self.path_manager.bounding_boxes_csv)"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "class WhaleRankingUtils(object):\n    def simple_rank(self, result_list: list, distance_cutoff: float = None, only_distance_fit: bool = False) -> list:\n            rank_list: list, like, [class_id_1, class_id_2, ... ]\n    def get_similar_cutoff(self, validating_labels: list, validating_feature_list: list) -> float:\n        for i, class_id in enumerate(validating_labels):\n            for (_distance, _class_id, _file_name) in validating_feature_list[i]:\n    def analyze_validating_result(self, feature_file: str):\n        class_id_result_list = [self.simple_rank(feature)[:self.top_k] for feature in feature_list]\n        self.logger.info(\"validating data result is: map@5 is {},  map@1 is {}!\".format(total_map_5, total_map_1))\n            \"validating data result with cutoff is: map@5 is {},  map@1 is {}!\".format(total_map_5, total_map_1))\n        submission = pd.read_csv(csv_file)\n            _new_result[file_id] = self.simple_rank(\n            _new_result[file_id] = self.simple_rank(\n    def _calc_weight_score(feature_list, file_id_list, cutoff) -> dict:\n        # todo simple score\n        cutoff_score = 5.0\n                        _new_result[file_id][class_id] += cutoff_score\n    def _get_result_by_weight_score(score_dict: dict, top_k: int = 5) -> dict:\n        for image_id, score in score_dict.items():\n            result_dict[image_id] = _sort_by_value(score)[:top_k]\n    def combine_submission_file(self, validating_file_list: list, submission_file_list: list, output_file: str):\n        def _update_weight_score(all_dict: dict, one_dict: dict, model_weight: float):\n            for _image_id, _score_dict in one_dict.items():\n                for _class_id, _score in _score_dict.items():\n                    all_dict[_image_id][_class_id] += _score * model_weight\n        assert \n...[truncated]"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "class TripletLossModelCNN(AbstractEstimator):\n        super(TripletLossModelCNN, self).__init__(\n            feature = np.vstack(feature_list).reshape((len(feature_list), self.params.dimension))\n        file_id_list, feature_list = WhaleRankingUtils.get_feature_list(feature_file=tmp_feature_list[0])\n        for score in result_list:\n            feature_file_list.append(byte_to_string(score[self._features_filename_key]))\n            feature_list.append(score[self._features_embedding_key].reshape(1, self.params.dimension))\n    def map_search(self, only_validate: bool = False, clear_cache_after_exists: bool = True,\n                map_5, map_1 = search.validate(data_percent=1.0)\n                if only_validate:\n                    self.logger.info(\"success to validate with {}, time cost {} seconds!\".format(\n        self.logger.info(\"success to merge all submission file into sub_ens.csv\")\n            self.map_search(only_validate=False, clear_cache_after_exists=True)\nclass TripletLossModelSiamese(TripletLossModelCNN):\n                 pretrained_ckpt_file: str = None, keras_model: str = None):\n            pretrained_ckpt_file=None if keras_model else pretrained_ckpt_file,\n        self.keras_model_file = keras_model\n        if not self._checkpoint_exist and keras_model:\n            ckpt_file = keras_convert_model_to_estimator_ckpt(\n                keras_model_path=keras_model, log_dir=self.TRAIN_CKPT_DIR, logger=self.logger)\n                self.logger.warning(\"fail to convert keras model to estimator!\")"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "markdown",
+            "snippet": "# 6.training model"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "!mkdir -p ./keras\n!cp ../input/piotte/mpiotte-standard.model ./keras/\n#         keras_model=\"./keras/mpiotte-standard.model\",\n        keras_model=None,\nestimator.map_search(only_validate=False, clear_cache_after_exists=True)"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "!rm ./keras/ -R"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 461,
+      "quality": "usable",
+      "score": 33,
+      "reasons": "",
+      "source": {
+        "path": "CV/humpback-whale-identification/rank461_20pct/esemble-lb-0-842.ipynb",
+        "file_name": "esemble-lb-0-842.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 5,
+        "code_cell_count": 4,
+        "markdown_cell_count": 1,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "2. Ref: https://www.kaggle.com/ateplyuk/ensemble-lb-0-833\n3. Ref: https://www.kaggle.com/axel81/siamese-ensemble-of-ensemble-lb-0-824\n6. Ref: https://www.kaggle.com/monuwio/ensemble-of-many-good-submissions"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "                 \"../input/ensemble-0842/sub_simi_800.csv\",\n                 \"../input/ensemble-0842/sub_simi_805.csv\",\n                 \"../input/ensemble-0842/sub_ens_833.csv\",\n                 \"../input/ensemble-0842/sub_ens_824.csv\",\n                 \"../input/ensemble-0842/sub_tri_760.csv\",\n                 \"../input/ensemble-0842/sub_siam_822.csv\","
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 316,
+      "quality": "weak",
+      "score": 17,
+      "reasons": "thin_ensemble",
+      "source": {
+        "path": "CV/humpback-whale-identification/rank316_10pct/whale-ensemble-lb-0-866.ipynb",
+        "file_name": "whale-ensemble-lb-0-866.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 4,
+        "code_cell_count": 4,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "                \"../input/ensemble-whale/whale1.csv\",\n                \"../input/ensemble-whale/whale2.csv\",\n               # \"../input/ensemble-whale/whale3.csv\",\n                #\"../input/ensemble-whale/whale4.csv\",\n               # \"../input/ensemble-whale/whale5.csv\",\n                \"../input/ensemble-whale/whale10.csv\","
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "out = open(\"whale_ensemble_3.csv\", \"w\", newline='')"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 4,
+      "quality": "strong",
+      "score": 58,
+      "reasons": "",
+      "source": {
+        "path": "CV/humpback-whale-identification/rank4_1st/visualisation-of-siamese-net.ipynb",
+        "file_name": "visualisation-of-siamese-net.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 10,
+        "code_cell_count": 5,
+        "markdown_cell_count": 5,
+        "snippets": [
+          {
+            "cell_index": 2,
+            "cell_type": "markdown",
+            "snippet": "**Create model and load weights**"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "    from keras.applications.densenet import preprocess_input\n    from keras.applications.densenet import DenseNet121\n    from keras import backend as K\n    from keras.optimizers import Adam\n    from keras.engine.topology import Input\n    from keras.layers import Concatenate, Conv2D, Dense, Flatten, Lambda, Reshape\n    from keras.models import Model, load_model\n    x = Conv2D(mid, (4, 1), activation='relu', padding='valid', name='hm_conv_2d_1')(x)\n    x = Conv2D(1, (1, mid), activation='linear', padding='valid', name='hm_conv_2d_2')(x)\n    # Weighted sum implemented as a Dense layer.\n    x = Dense(1, use_bias=True, activation=activation, name='weighted-average')(x)\n    model.compile(optim, loss='binary_crossentropy', metrics=['binary_crossentropy', 'acc'])"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "markdown",
+            "snippet": "**Create activation maps**\n\nIt's main functions. We got tensor from last BatchNormalization layer (also we can use last activation layer). It has shape like (10, 16, 16, 1024) or (16, 16, 1024) for single image in batch. On the next GlobalMaxPooling layer it converted to vector with 1024 elements in it. To generate N-th element of vector maximum value is taken from (16 x 16) matrix. So pixel located in position with maximum value define the vector value. This vector next goes to head model, which compare whale parameters. So we need to find places on (16x16) matrix where maximum value appear often. Also it's interesting to find places where values change often from one feature map to next feature map. We can use value of standard deviation to mark such places.\n\nSo colors on generated images:\n* Pink - places where value of max appears often\n* Green - places where Std is large\n* White - Pink + Green"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "        ch = np.stack((ch0, ch1, ch2), axis=2)\n    from keras.models import Model\n    image_ids = pd.read_csv('../input/humpback-whale-identification/sample_submission.csv')['Image'].values[start:end]"
+          }
+        ]
+      }
+    }
+  }
+}

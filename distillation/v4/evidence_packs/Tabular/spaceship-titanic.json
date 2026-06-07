@@ -1,0 +1,373 @@
+{
+  "domain": "Tabular",
+  "competition": "spaceship-titanic",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 1616,
+      "quality": "strong",
+      "score": 55,
+      "reasons": "bad_keyword",
+      "source": {
+        "path": "Tabular/spaceship-titanic/rank1616_70pct/spaceship-titanic-0527.ipynb",
+        "file_name": "spaceship-titanic-0527.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 22,
+        "code_cell_count": 16,
+        "markdown_cell_count": 6,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\n# For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory\n# Use the kagglehub client library to attach Kaggle resources like competitions, datasets, and models to your session"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "from sklearn.ensemble import RandomForestClassifier\nfrom sklearn.preprocessing import OneHotEncoder\nimport xgboost as xgb"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "df_train = pd.read_csv(\"/kaggle/input/competitions/spaceship-titanic/train.csv\")\ndf_test = pd.read_csv(\"/kaggle/input/competitions/spaceship-titanic/test.csv\")"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "member_count= group.groupby(\"group\")[\"group\"].transform(\"size\")\nmember_count= group.groupby(\"group\")[\"group\"].transform(\"size\")"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "df_train_new.groupby(\"CryoSleep\")[\"Transported\"].mean().plot(kind=\"bar\")"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "ax = df_train_new.query(\"CryoSleep==True\").groupby(agebin, observed=False)[\"Transported\"].mean().plot(kind=\"bar\")\nax = df_train_new.query(\"CryoSleep==True\").groupby(\"member_count\")[\"Transported\"].mean().plot(kind=\"bar\")\nt_rate_4Sleep = df_train_new.query(\"CryoSleep==True\").groupby([agebin, \"deck\"],observed=False)[\"Transported\"].mean()\nax = sns.heatmap(t_rate_4Sleep.unstack(), annot=True)"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "t_rate_4nonSleep = df_train_new.query(\"CryoSleep==False\").groupby([agebin, \"Last_init\"],observed=False)[\"Transported\"].mean()\nax = sns.heatmap(t_rate_4nonSleep.unstack(), annot=True)\nax = df_train_new.query(\"CryoSleep==False\").groupby(servicebin,observed=False)[\"Transported\"].mean().plot(kind=\"bar\")"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "    (\"encode\", OneHotEncoder(handle_unknown=\"ignore\"))\n    #(\"model\", RandomForestClassifier(n_estimators=1000, random_state=0))\n    (\"model\", xgb.XGBClassifier(n_estimators=1000,\n    (\"encode\", OneHotEncoder(handle_unknown=\"ignore\"))\n    #(\"model\", RandomForestClassifier(n_estimators=1000, random_state=0))\n    (\"model\", xgb.XGBClassifier(n_estimators=1000,"
+          },
+          {
+            "cell_index": 21,
+            "cell_type": "code",
+            "snippet": "y_pred.to_csv(\"submission.csv\", index=False)"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 870,
+      "quality": "strong",
+      "score": 73,
+      "reasons": "",
+      "source": {
+        "path": "Tabular/spaceship-titanic/rank870_40pct/beginner-eda-to-clean-cv-gpu-catboost.ipynb",
+        "file_name": "beginner-eda-to-clean-cv-gpu-catboost.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 55,
+        "code_cell_count": 30,
+        "markdown_cell_count": 25,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "  <div style=\"margin: 0 0 8px 0; color: #233127; font-size: 2.05rem; font-weight: 900; line-height: 1.14;\">🚀 Beginner EDA to Clean CV + GPU CatBoost</div>\n    Cabin structure, CryoSleep, spending behavior, group-aware validation, GPU-ready CatBoost, OOF blending, and a fold-averaged submission for predicting <span style=\"color:#2F6B4F; font-weight:900; border-bottom:2px solid #CFE0D0;\">Transported</span>.\n      <div style=\"font-size: 11px; text-transform: uppercase; color: #6F7C69; font-weight: 900; letter-spacing: 0.08em; margin-bottom: 6px;\">🧪 Validation</div>\n      <div style=\"font-size: 15px; color: #233127; font-weight: 800; line-height: 1.35;\">StratifiedGroupKFold</div>\n      <div style=\"font-size: 15px; color: #233127; font-weight: 800; line-height: 1.35;\">Fold-averaged probabilities</div>"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "markdown",
+            "snippet": "    <div style=\"border: 1px solid #E4DAC9; border-radius: 14px; padding: 13px 14px; background: #F7F3EA;\"><div style=\"font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color:#6F7C69; font-weight:900; margin-bottom:6px;\">Models</div><div style=\"font-weight: 900; color: #C7772C; margin-bottom: 6px;\">7-9. Validation and Interpretation</div><div style=\"font-size: 12.5px; line-height: 1.55; color: #233127;\">Group-aware CV, ablation, threshold tuning, and feature importance.</div></div>"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "markdown",
+            "snippet": "<div style=\"background:#FFFCF8; border:1px solid #E2D8C7; border-left:6px solid #2F6B4F; border-radius:14px; padding:13px 15px; margin:10px 0 16px 0; color:#233127; line-height:1.58; box-shadow:0 8px 18px rgba(35,49,39,0.04);\">Spaceship Titanic is a <b>binary classification</b> problem. For each passenger, the model predicts whether <span style=\"color:#2F6B4F; font-weight:900; border-bottom:2px solid #CFE0D0;\">Transported</span> is <b>True</b> or <b>False</b>. The public score is accuracy.</div>"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "from sklearn.ensemble import (\n    RandomForestClassifier,\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import accuracy_score, confusion_matrix, log_loss, roc_auc_score\nfrom sklearn.model_selection import StratifiedGroupKFold, cross_validate\nfrom sklearn.preprocessing import OneHotEncoder, StandardScaler\ndef display_metric_cards(cards, title=None, subtitle=None):\n        ratio_like_tokens = ['rate', 'share', 'ratio', 'accuracy', 'auc', 'loss', 'smd', 'correlation', 'drop', 'std', 'mean', 'threshold', 'entropy']\n            valid = numeric.dropna()\n            if valid.empty:\n            is_integer_like = np.all(np.isclose(valid, np.round(valid), atol=1e-9))\n                inferred[col] = '{:.2%}' if valid.between(0, 1).all() else '{:.2f}'\n            valid = numeric.dropna()\n            if valid.empty:\n            lo, hi = valid.min(), valid.max()\n            normalized = ((numeric - lo) / denom).fillna(0.0).clip(0, 1)"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "submission_template_path = resolve_file('sample_submission.csv')\ntrain = pd.read_csv(train_path)\ntest = pd.read_csv(test_path)\nsample_submission = pd.read_csv(submission_template_path)\n    '📄 Table': ['train', 'test', 'sample_submission'],\n    'Rows': [len(train), len(test), len(sample_submission)],\n    'Columns': [train.shape[1], test.shape[1], sample_submission.shape[1]],\n    subtitle='The train/test sizes are small enough for fast iteration, but large enough for stable group-aware validation.',"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "# COMPUTED HEADLINE METRICS\nmetric_cards = [\ndisplay_metric_cards(\n    metric_cards,"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "    {'Column': 'Name', 'Family': '👤 Text identifier', 'Plain-English meaning': 'Passenger name; surname can approximate family links.', 'Modeling note': 'Use surname counts; raw surname is best saved for CatBoost.'},\n    {'Column': 'Transported', 'Family': '🎯 Target', 'Plain-English meaning': 'Binary label to predict.', 'Modeling note': 'Accuracy is the competition metric.'},"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "markdown",
+            "snippet": "| 🚪 Cabin deck, side, and interactions | `Cabin` | Ship location and deck-side combinations can shift the base rate. |"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "    return usable.groupby(key_col)[value_col].agg(lambda values: values.mode().iat[0])\n    spend_ratio = spend_for_features.div(data['TotalSpend'].where(data['TotalSpend'].gt(0), np.nan), axis=0).fillna(0).clip(0, 1)"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "# OneHotEncoder expects each categorical column to contain a consistent data type."
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "markdown",
+            "snippet": "### 4.1 Rule-Based Imputation Audit\n\nSome missing values can be filled with structural rules before the general model pipeline runs. These rules are intentionally conservative: they use passenger metadata and observed feature relationships, not the target label."
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "    .groupby(['CryoSleepLabel', 'NoSpend'], observed=True)[TARGET]\n    .agg(Rows='count', TransportedRate='mean')"
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "code",
+            "snippet": "        temp.groupby(col, observed=True)[TARGET]\n        .agg(Rows='count', TransportedRate='mean')"
+          },
+          {
+            "cell_index": 25,
+            "cell_type": "code",
+            "snippet": "    rates = temp.groupby(col, observed=True)[TARGET].mean().sort_values()"
+          },
+          {
+            "cell_index": 28,
+            "cell_type": "code",
+            "snippet": "    train_fe.groupby('GroupSizeBand', observed=True)[TARGET]"
+          },
+          {
+            "cell_index": 29,
+            "cell_type": "code",
+            "snippet": "# Rank numeric features by absolute correlation with the target\n    valid = train_fe[[col, TARGET]].dropna()\n    if valid[col].nunique() > 1:\n        corr = valid[col].corr(valid[TARGET])\n    subtitle='Correlation is only a first screen; nonlinear models can still use threshold-like patterns such as zero spend.',"
+          },
+          {
+            "cell_index": 31,
+            "cell_type": "markdown",
+            "snippet": "Correlation captures simple linear association. Tree models can also use nonlinear patterns such as zero spend versus any spend."
+          },
+          {
+            "cell_index": 32,
+            "cell_type": "markdown",
+            "snippet": "Validation works best when train and test come from similar distributions. We cannot see the test labels, but we can compare feature distributions. Large train/test differences are a warning that local validation may not match the Kaggle score perfectly."
+          },
+          {
+            "cell_index": 35,
+            "cell_type": "markdown",
+            "snippet": "Group-aware validation keeps passengers from the same `PassengerId` group inside the same fold. `StratifiedGroupKFold` preserves class balance while reducing group leakage.\n| Soft Voting Ensemble | Averaged scikit-learn probabilities. |\n| CatBoost | Categorical interactions and raw surname, GPU-ready on Kaggle P100. |\n| LightGBM + fold-safe target encoding | Compact categorical encoding without full-train target leakage. |\n| OOF blend | Transparent probability-weight search using out-of-fold predictions. |\n<div style=\"background:#FFFCF8; border:1px solid #E2D8C7; border-left:6px solid #3D6F8A; border-radius:14px; padding:13px 15px; margin:12px 0 0 0; color:#233127; line-height:1.58; box-shadow:0 8px 18px rgba(35,49,39,0.04);\"><b>CV note:</b> count features use target-free train+test covariates such as surname and cabin counts. The score is therefore closer to a leaderboard-style transductive estimate than a fully strict future-data estimate.</div>"
+          },
+          {
+            "cell_index": 36,
+            "cell_type": "code",
+            "snippet": "# Create one group-aware validation split\ngroup_cv = StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=RANDOM_STATE)\ntrain_idx, valid_idx = next(group_cv.split(X, y, groups=groups))\nX_train, X_valid = X.iloc[train_idx], X.iloc[valid_idx]\ny_train, y_valid = y.iloc[train_idx], y.iloc[valid_idx]\ngroups_train, groups_valid = groups.iloc[train_idx], groups.iloc[valid_idx]\n    'Split': ['Training fold', 'Validation fold'],\n    'Rows': [len(X_train), len(X_valid)],\n    'Unique groups': [groups_train.nunique(), groups_valid.nunique()],\n    'Positive rate': [y_train.mean(), y_valid.mean()],\n    subtitle='Every passenger group is kept entirely inside either training or validation for this diagnostic split.',"
+          },
+          {
+            "cell_index": 37,
+            "cell_type": "code",
+            "snippet": "    if 'sparse_output' in inspect.signature(OneHotEncoder).parameters:\n    return OneHotEncoder(**params)\n        ('onehot', make_one_hot_encoder()),\n        transformers=[\n    return RandomForestClassifier(\n    'Logistic Regression': LogisticRegression(max_iter=2500, C=1.0, random_state=RANDOM_STATE),\n    'Soft Voting Ensemble': VotingClassifier("
+          },
+          {
+            "cell_index": 38,
+            "cell_type": "code",
+            "snippet": "# Fit baselines and evaluate holdout validation performance\nvalid_predictions = {}\n    proba = pipe.predict_proba(X_valid)[:, 1]\n    valid_predictions[name] = {'proba': proba, 'pred': pred}\n        'Accuracy': accuracy_score(y_valid, pred),\n        'ROC AUC': roc_auc_score(y_valid, proba),\n        'Log loss': log_loss(y_valid, proba, labels=[0, 1]),"
+          },
+          {
+            "cell_index": 40,
+            "cell_type": "markdown",
+            "snippet": "Ablation adds feature families step by step and measures validation changes."
+          },
+          {
+            "cell_index": 41,
+            "cell_type": "code",
+            "snippet": "ablation_cv = StratifiedGroupKFold(n_splits=3, shuffle=True, random_state=RANDOM_STATE)\n    scores = cross_validate(\n        error_score='raise',\n        'Accuracy mean': scores['test_score'].mean(),\n        'Accuracy std': scores['test_score'].std(),"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 440,
+      "quality": "strong",
+      "score": 73,
+      "reasons": "",
+      "source": {
+        "path": "Tabular/spaceship-titanic/rank440_20pct/spaceship-titanic.ipynb",
+        "file_name": "spaceship-titanic.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 33,
+        "code_cell_count": 32,
+        "markdown_cell_count": 1,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "## High Accuracy Ensemble Pipeline with Feature Engineering\n✅ High Accuracy Ensemble Models\n✅ Cross Validation"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "from sklearn.model_selection import StratifiedKFold\nfrom sklearn.model_selection import cross_val_score\nfrom sklearn.preprocessing import LabelEncoder\nfrom sklearn.metrics import accuracy_score\nfrom sklearn.metrics import confusion_matrix\nfrom sklearn.metrics import classification_report\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.ensemble import ExtraTreesClassifier\nfrom sklearn.ensemble import VotingClassifier\nfrom xgboost import XGBClassifier\nfrom lightgbm import LGBMClassifier\nfrom catboost import CatBoostClassifier"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "train_df = pd.read_csv('/kaggle/input/competitions/spaceship-titanic/train.csv')\ntest_df = pd.read_csv('/kaggle/input/competitions/spaceship-titanic/train.csv')"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "    df['GroupSize'] = df.groupby('Group')['Group'].transform('count')"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "    encoder = LabelEncoder()"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "from sklearn.preprocessing import LabelEncoder\n    encoder = LabelEncoder()"
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "code",
+            "snippet": "# TRAIN VALIDATION SPLIT\nX_train, X_valid, y_train, y_valid = train_test_split(\nprint(\"X_valid Shape :\", X_valid.shape)"
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "code",
+            "snippet": "# TRAIN CATBOOST MODEL\nfrom catboost import CatBoostClassifier\ncat_model = CatBoostClassifier(\n    eval_metric='Accuracy',"
+          },
+          {
+            "cell_index": 25,
+            "cell_type": "code",
+            "snippet": "# VALIDATION PREDICTIONS\nfrom sklearn.metrics import accuracy_score\nfrom sklearn.metrics import classification_report\nfrom sklearn.metrics import confusion_matrix\npreds = cat_model.predict(X_valid)\naccuracy = accuracy_score(\n    y_valid,\nprint(\"Validation Accuracy :\", accuracy)"
+          },
+          {
+            "cell_index": 26,
+            "cell_type": "code",
+            "snippet": "        y_valid,"
+          },
+          {
+            "cell_index": 27,
+            "cell_type": "code",
+            "snippet": "    y_valid,"
+          },
+          {
+            "cell_index": 30,
+            "cell_type": "code",
+            "snippet": "test_df = pd.read_csv(\ntest_df['GroupSize'] = test_df.groupby('Group')['Group'].transform('count')\n    encoder = LabelEncoder()"
+          },
+          {
+            "cell_index": 31,
+            "cell_type": "code",
+            "snippet": "submission.to_csv("
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 134,
+      "quality": "strong",
+      "score": 55,
+      "reasons": "bad_keyword",
+      "source": {
+        "path": "Tabular/spaceship-titanic/rank134_10pct/notebooka2b1182843.ipynb",
+        "file_name": "notebooka2b1182843.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 14,
+        "code_cell_count": 14,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\n# For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "from sklearn.preprocessing import OrdinalEncoder, OneHotEncoder, MinMaxScaler, StandardScaler, RobustScaler\nfrom sklearn.model_selection import train_test_split, GridSearchCV, RandomizedSearchCV, cross_val_score, KFold, StratifiedKFold, StratifiedShuffleSplit\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier\nfrom sklearn.metrics import log_loss, roc_auc_score, accuracy_score\nfrom xgboost import XGBClassifier\nfrom lightgbm import LGBMClassifier\nfrom tensorflow.keras.utils import set_random_seed"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv('/kaggle/input/spaceship-titanic/train.csv')"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "test = pd.read_csv('/kaggle/input/spaceship-titanic/test.csv')"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "# merge test and train datasets into single dataframe for data cleaning and necessary pre-processing"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "Columns with ordinal values (ranks, value_counts, high-cardinality columns, etc) will be processed\nto be OneHotEncoded, but we will first convert them into numerical codes (with Ordinal Encoder) so"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "# Splitting our merged dataset into original train and test sets,"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "# Transforming Categorical features using OneHotEncoder\nonehot = OneHotEncoder(drop='first', handle_unknown='ignore', sparse_output=False)\nonehot = make_column_transformer((onehot, categorical), remainder='passthrough')\nX_train = onehot.fit_transform(X_train)\nX_test = onehot.transform(X_test)\n# Creating training and validation split (including corresponding indices from the base set) to evaluate model performances"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "sss = StratifiedShuffleSplit(n_splits=n_splits, test_size=2, random_state=SEED, )\n    # training on shuffled dataset with 0.2 validation_fraction\n    model = GradientBoostingClassifier(max_depth=7, max_features='sqrt', n_estimators=600, n_iter_no_change=50, tol=0, subsample=0.75, learning_rate=0.05, validation_fraction=0.2, verbose=0, random_state=SEED+i )\n    # Checking OOB scores\n#     print(i, 'accuracy', model.score(X_train_full[ts_ids], y_train_full[ts_ids]), '\\n')\n    # Refit the model using n_estimators = raw_ests - early stopping\n    model = GradientBoostingClassifier(max_depth=7, max_features='sqrt', n_estimators=estop_ests, n_iter_no_change=50, tol=0, subsample=0.75, learning_rate=0.05, validation_fraction=0.2, verbose=0, random_state=SEED+i)\n    # Checking OOB scores\n#     print(i, 'accuracy', model.score(X_train_full[ts_ids], y_train_full[ts_ids]), '\\n')\n    # predict on test set using model trained on StratifiedShuffleSplit of training data with 0.2 validation_fraction\nsubmission.to_csv('submission.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 119,
+      "quality": "usable",
+      "score": 32,
+      "reasons": "",
+      "source": {
+        "path": "Tabular/spaceship-titanic/rank119_1st/spaceship-titanic-survival-prediction-model.ipynb",
+        "file_name": "spaceship-titanic-survival-prediction-model.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 1,
+        "code_cell_count": 1,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "SUB_PATH = \"/kaggle/input/competitions/spaceship-titanic/sample_submission.csv\"\ntest = pd.read_csv(TEST_PATH)\nsub = pd.read_csv(SUB_PATH)\nsub.to_csv(\"/kaggle/working/submission.csv\", index=False)"
+          }
+        ]
+      }
+    }
+  }
+}

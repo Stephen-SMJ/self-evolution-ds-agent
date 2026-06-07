@@ -1,0 +1,323 @@
+{
+  "domain": "NLP",
+  "competition": "google-quest-challenge",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 1068,
+      "quality": "usable",
+      "score": 41,
+      "reasons": "",
+      "source": {
+        "path": "NLP/google-quest-challenge/rank1068_70pct/google-quest-spelling-feature.ipynb",
+        "file_name": "google-quest-spelling-feature.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 20,
+        "code_cell_count": 13,
+        "markdown_cell_count": 7,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "In this notebook i show one approach for predicting the 'question_type_spelling' label\nby building a custom feature using L2distance between USE embeddings of\n* a magic sentence and\n* input 'answer' data"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "import tensorflow_hub as hub"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "df_train = pd.read_csv(PATH+'train.csv')"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "markdown",
+            "snippet": "We find how many rows match for this feature 'question_type_spelling' in training data"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "    embeddings_train[text + '_embedding'] = np.vstack(curr_train_emb)"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "  spell_embeddings_train['spell_embedding'] = np.vstack(curr_train_emb)"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "df_comp = pd.DataFrame(np.hstack([dist_features_train]),"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 275,
+      "quality": "usable",
+      "score": 43,
+      "reasons": "",
+      "source": {
+        "path": "NLP/google-quest-challenge/rank275_40pct/eda-and-feature-engineering.ipynb",
+        "file_name": "eda-and-feature-engineering.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 64,
+        "code_cell_count": 33,
+        "markdown_cell_count": 31,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "from sklearn.feature_extraction.text import TfidfVectorizer"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "train_data = pd.read_csv('../input/google-quest-challenge/train.csv')\ntest_data = pd.read_csv('../input/google-quest-challenge/test.csv')\nsample_submission = pd.read_csv('../input/google-quest-challenge/sample_submission.csv')"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "print('Size of sample_submission', sample_submission.shape)"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "sample_submission.head()"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "targets = list(sample_submission.columns[1:])"
+          },
+          {
+            "cell_index": 48,
+            "cell_type": "markdown",
+            "snippet": "# <a id='6'>6. Data Preparation & Feature Engineering</a>"
+          },
+          {
+            "cell_index": 50,
+            "cell_type": "code",
+            "snippet": "#https://www.kaggle.com/urvishp80/quest-encoding-ensemble"
+          },
+          {
+            "cell_index": 56,
+            "cell_type": "markdown",
+            "snippet": "## <a id='6-3'>6.3 Feature Engineering</a>"
+          },
+          {
+            "cell_index": 57,
+            "cell_type": "markdown",
+            "snippet": "### <a id='6-3-1'>6.3.1 Text based features</a>"
+          },
+          {
+            "cell_index": 58,
+            "cell_type": "markdown",
+            "snippet": "Text based features are :\n * Number of characters in the question_title\n * Number of characters in the question_body\n * Number of characters in the answer\n * Number of words in the question_title\n * Number of words in the question_body\n * Number of words in the answer\n * Number of unique words in the question_title\n * Number of unique words in the question_body\n * Number of unique words in the answer"
+          },
+          {
+            "cell_index": 60,
+            "cell_type": "markdown",
+            "snippet": "### <a id='6-3-2'>6.3.2 TF-IDF Features</a>"
+          },
+          {
+            "cell_index": 61,
+            "cell_type": "markdown",
+            "snippet": "#### TF-IDF :\n  *  Term Frequency (TF) and Inverse Document Frequency (IDF)\n  *  TF(t) = (Number of times term t appears in a document) / (Total number of terms in the document)\n  *  IDF(t) = log_e(Total number of documents / Number of documents with term t in it)\n\n**TF-IDF based features are :**\n\n* Character Level N-Gram TF-IDF of question_title\n* Character Level N-Gram TF-IDF of question_body\n* Character Level N-Gram TF-IDF of answer\n* Word Level N-Gram TF-IDF of question_title\n* Word Level N-Gram TF-IDF of question_body\n* Word Level N-Gram TF-IDF of answer"
+          },
+          {
+            "cell_index": 62,
+            "cell_type": "code",
+            "snippet": "tfidf = TfidfVectorizer(ngram_range=(1, 3))\ntfquestion_title = tfidf.fit_transform(train_data[\"question_title\"].values)\ntfquestion_title_test = tfidf.transform(test_data[\"question_title\"].values)\ntfquestion_body = tfidf.fit_transform(train_data[\"question_body\"].values)\ntfquestion_body_test = tfidf.transform(test_data[\"question_body\"].values)\ntfanswer = tfidf.fit_transform(train_data[\"answer\"].values)\ntfanswer_test = tfidf.transform(test_data[\"answer\"].values)"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 275,
+      "quality": "usable",
+      "score": 43,
+      "reasons": "",
+      "source": {
+        "path": "NLP/google-quest-challenge/rank275_20pct/eda-and-feature-engineering.ipynb",
+        "file_name": "eda-and-feature-engineering.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 64,
+        "code_cell_count": 33,
+        "markdown_cell_count": 31,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "from sklearn.feature_extraction.text import TfidfVectorizer"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "train_data = pd.read_csv('../input/google-quest-challenge/train.csv')\ntest_data = pd.read_csv('../input/google-quest-challenge/test.csv')\nsample_submission = pd.read_csv('../input/google-quest-challenge/sample_submission.csv')"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "print('Size of sample_submission', sample_submission.shape)"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "sample_submission.head()"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "targets = list(sample_submission.columns[1:])"
+          },
+          {
+            "cell_index": 48,
+            "cell_type": "markdown",
+            "snippet": "# <a id='6'>6. Data Preparation & Feature Engineering</a>"
+          },
+          {
+            "cell_index": 50,
+            "cell_type": "code",
+            "snippet": "#https://www.kaggle.com/urvishp80/quest-encoding-ensemble"
+          },
+          {
+            "cell_index": 56,
+            "cell_type": "markdown",
+            "snippet": "## <a id='6-3'>6.3 Feature Engineering</a>"
+          },
+          {
+            "cell_index": 57,
+            "cell_type": "markdown",
+            "snippet": "### <a id='6-3-1'>6.3.1 Text based features</a>"
+          },
+          {
+            "cell_index": 58,
+            "cell_type": "markdown",
+            "snippet": "Text based features are :\n * Number of characters in the question_title\n * Number of characters in the question_body\n * Number of characters in the answer\n * Number of words in the question_title\n * Number of words in the question_body\n * Number of words in the answer\n * Number of unique words in the question_title\n * Number of unique words in the question_body\n * Number of unique words in the answer"
+          },
+          {
+            "cell_index": 60,
+            "cell_type": "markdown",
+            "snippet": "### <a id='6-3-2'>6.3.2 TF-IDF Features</a>"
+          },
+          {
+            "cell_index": 61,
+            "cell_type": "markdown",
+            "snippet": "#### TF-IDF :\n  *  Term Frequency (TF) and Inverse Document Frequency (IDF)\n  *  TF(t) = (Number of times term t appears in a document) / (Total number of terms in the document)\n  *  IDF(t) = log_e(Total number of documents / Number of documents with term t in it)\n\n**TF-IDF based features are :**\n\n* Character Level N-Gram TF-IDF of question_title\n* Character Level N-Gram TF-IDF of question_body\n* Character Level N-Gram TF-IDF of answer\n* Word Level N-Gram TF-IDF of question_title\n* Word Level N-Gram TF-IDF of question_body\n* Word Level N-Gram TF-IDF of answer"
+          },
+          {
+            "cell_index": 62,
+            "cell_type": "code",
+            "snippet": "tfidf = TfidfVectorizer(ngram_range=(1, 3))\ntfquestion_title = tfidf.fit_transform(train_data[\"question_title\"].values)\ntfquestion_title_test = tfidf.transform(test_data[\"question_title\"].values)\ntfquestion_body = tfidf.fit_transform(train_data[\"question_body\"].values)\ntfquestion_body_test = tfidf.transform(test_data[\"question_body\"].values)\ntfanswer = tfidf.fit_transform(train_data[\"answer\"].values)\ntfanswer_test = tfidf.transform(test_data[\"answer\"].values)"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 217,
+      "quality": "strong",
+      "score": 67,
+      "reasons": "",
+      "source": {
+        "path": "NLP/google-quest-challenge/rank217_10pct/end-to-end-bert-training.ipynb",
+        "file_name": "end-to-end-bert-training.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 12,
+        "code_cell_count": 6,
+        "markdown_cell_count": 6,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "import torch\nimport torch.nn as nn\nfrom torch.utils.data import DataLoader\nfrom sklearn.model_selection import GroupKFold\nfrom transformers import BertModel, BertPreTrainedModel, BertTokenizer, AdamW, get_linear_schedule_with_warmup"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "markdown",
+            "snippet": "## Utils for loading data and calculating score"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "    train = pd.read_csv(BASE_PATH + 'train.csv')\n    test = pd.read_csv(BASE_PATH + 'test.csv')\n    print('Reading sample_submission.csv file....')\n    sample_submission = pd.read_csv(BASE_PATH + 'sample_submission.csv')\n    print('Sample_submission.csv file have {} rows and {} columns'.format(\n        sample_submission.shape[0], sample_submission.shape[1]))\n    return train, test, sample_submission\ndef mean_spearmanr_correlation_score(y_true, y_pred):\n    score = np.nanmean([spearmanr(y_pred[:, col], y_true[:, col]).correlation\n    return score"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "def compute_input_arrays(df, columns, tokenizer, max_sequence_length,\n        t, q, a = _trim_input(t, q, a, tokenizer, max_sequence_length, t_max_len, q_max_len, a_max_len, head_tail)\n        ids, masks, segments = _convert_to_bert_inputs(stoken, tokenizer, max_sequence_length)\n        torch.from_numpy(np.asarray(input_ids, dtype=np.int32)).long(),\n        torch.from_numpy(np.asarray(input_masks, dtype=np.int32)).long(),\n        torch.from_numpy(np.asarray(input_segments, dtype=np.int32)).long(),\n    # TODO: if label is int, dtype is torch.long\n    return torch.tensor(np.asarray(df[columns]), dtype=torch.float32)\ndef _trim_input(title, question, answer, tokenizer, max_sequence_length,\n    t = tokenizer.tokenize(title)\n    q = tokenizer.tokenize(question)\n    a = tokenizer.tokenize(answer)\ndef _get_ids(tokens, tokenizer, max_seq_length):\n    \"\"\"Token ids from Tokenizer vocab\"\"\"\n    token_ids = tokenizer.convert_tokens_to_ids(tokens)\ndef _convert_to_bert_inputs(stoken, tokenizer, max_sequence_length):\n    \"\"\"Converts tokenized input to ids, masks and segments for BERT\"\"\"\n    input_ids = _get_ids(stoken, tokenizer, max_sequence_length)"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "markdown",
+            "snippet": "## Dataset and model class"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "class QuestDataset(torch.utils.data.Dataset):\nclass CustomBertForSequenceClassification(BertPreTrainedModel):\n        super(CustomBertForSequenceClassification, self).__init__(config)\n        self.bert = BertModel(config)\n        # https://huggingface.co/transformers/model_doc/bert.html#transformers.BertModel.forward\n        outputs = self.bert(\n        pooled_output = torch.cat(["
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "class BertRunner:\n    def train(self, model, criterion, optimizer, loaders, scheduler=None, logdir=None,\n              num_epochs=5, score_func=None):\n        valid_loader = loaders['valid']\n        best_score = -1.0\n            torch.cuda.empty_cache()\n            avg_loss = self._train_model(model, criterion, optimizer, train_loader, scheduler)\n            # evaluate on validation set\n            avg_val_loss, score = self._validate_model(model, criterion, valid_loader, score_func)\n            print('Epoch {}/{} \\t loss={:.4f} \\t val_loss={:.4f} \\t score={:.6f} \\t time={:.2f}s'.format(\n                epoch + 1, num_epochs, avg_loss, avg_val_loss, score, elapsed_time))\n            if score is None:\n                    torch.save(best_param_loss, save_path)\n                if best_score < score:\n                    best_score = score\n                    best_param_score = model.state_dict()\n                    torch.save(best_param_score, save_path)\n        model.load_state_dict(torch.load(resume))\n        with torch.no_grad():\n                output_valid = model(\n                logits = output_valid[0]  # output preds\n            preds = torch.sigmoid(torch.tensor(preds)).numpy()\n    def _train_model(self, model, criterion, optimizer, train_loader, scheduler=None):\n            # bert training\n            # the position of this depends on the scheduler you use\n            if scheduler is not None:\n                scheduler.step()\n    def _validate_model(self, model, criterion, valid_loader, score_func=None):\n        valid_preds = []\n        with torch.no_grad():\n            for idx, batch in tqdm(enumerate(valid_loader), total=len(valid_loader)):\n                output_valid = model(\n                logits = output_valid[0]  # output preds\n                # calc scor\n...[truncated]"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "num_folds = 5\nbert_model = 'bert-base-uncased'\ntrain, test, sample_submission = read_data(base_dataset_path)\n# init Bert\ntokenizer = BertTokenizer.from_pretrained(bert_model)\nkf = GroupKFold(n_splits=num_folds)\nfold_scores = []\nfor fold, (train_idx, valid_idx) in enumerate(ids):\n    print(\"Current Fold: \", fold + 1)\n    logdir = os.path.join(base_logdir, 'fold_{}'.format(fold + 1))\n    train_df, val_df = train.iloc[train_idx], train.iloc[valid_idx]\n    print(\"Train and Valid Shapes are\", train_df.shape, val_df.shape)\n    inputs_train = compute_input_arrays(train_df, input_cols, tokenizer, max_sequence_length=512)\n    print(\"Preparing valid datasets....\")\n    inputs_valid = compute_input_arrays(val_df, input_cols, tokenizer, max_sequence_length=512)\n    outputs_valid = compute_output_arrays(val_df, columns=target_cols)\n    lengths_valid = np.argmax(inputs_valid[0] == 0, axis=1)\n    lengths_valid[lengths_valid == 0] = inputs_valid[0].shape[1]\n    valid_set = QuestDataset(inputs=inputs_valid, lengths=lengths_valid, labels=outputs_valid)\n    valid_loader = DataLoader(valid_set, batch_size=batch_size, shuffle=False)\n    model = CustomBertForSequenceClassification.from_pretrained(\n        bert_model, num_labels=num_labels, output_hidden_states=True)\n    scheduler = get_linear_schedule_with_warmup(\n    runner = BertRunner(device=device)\n    loaders = {'train': train_loader, 'valid': valid_loader}\n    runner.train(model=model, criterion=criterion, optimizer=optimizer, scheduler=scheduler,\n                 score_func=mean_spearmanr_correlation_score)\n    # calc valid score\n    val_preds = runner.predict_loader(model, loaders['valid'], resume=best_model_path)\n    val_truth = train[target_cols].iloc[valid_idx].values\n    # TODO: set your score function\n    cv_score = mean_spearman\n...[truncated]"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 5,
+      "quality": "strong",
+      "score": 54,
+      "reasons": "",
+      "source": {
+        "path": "NLP/google-quest-challenge/rank5_1st/postprocessing-for-google-quest.ipynb",
+        "file_name": "postprocessing-for-google-quest.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 10,
+        "code_cell_count": 8,
+        "markdown_cell_count": 2,
+        "snippets": [
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "target_columns=pd.read_csv(f'../input/ensemble-data/fold_0_labels.csv').iloc[:,1:].columns.tolist()"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "        # deal with every column but skip the columns that post-processing won't improve the score\ndef cal(arr1, arr2): # calculate column-wise scores"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "for FOLD in range(5):\n    labels=pd.read_csv(f'../input/ensemble-data/fold_{FOLD}_labels.csv').iloc[:,1:]\n    base=pd.read_csv(f'../input/ensemble-data/bert_base_uncased_fold_{FOLD}_preds.csv').iloc[:,1:]\n    wwm_uncased=pd.read_csv(f'../input/ensemble-data/wwm_uncased_fold_{FOLD}_preds.csv').iloc[:,1:]\n    wwm_cased=pd.read_csv(f'../input/ensemble-data/wwm_cased_fold_{FOLD}_preds.csv').iloc[:,1:]\n    large_uncased=pd.read_csv(f'../input/ensemble-data/large_uncased_fold_{FOLD}_preds.csv').iloc[:,1:]\n    roberta=pd.read_csv(f'../input/ensemble-data/roberta_large_fold_{FOLD}_preds.csv').iloc[:,1:]\n    ps=[base.values, wwm_uncased.values, wwm_cased.values, large_uncased.values, roberta.values]\n    original_scores=cal(labels.values,mv)\n    relative_scores=cal(labels.values,mv_1)-original_scores\n    row = pd.DataFrame(relative_scores).T\ndiffs.index=[f'fold-{n}' for n in range(5)]"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "# apply post-processing to the following columns will lower the scores. The numbers are the indices of the column in target_columns\nscores,post_scores,post_ban_scores=[],[],[]\nfor FOLD in range(5):\n    labels=pd.read_csv(f'../input/ensemble-data/fold_{FOLD}_labels.csv').iloc[:,1:]\n    base=pd.read_csv(f'../input/ensemble-data/bert_base_uncased_fold_{FOLD}_preds.csv').iloc[:,1:]\n    wwm_uncased=pd.read_csv(f'../input/ensemble-data/wwm_uncased_fold_{FOLD}_preds.csv').iloc[:,1:]\n    wwm_cased=pd.read_csv(f'../input/ensemble-data/wwm_cased_fold_{FOLD}_preds.csv').iloc[:,1:]\n    large_uncased=pd.read_csv(f'../input/ensemble-data/large_uncased_fold_{FOLD}_preds.csv').iloc[:,1:]\n    roberta=pd.read_csv(f'../input/ensemble-data/roberta_large_fold_{FOLD}_preds.csv').iloc[:,1:]\n    ps=[base.values, wwm_uncased.values, wwm_cased.values, large_uncased.values, roberta.values]\n    scores.append(compute_spearmanr(labels.values,mv))\n    post_scores.append(compute_spearmanr(labels.values,mv_1))\n    post_ban_scores.append(compute_spearmanr(labels.values,mv_2))"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "print(f\"original score: {np.mean(scores)}\\npost without ban: {np.mean(post_scores)}\\npost with ban: {np.mean(post_ban_scores)}\")"
+          }
+        ]
+      }
+    }
+  }
+}

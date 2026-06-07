@@ -1,0 +1,23 @@
+{
+  "id": "lonelygo/cnn-2d-basic-solution-powered-by-fast-ai",
+  "id_no": 3760508,
+  "title": "CNN 2D Basic Solution Powered by fast.ai",
+  "code_file": "cnn-2d-basic-solution-powered-by-fast-ai.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "keywords": [
+    "gpu"
+  ],
+  "dataset_sources": [],
+  "kernel_sources": [],
+  "competition_sources": [
+    "freesound-audio-tagging-2019"
+  ],
+  "model_sources": [],
+  "docker_image": "gcr.io/kaggle-private-byod/python@sha256:742fa26e1d0b8e816011492dfa78fe0213a1f3cb60b57c8b6ef07909925a70b7",
+  "machine_shape": "Gpu"
+}

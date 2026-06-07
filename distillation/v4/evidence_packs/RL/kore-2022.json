@@ -1,0 +1,178 @@
+{
+  "domain": "RL",
+  "competition": "kore-2022",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 329,
+      "quality": "usable",
+      "score": 37,
+      "reasons": "",
+      "source": {
+        "path": "RL/kore-2022/rank329_70pct/kore-2022-understand-competition.ipynb",
+        "file_name": "kore-2022-understand-competition.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 65,
+        "code_cell_count": 18,
+        "markdown_cell_count": 47,
+        "snippets": [
+          {
+            "cell_index": 58,
+            "cell_type": "code",
+            "snippet": "%%writefile attacker.py"
+          },
+          {
+            "cell_index": 60,
+            "cell_type": "code",
+            "snippet": "attacker_agent_path = \"/kaggle/working/attacker.py\"\nenv.run([attacker_agent_path, starter_agent_path, starter_agent_path, starter_agent_path])"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 187,
+      "quality": "weak",
+      "score": 21,
+      "reasons": "",
+      "source": {
+        "path": "RL/kore-2022/rank187_40pct/koreye-2022-integration.ipynb",
+        "file_name": "koreye-2022-integration.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 5,
+        "code_cell_count": 4,
+        "markdown_cell_count": 1,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "# Koreye 2022 integration\n\nThis notebook shows how to use [Koreye 2022](https://jmerle.github.io/koreye-2022/) with Kaggle notebooks.\n\nIt's pretty easy: simply copy-and-paste the following cell into your notebook and call `render_env(env, ...)` instead of `env.render(mode=\"ipython\", ...)`. The `render_env` function shows a button to open the episode in Koreye 2022 along with the official visualizer. Additionally you can pass `open_koreye=True` to open the episode in Koreye 2022 immediately (only while editing the notebook)."
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "import json\nfrom IPython import get_ipython\nfrom IPython.display import display, HTML\n\ndef render_env(env, open_koreye=False, show_koreye_button=True, show_official_viewer=True, *args, **kwargs):\n    \"\"\"Renders an env and includes a button to open the episode in Koreye 2022.\n\n    :param env: the env to render\n    :param open_koreye: whether the episode should be opened in Koreye 2022 immediately (only while editing the notebook)\n    :param show_koreye_button: whether a button to open the episode in Koreye 2022 should be shown\n    :param show_official_viewer: whether the official episode viewer should be shown\n    :param *args: args passed on to env.render(mode=\"ipython\", ...) when show_official_viewer is True\n    :param **kwargs: kwargs passed on to env.render(mode=\"ipython\", ...) when show_official_viewer is True\n    \"\"\"\n    data_var = None\n    html = \"\"\n\n    if open_koreye or show_koreye_button:\n        data_var = f\"koreye2022Data{get_ipython().execution_count}\"\n        html += f\"\"\"\n<script>\nfunction openKoreye2022(data) {{\n    const tab = window.open('https://jmerle.github.io/koreye-2022/kaggle', '_blank');\n    for (const ms of [100, 250, 500, 750, 1000, 1500, 2000, 3000, 4000, 5000, 10000]) {{\n        setTimeout(() => tab.postMessage(data, 'https://jmerle.github.io'), ms);\n    }}\n}}\n\n{data_var} = {{\n    episode: {env.render(mode=\"json\")},\n    logs: {json.dumps(env.logs)},\n}};\n</script>\n        \"\"\"\n\n    if open_koreye:\n        html += f\"\"\"\n<script>\nif (window.location.host.endsWith('.jupyter-proxy.kaggle.net')) {{\n    openKoreye2022({data_var});\n}}\n</script>\n        \"\"\"\n\n    if show_koreye_button:\n        html += f\"\"\"\n<style>\n.koreye-2022-button {{\n    border-radius: 18px;\n    cursor: pointer;\n    font-family: Inter;\n    font-style: normal;\n    font-weight: 500;\n    \n...[truncated]"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "%%capture\n!pip install --upgrade kaggle-environments"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "from kaggle_environments import make\nenv = make(\"kore_fleets\")\nenv.run([\"balanced\", \"miner\"]);"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "render_env(env, width=800, height=600)"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 94,
+      "quality": "strong",
+      "score": 49,
+      "reasons": "",
+      "source": {
+        "path": "RL/kore-2022/rank94_20pct/loadinganothermodel.ipynb",
+        "file_name": "loadinganothermodel.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 7,
+        "code_cell_count": 7,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "from tensorflow.keras import models, layers\n            raise ValueError(f\"Invalid action space: {action_space}\")"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 55,
+      "quality": "weak",
+      "score": 13,
+      "reasons": "",
+      "source": {
+        "path": "RL/kore-2022/rank55_10pct/kore2022-winrate-evaluation-multiprocessing.ipynb",
+        "file_name": "kore2022-winrate-evaluation-multiprocessing.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 3,
+        "code_cell_count": 3,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "    scores1, scores2 = rewards[0], rewards[1]\n    if scores1 > scores2:\n        print(f'Game no. #{i} : {what} with score {scores1:.0f} vs {scores2:.0f}')\n    return scores1, scores2, wins\nprint(f' Win rate {100*np.array(results)[:,2].sum()/No_games_to_run}% with mean score {np.array(results)[:,0].mean():.0f} vs {np.array(results)[:,1].mean():.0f} ')"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 25,
+      "quality": "strong",
+      "score": 46,
+      "reasons": "",
+      "source": {
+        "path": "RL/kore-2022/rank25_1st/plot-submission-score-trajectory.ipynb",
+        "file_name": "plot-submission-score-trajectory.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 14,
+        "code_cell_count": 10,
+        "markdown_cell_count": 4,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "This notebook plots the scores of specific submissions over time to help you understand how long it takes for your agent to reach its approximate skill level\nI took much guidance from @robga's excellent episode scraper downloader.  We don't need the actual episodes here, just the scores from"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "data = pd.read_csv(META + \"Episodes.csv\", chunksize=1e6)"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "#This has the Agents (Submissions) and their scores.  This is all we will need if we do not care about times of episodes\ndata = pd.read_csv(META + \"EpisodeAgents.csv\", chunksize=1e6)"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "markdown",
+            "snippet": "InitialScore and UpdatedScore columns.  They should connect, UpdatedScore[i] should match InitialScore[i+1] when they are in\nthe correct order.  We know the initial score should be 600 for the first real episode and the UpdatedScore should be 600 for that first test episode where we play ourself."
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "agent1.loc[(agent1['InitialScore']==600) | (agent1['UpdatedScore']==600)]"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "markdown",
+            "snippet": "This looks good.  I suppose it is possible that EpisodeId is not the exact order things are scored in if, for example, the episodes are carried out in a multi-processing environment, and episodes could be finished out of order.  However, this looks good enough for our purposes, as we just want to plot a score"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "agent1.plot(y='UpdatedScore',kind='line')"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "#for key, grp in df.groupby(['color']):\n    agent.plot(y='UpdatedScore', kind='line',ax=ax, label=x)"
+          }
+        ]
+      }
+    }
+  }
+}

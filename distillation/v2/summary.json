@@ -1,0 +1,20 @@
+{
+  "manifest": "distillation/coverage_manifest.csv",
+  "competitions": 45,
+  "bucket_files": 225,
+  "domains": [
+    "Audio",
+    "CV",
+    "GenAI",
+    "Medical",
+    "NLP",
+    "RL",
+    "RecSys",
+    "Tabular",
+    "Time-Series"
+  ],
+  "files": {
+    "competition_evolution_traces": "distillation/v2/competition_evolution_traces.json",
+    "domain_recipes": "distillation/v2/domain_recipes.json"
+  }
+}

@@ -1,0 +1,528 @@
+{
+  "domain": "Audio",
+  "competition": "rfcx-species-audio-detection",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 575,
+      "quality": "strong",
+      "score": 67,
+      "reasons": "",
+      "source": {
+        "path": "Audio/rfcx-species-audio-detection/rank575_70pct/recensementoiseauxamazonie.ipynb",
+        "file_name": "recensementoiseauxamazonie.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 31,
+        "code_cell_count": 16,
+        "markdown_cell_count": 15,
+        "snippets": [
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "    !pip -q install timm\n    !pip -q install torchlibrosa"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "import torch\nimport torch.nn as nn\nimport torch.nn.functional as F\nimport torchvision\nfrom sklearn import metrics\nfrom sklearn.model_selection import StratifiedKFold\nfrom transformers import get_linear_schedule_with_warmup\nfrom torchlibrosa.stft import Spectrogram, LogmelFilterBank\nfrom torchlibrosa.augmentation import SpecAugmentation"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "markdown",
+            "snippet": "### About Sound Event Detection(SED)\n\nSound event detection (SED) is the task of detecting the type as well as\nthe onset and offset times of sound events in audio streams.\n\nIn this notebook i will show how to train Sound Event Detection (SED) model with only weak annotation.\n\nIn SED task, we need to detect sound events from continuous (long) audio clip, and provide prediction of what sound event exists from when to when.\n\nfor more details\n\n-> [Polyphonic Sound Event Detection\nwith Weak Labeling Paper](http://www.cs.cmu.edu/~yunwang/papers/cmu-thesis.pdf)\n\n-> [Introduction to Sound Event Detection Notebook](https://www.kaggle.com/hidehisaarai1213/introduction-to-sound-event-detection)"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "def interpolate(x: torch.Tensor, ratio: int):\n    resolution reduction in downsampling of a CNN.\ndef pad_framewise_output(framewise_output: torch.Tensor, frames_num: int):\n    output = torch.cat((framewise_output, pad), dim=1)"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "def create_folds():\n    Split kaggle dataset into [5] folds. Re-write the csv with fold information.\n    output: ./train_folds.csv\n    train = pd.read_csv(args.train_tp_csv).sort_values(\"recording_id\")\n    train_gby = train.groupby(\"recording_id\")[[\"species_id\"]].first().reset_index()\n    train_gby.loc[:, 'kfold'] = -1\n    kfold = StratifiedKFold(n_splits=args.FOLDS)\n    for fold, (t_idx, v_idx) in enumerate(kfold.split(X, y)):\n        train_gby.loc[v_idx, \"kfold\"] = fold # mark validation set : 0..4\n    train = train.merge(train_gby[['recording_id', 'kfold']], on=\"recording_id\", how=\"left\")\n    print('train.kfold.value_counts:\\n{}'.format(train.kfold.value_counts()))\n    train.to_csv(args.train_csv, index=False)\ndef create_foldsfp():\n    Split kaggle dataset into [5] folds. Re-write the csv with fold information.\n    output: ./train_folds.csv\n    trainfp = pd.read_csv(args.train_fp_csv).sort_values(\"recording_id\")\n    trainfp_gby = trainfp.groupby(\"recording_id\")[[\"species_id\"]].first().reset_index()\n    trainfp_gby.loc[:, 'kfold'] = -1\n    kfold = StratifiedKFold(n_splits=args.FOLDS)\n    for fold, (t_idx, v_idx) in enumerate(kfold.split(X, y)):\n        trainfp_gby.loc[v_idx, \"kfold\"] = fold # mark validation set : 0..4\n    trainfp = trainfp.merge(trainfp_gby[['recording_id', 'kfold']], on=\"recording_id\", how=\"left\")\n    print('trainfp.kfold.value_counts:\\n{}'.format(trainfp.kfold.value_counts()))\n    trainfp.to_csv(args.trainfp_csv, index=False)"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "markdown",
+            "snippet": "1. Model takes raw waveform and converted into log-melspectogram using `torchlibrosa`'s module\n2. spectogram converted into 3-channels input for ImageNet pretrain model to extract features from CNN's"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "    #     norm_att = torch.softmax(torch.clamp(x1, -10, 10), dim=-1) #[16, 24, 10]\n    #     cla = torch.sigmoid(x2) #[16, 24, 10]\n    #     x = torch.sum(norm_att * cla, dim=2) #[16, 24]\n        x = torch.max(x, dim=2)[0] #[16, 24]\n        # x = torch.sum(x, dim=2) #[16, 24] insteqd of max => extremely high loss !\n        x = torch.sigmoid(x)\n        # Spec augmenter\n        self.spec_augmenter = SpecAugmentation(time_drop_width=64, time_stripes_num=2,\n        self.encoder = torchvision.models.resnet18(pretrained=True)\n            x = self.spec_augmenter(x)"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "        self.df = df.groupby(\"recording_id\").agg(lambda x: list(x)).reset_index()\n        _, idx = torch.max(target, dim=1)\n            # y = np.stack([y[i:i+effective_length].astype(np.float32) for i in range(0, 60*sr+stride-effective_length, stride)])\n            y = np.stack(y_)"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "    #AA.PitchShift(min_semitones=-0.5, max_semitones=0.5, p=0.1),\n    #AA.Shift(p=0.1),\n    #AA.ClippingDistortion(min_percentile_threshold=0, max_percentile_threshold=1, p=0.05),"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "def _lwlrap_sklearn(truth, scores):\n    overall_lwlrap = metrics.label_ranking_average_precision_score(\n        scores[nonzero_weight_sample_indices, :],                    # (144, 24)\nclass MetricMeter(object):\n        # print(f'torch.max(y_true)={torch.max(y_true)} shape{y_true.shape} tot-len {len(self.y_true)}')\n        #score_class, weight = lwlrap(np.array(self.y_true), np.array(self.y_pred))\n        self.score = _lwlrap_sklearn(np.array(self.y_true), np.array(self.y_pred)) #(score_class * weight).sum()\n            \"lwlrap\" : self.score\n    torch.manual_seed(seed)\n    torch.cuda.manual_seed(seed)\n    torch.backends.cudnn.deterministic = True\n        checkpoint = torch.load(args.pretrain_weights, map_location=args.device)"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "from torch.nn import BCEWithLogitsLoss, CrossEntropyLoss\n        input = torch.clamp(input, 0.0, 0.99999)"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "# def train_epoch(args, model, loader, criterion, optimizer, scheduler, epoch, fpDs):\n#     scores = MetricMeter()\n#         input = torch.tensor(input).to(args.device)\n#         target = torch.tensor(target).to(args.device)\n#         if scheduler and args.step_scheduler:\n#             scheduler.step()\n#         scores.update(target, output)\n#     return scores.avg, losses.avg\ndef train_epoch(args, model, loader, criterion, optimizer, scheduler, epoch, fpDs):\n    scores = MetricMeter()\n        loss = torch.mean(loss)\n        fp_input = torch.tensor([fp_sample[i]['image'] for i in range(len(fp_sample))])\n        fp_target = torch.tensor([fp_sample[i]['target'] for i in range(len(fp_sample))])\n        fp_loss = torch.mean(fp_loss)*0.1\n        if scheduler and args.step_scheduler:\n            scheduler.step()\n        scores.update(target, output)\n    return scores.avg, losses.avg\ndef valid_epoch(args, model, loader, criterion, epoch):\n    scores = MetricMeter()\n    with torch.no_grad():\n            scores.update(target, output)\n    # print(f\"Valid E:{epoch} - Loss:{losses.avg:0.4f}\")\n    return scores.avg, losses.avg\n    with torch.no_grad():\n            output = torch.sum(output, dim=1) / seq\n            #output, _ = torch.max(output, dim=1)"
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "code",
+            "snippet": "        modelPath=os.path.join(args.save_path, f'fold-{modelNr}.bin')\n    sub_df = pd.read_csv(args.sample_submission_csv)\n    test_loader = torch.utils.data.DataLoader(\n    checkpoint = torch.load(modelPath, map_location=args.device)\n    # model.load_state_dict(torch.load(modelPath, map_location=args.device))\n    test_pred_df.to_csv(os.path.join(args.save_path, f\"fold-{modelNr}-submission.csv\"), index=False)\n    print(os.path.join(args.save_path, f\"fold-{modelNr}-submission.csv\"))"
+          },
+          {
+            "cell_index": 25,
+            "cell_type": "code",
+            "snippet": "    files = glob.glob(f\"{args.save_path}/fold-*.bin\")\n    files.extend(glob.glob(f\"{args.input_dir}/fold-*.bin\"))\n        modelNr = re.compile('.*fold-([0-9]+).bin').match(f).group(1)\n    # Ensemble multiple fold-n-submission.csv into submission.csv\n    print('Ensemble : ')\n    fsubs = glob.glob(os.path.join(args.save_path, \"fold-*-submission.csv\"))\n        sub_df = pd.read_csv(fsub)\n        sub_df.to_csv(\"submission.csv\", index=False)"
+          },
+          {
+            "cell_index": 26,
+            "cell_type": "code",
+            "snippet": "def main_CV(fold):\n        checkpoint = torch.load(args.pretrain_weights, map_location=args.device)\n    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr,weight_decay=0.005)\n    train_df = pd.read_csv(args.train_csv)\n    train_fold = train_df[train_df.kfold != (fold)]\n    valid_fold = train_df[train_df.kfold == (fold)]\n        df = train_fold,\n    valid_dataset = SedDataset(\n        df = valid_fold,\n        mode=\"valid\"\n    train_loader = torch.utils.data.DataLoader(\n    valid_loader = torch.utils.data.DataLoader(\n        valid_dataset,\n    trainfp_df = pd.read_csv(args.trainfp_csv)\n    trainfp_fold = trainfp_df[trainfp_df.kfold != (fold)]\n    validfp_fold = trainfp_df[trainfp_df.kfold == (fold)]\n        df = trainfp_fold,\n    scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=num_warmup_steps, num_training_steps=num_train_steps)\n        train_avg, train_loss = train_epoch(args, model, train_loader, criterion, optimizer, scheduler, epoch, trainfp_dataset)\n        valid_avg, valid_loss = valid_epoch(args, model, valid_loader, criterion, epoch)\n                Fold:{fold}, Epoch:{epoch}, lr:{optimizer.param_groups[0]['lr']:.7}\\n\n                Valid Loss:{valid_loss:0.4f} - LWLRAP:{valid_avg['lwlrap']:0.4f}\\n\n        if valid_avg['lwlrap'] > best_lwlrap:\n            print(f\"########## >>>>>>>> Model Improved From {best_lwlrap} ----> {valid_avg['lwlrap']}\")\n            best_lwlrap = valid_avg['lwlrap']\n            torch.save({'state': model.state_dict(), 'best': best_lwlrap, 'seed': args.seed},\n                       os.path.join(args.save_path, f'fold-{fold}.bin'))\n        if args.epoch_scheduler:\n            scheduler.step()\n    torch.save({'state': model.state_dict(), 'best': best_lwlrap, 'seed': args.seed},\n               os.path.join(ar\n...[truncated]"
+          },
+          {
+            "cell_index": 28,
+            "cell_type": "code",
+            "snippet": "    FOLDS = 5\n        sample_submission_csv = \"C:/kaggle/sample_submission.csv\"\n        train_csv = \"C:/kaggle/work/train_folds.csv\"\n        trainfp_csv = \"C:/kaggle/work/trainfp_folds.csv\"\n        sample_submission_csv = \"../input/rfcx-species-audio-detection/sample_submission.csv\"\n        train_csv = \"train_folds.csv\"\n        trainfp_csv = \"trainfp_folds.csv\"\n        'encoder' : 'resnet18', #'tf_efficientnet_b0_ns',\n    step_scheduler = True\n    epoch_scheduler = False\n    device = ('cuda' if torch.cuda.is_available() else 'cpu')"
+          },
+          {
+            "cell_index": 30,
+            "cell_type": "code",
+            "snippet": "    os.environ['TORCH_HOME'] = os.path.join(args.output_dir, 'resnet')\n    create_folds()\n    create_foldsfp()"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 452,
+      "quality": "strong",
+      "score": 73,
+      "reasons": "",
+      "source": {
+        "path": "Audio/rfcx-species-audio-detection/rank452_40pct/rfcx-train-resnet50-with-tpu.ipynb",
+        "file_name": "rfcx-train-resnet50-with-tpu.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 57,
+        "code_cell_count": 42,
+        "markdown_cell_count": 15,
+        "snippets": [
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "import tensorflow as tf\nimport tensorflow_addons as tfa\n# from sklearn.model_selection import StratifiedKFold\nfrom iterstrat.ml_stratifiers import MultilabelStratifiedKFold"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "        'arch': tf.keras.applications.ResNet50,\n        'arch_preprocess': tf.keras.applications.resnet50.preprocess_input,\n        'mixup': False"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "    # center crop in validation"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "#     #mod = tf.stack([first_slice,second_slice],1)"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "# in validation, annotations will come to the center"
+          },
+          {
+            "cell_index": 25,
+            "cell_type": "code",
+            "snippet": "    def _specaugment(image):\n        gau = tf.keras.layers.GaussianNoise(0.3)\n        # specaugment\n        image = tf.cond(tf.random.uniform([]) < 0.5, lambda: _specaugment(image), lambda: image)"
+          },
+          {
+            "cell_index": 27,
+            "cell_type": "markdown",
+            "snippet": "# Model"
+          },
+          {
+            "cell_index": 28,
+            "cell_type": "code",
+            "snippet": "        head = tf.keras.Sequential([\n            tf.keras.layers.GlobalAveragePooling2D(),\n            tf.keras.layers.BatchNormalization(),\n            tf.keras.layers.Dropout(0.4),\n            tf.keras.layers.Dense(1024, activation='relu', kernel_initializer=tf.keras.initializers.he_normal()),\n            tf.keras.layers.BatchNormalization(),\n            tf.keras.layers.Dropout(0.4),\n            tf.keras.layers.Dense(CLASS_N, bias_initializer=tf.keras.initializers.Constant(pi))\n        model = tf.keras.Sequential([backbone, head])"
+          },
+          {
+            "cell_index": 29,
+            "cell_type": "code",
+            "snippet": "def _mixup(inp, targ):"
+          },
+          {
+            "cell_index": 32,
+            "cell_type": "code",
+            "snippet": "df = pd.read_csv(\"/kaggle/input/rfcx-species-audio-detection/train_tp.csv\")\ntable = df.groupby('recording_id')['species_id'].apply(\nskf = MultilabelStratifiedKFold(n_splits=5, shuffle=True, random_state=0)\nidx_splits = list(skf.split(table.recording_id, np.stack(table.species_id.to_numpy())))"
+          },
+          {
+            "cell_index": 33,
+            "cell_type": "code",
+            "snippet": "         bins=CLASS_N,stacked=True)"
+          },
+          {
+            "cell_index": 36,
+            "cell_type": "code",
+            "snippet": "    if cfg['model_params']['mixup']:\n        dataset = (dataset.map(_mixup, num_parallel_calls=AUTOTUNE)"
+          },
+          {
+            "cell_index": 38,
+            "cell_type": "code",
+            "snippet": "# from https://www.kaggle.com/carlthome/l-lrap-metric-for-tf-keras\n    retrieved_classes = tf.argsort(y_pred, direction='DESCENDING')\n    class_rankings = tf.argsort(retrieved_classes)\n    i = tf.boolean_mask(class_rankings, y_true)\nclass LWLRAP(tf.keras.metrics.Metric):"
+          },
+          {
+            "cell_index": 40,
+            "cell_type": "code",
+            "snippet": "        rec_id_stack = tf.reshape(rec_id, [-1, 60//TIME])\n        rec_ids.append(rec_id_stack.numpy()[:,0])"
+          },
+          {
+            "cell_index": 42,
+            "cell_type": "code",
+            "snippet": "    plt.title(\"metric\")"
+          },
+          {
+            "cell_index": 43,
+            "cell_type": "code",
+            "snippet": "        model.compile(optimizer=optimizer, loss=loss_fn, metrics=[LWLRAP(CLASS_N)])\n                        validation_data=vdataset,\n                            tf.keras.callbacks.ModelCheckpoint("
+          },
+          {
+            "cell_index": 44,
+            "cell_type": "code",
+            "snippet": "# N-fold ensemble"
+          },
+          {
+            "cell_index": 46,
+            "cell_type": "code",
+            "snippet": "sub.to_csv(\"submission.csv\", index=False)"
+          },
+          {
+            "cell_index": 47,
+            "cell_type": "markdown",
+            "snippet": "# Show Grad-CAM\nLet's take a look at Grad-CAM and check if my model is trained properly"
+          },
+          {
+            "cell_index": 49,
+            "cell_type": "code",
+            "snippet": "to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n    x = tf.keras.Input((None, None, 3))\n    grad_model = tf.keras.Model(x, [conv_y, y])\n    with tf.GradientTape() as tape:"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 181,
+      "quality": "usable",
+      "score": 43,
+      "reasons": "bad_keyword",
+      "source": {
+        "path": "Audio/rfcx-species-audio-detection/rank181_20pct/rainforest-write-up.ipynb",
+        "file_name": "rainforest-write-up.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 17,
+        "code_cell_count": 9,
+        "markdown_cell_count": 8,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "# My Training Script\nThis is the training script I used to approach the competition. If you have any questions, feel free to reach out and ask."
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "import tensorflow as tf\nimport tensorflow.keras as keras\nimport tensorflow.keras.layers as layers\nfrom sklearn.metrics import label_ranking_average_precision_score"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "annotations = pd.read_csv(\"../input/rfcx-species-audio-detection/train_tp.csv\")\nannotations_nl = pd.read_csv(\"../input/rfcx-species-audio-detection/train_fp.csv\")\nmodels = { 'inception': keras.applications.InceptionV3,\n           'efficientnet': keras.applications.EfficientNetB3,\n           'resnet': keras.applications.ResNet50 }"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "markdown",
+            "snippet": "# Data Preprocessing\nChanging the input data from 1D sound signals to 2D Mel Spectrograms, cropped to where the labels are located along the time (x) axis, and label gathering.\n\nThe 1D sound signals are being converted to Mel Spectrograms because neural network architectures in image classification are well established while the data conversion doesn't lead to any loss of information, so it makes sense to use better tools for what is essentially the same data.\n\nWe're cropping the input images to the locations of the labels because feeding instead a 60-second clip would provide too much information for the model to learn properly what is what. e.g. if the label is tf.one_hot([0, 3, 15, 23], 24) given the entire clip, then distinguishing which part is which class is much more difficult than feeding the model each instance of the label directly."
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "def get_labels_validation_numpy(recording_id, times, frequencies, annotations):\ndef mixup(inp, targ):"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "markdown",
+            "snippet": "Actual making of the TensorFlow Datasets using generators to fetch the data. The created datasets are then divided into five different folds. If you're unfamiliar with k-fold validation, see https://en.wikipedia.org/wiki/Cross-validation_(statistics).\nSomething I tried to do for some cross-validation and leaderboard correlation was to similarize the validation and inference methods i.e. validation follows inference in slicing and stacking each image then taking the max prediction for each slice to get the prediction for the entire image."
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "def generate_dataset(batch_size, fold, train_files, validation_files):\n            images = augment(images)\n    def validation_generator():\n        for i in range(len(validation_files)):\n            recording_id = validation_files[i].split('/')[-1][:-5]\n            image = tf.expand_dims(load_spec(validation_files[i], 0, 60), axis=-1)\n                im = augment(im, training=False)\n            images = tf.stack(images)\n            labels = tf.stack(labels)\n                                                                                  tf.float32)).repeat().batch(batch_size).map(mixup)\n    validation_dataset = tf.data.Dataset.from_generator(validation_generator, output_types=(tf.float32,\n    return train_dataset, validation_dataset\n# Creating each fold\n# the lists containing each class before selecting recording_ids for the folds\nfolds = 5\nfor fold in range(folds):\n    validation_files = []\n        class_ratio = class_records.shape[0] // folds\n        train_files += class_records[:class_ratio*fold] + class_records[class_ratio*(fold+1):]\n        validation_files += class_records[class_ratio*fold:class_ratio*(fold+1)]\n    shuffle(validation_files)\n    validation_files = [train_path+s+\".flac\" for s in validation_files]\n    datasets.append(generate_dataset(BATCH_SIZE, fold, train_files, validation_files))"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "markdown",
+            "snippet": "# Data Augmentations\nVarious augmentations to improve the generalization of the model. I wasn't able to find any success in using them in this notebook."
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "def apply_augmentation(image):\ndef augment(images, training=True):\n    #    images = apply_augmentation(images)\ndef get_validation_data(index):\n    f, start, end = load_spec(validation_files[index])\n    s = validation_files[index].split('/')[-1][:-5]"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "markdown",
+            "snippet": "# Model Definition\nAfter being sent through the model, the output is averaged across the frequency-axis (y-axis) then sent through an attention mechanism before the final predictions are made."
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "    inp = keras.Input(input_shape)\n    norm_att = tf.keras.layers.Conv1D(class_count, 1)(x)\n    conv = tf.keras.layers.Conv1D(class_count, 1)(x)\n    return tf.keras.Model(inp, x)"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "markdown",
+            "snippet": "# Competition metric\nSee https://stackoverflow.com/questions/55881642/how-to-interpret-label-ranking-average-precision-score.\nCode here taken from https://www.kaggle.com/ashusma/training-rfcx-tensorflow-tpu-effnet-b2#Competition-Metric"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "    retrieved_classes = tf.argsort(y_pred, direction='DESCENDING')\n    class_rankings = tf.argsort(retrieved_classes)\n    i = tf.boolean_mask(class_rankings, y_true)\nclass LWLRAP(tf.keras.metrics.Metric):\nclass Precision(keras.metrics.Metric):\n        self.met = keras.metrics.Precision()"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "markdown",
+            "snippet": "# Learning Rate Schedule\nA changing learning rate over time typically performs better than a stagnant one. Here we're using the schedule used to train the [Transformer model](https://arxiv.org/pdf/1706.03762.pdf%EF%BC%89%E6%8F%8F%E8%BF%B0%E4%BA%86%E8%BF%99%E6%A0%B7%E5%81%9A%E7%9A%84%E5%8E%9F%E5%9B%A0%E3%80%82)."
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "class LRSchedule(tf.keras.optimizers.schedules.LearningRateSchedule):"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "markdown",
+            "snippet": "Nested loop for training all five folds for each model. The loop is wrapped in a function to make sure this notebook can submit; otherwise it would take too long and time out."
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "lf = tf.keras.losses.BinaryCrossentropy(label_smoothing=0.2, reduction=tf.keras.losses.Reduction.NONE)\n        for i, fold in enumerate(datasets):\n            print(f\"FOLD {i}\")\n            train_dataset, validation_dataset = fold\n            model.compile(optimizer=keras.optimizers.Adam(learning_rate=LRSchedule()),\n                          metrics=[LWLRAP(24)])\n            checkpointing = tf.keras.callbacks.ModelCheckpoint(\n                                f\"fold_{m}_{i}.h5\", monitor='val_loss', verbose=0, save_best_only=False,\n                      validation_data=validation_dataset,\n            # Use the trained model to create the submission for this fold\n                # Each batch consists of a single image, sliced and stacked.\n                inp = tf.stack(inp)\n                inp = augment(inp, training=False)\n            pd.DataFrame.from_dict(submission).to_csv(f\"submission_{m}_{i}.csv\", index=False)\n        # Merge the submissions from each fold by using the average prediction for each recording_id\n        submission.to_csv(f\"submission_{m}.csv\", index=False)"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 103,
+      "quality": "strong",
+      "score": 55,
+      "reasons": "",
+      "source": {
+        "path": "Audio/rfcx-species-audio-detection/rank103_10pct/inverse-stft.ipynb",
+        "file_name": "inverse-stft.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 29,
+        "code_cell_count": 16,
+        "markdown_cell_count": 13,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "# Learnable Time-Frequency Representations\nThis assignment was about training models to learn different time-frequency representations of audio. I chose to work with the Rainforest dataset because I'm familiar with the dataset from a previous Kaggle competition and because I thought it was fun to use a bioacoustics dataset for the assignment."
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "import torch\nfrom torch import nn\nimport torch.nn.functional as F\nfrom torch.utils.data import Dataset, DataLoader\nimport torchaudio\ntorchaudio.set_audio_backend('sox_io')"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "df = pd.read_csv(rainforest_data / 'train_tp.csv')"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "markdown",
+            "snippet": "For each row in the dataframe we are going to extract a short segment of audio of the file corresponding to `recording_id`. We are going to center the extracted segment in the middle of `t_min` and `t_max`, and all extracted segments will be of the same lenght, for simplicity. We are going to do the segmentation in advance and save the extracted and normalized segments as tensors, for faster loading when we train the models.\nWe specify the wanted length and sample rate of the extracted segments, as well as the encoder we want to use:"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "ENCODER = torchaudio.transforms.Spectrogram(n_fft=N_FFT)"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "    audio, sr = torchaudio.load(fpath)\n    resampler = torchaudio.transforms.Resample(sr, SAMPLE_RATE)\n    seg -= torch.mean(seg)\n    seg /= torch.max(torch.abs(seg))\n    assert segment.shape == torch.Size([CLIP_LEN_SAMPLES])\n    torch.save(segment, waveform_tensors / fname)"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "        return torch.load(self.fpaths[idx])\n            waveform = torch.load(self.fpaths[idx])"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "markdown",
+            "snippet": "We now define the model we are going to use. The model takes normalized audio waveforms as input, the first part of the model encodes the input with some waveform -> time-frequency transformation. The second part of the model is the decoder, it consists of transposed 1d convolution blocks that upsamples the time dimension of the activations through the layers and simultanously downsamples the frequency dimension, producing a pure time domain signal"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "    log_pred = torch.log(encoded_pred + 1e-8)\n    log_target = torch.log(encoded_target+ 1e-8)"
+          },
+          {
+            "cell_index": 21,
+            "cell_type": "markdown",
+            "snippet": "The training loop is pretty straightforward, I decrease the learning rate by a factor of 10 when the validation loss stops to decrease."
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "    optimizer = torch.optim.Adam(params=model.parameters(), lr=1e-2)\n    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=2, verbose=True, factor=0.1)\n        with torch.no_grad():\n            torch.save(model, weights_path)\n        scheduler.step(val_loss)"
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "code",
+            "snippet": "device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')"
+          },
+          {
+            "cell_index": 25,
+            "cell_type": "code",
+            "snippet": "model = torch.load(weights_dir / 'weights1.pt')"
+          },
+          {
+            "cell_index": 28,
+            "cell_type": "markdown",
+            "snippet": "We can see (and hear!) that the reconstructed audio does not sound very good, although we can see that the shape of the waveforms are pretty similar. By looking at the spectrograms, we can see that the model manages to localize the birdcall in time, but the dominating frequencies are off."
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 3,
+      "quality": "strong",
+      "score": 78,
+      "reasons": "",
+      "source": {
+        "path": "Audio/rfcx-species-audio-detection/rank3_1st/rfcx-minimal.ipynb",
+        "file_name": "rfcx-minimal.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 23,
+        "code_cell_count": 17,
+        "markdown_cell_count": 6,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "it starts \"forgetting\". The confidence for species 3 goes on decreasing which negatively impacts the lb score.\n2. Augmenting other datasets\\\n    - Validation scheme should be similar to test scheme.\n    be done during validation also.\n    - I found Click Noise Augmentation to be very useful (https://librosa.org/doc/0.8.0/generated/librosa.clicks.html)"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "import albumentations as A\nfrom resnest.torch.resnet import ResNet, Bottleneck\nfrom pytorch_lightning.loggers import TensorBoardLogger\nfrom pytorch_lightning.callbacks.early_stopping import EarlyStopping\nfrom pytorch_lightning.callbacks import ModelCheckpoint\nfrom pytorch_lightning import LightningModule\nfrom pytorch_lightning import Trainer\nfrom torchvision.models import resnet18, resnet34, resnet50\nfrom resnest.torch import resnest50\nimport torchaudio\nimport torch.nn.functional as F\nfrom torch.utils.data import WeightedRandomSampler\nfrom torch import nn\nfrom torch.utils.data import Dataset, DataLoader\nimport torchvision\nimport torch\nfrom sklearn.model_selection import StratifiedKFold\nfrom sklearn.metrics import f1_score, confusion_matrix"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "    torch.manual_seed(seed)\n    torch.cuda.manual_seed(seed)\n    torch.backends.cudnn.deterministic = True\n    torch.cuda.empty_cache()"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "    # Ranks of the predictions\n    ranked_classes = torch.argsort(preds, dim=-1, descending=True)\n    # i, j corresponds to rank of prediction in row i\n    class_ranks = torch.zeros_like(ranked_classes).to(preds.device)\n    for i in range(ranked_classes.size(0)):\n        for j in range(ranked_classes.size(1)):\n            class_ranks[i, ranked_classes[i][j]] = j + 1\n    # Mask out to only use the ranks of relevant GT labels\n    ground_truth_ranks = class_ranks * labels + (1e6) * (1 - labels)\n    # All the GT ranks are in front now\n    sorted_ground_truth_ranks, _ = torch.sort(\n        ground_truth_ranks, dim=-1, descending=False)\n    pos_matrix = torch.tensor(\n    score_matrix = pos_matrix / sorted_ground_truth_ranks\n    score_mask_matrix, _ = torch.sort(labels, dim=-1, descending=True)\n    scores = score_matrix * score_mask_matrix\n    score = scores.sum() / labels.sum()\n    return score.item()"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "    loss_fn = torch.nn.BCEWithLogitsLoss()"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "# Mostly taken from https://www.kaggle.com/hidehisaarai1213/rfcx-audio-data-augmentation-japanese-english\n        augmented = (y + white_noise * 1 / a_white * a_noise).astype(y.dtype)\n        return augmented\n        augmented = (y + pink_noise * 1 / a_pink * a_noise).astype(y.dtype)\n        return augmented\nclass TimeShift(AudioTransform):\n    def __init__(self, always_apply=False, p=0.5, max_shift_second=2, sr=32000, padding_mode=\"zero\"):\n        self.max_shift_second = max_shift_second\n        shift = np.random.randint(-self.sr * self.max_shift_second,\n                                  self.sr * self.max_shift_second)\n        augmented = np.roll(y, shift)\n        #     if shift > 0:\n        #         augmented[:shift] = 0\n        #         augmented[shift:] = 0\n        return augmented\n        augmented = y * db_translated\n        return augmented"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "    X = np.stack([X, X, X], axis=-1)\n        V = np.clip(X, _min, _max)"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "        self.fp = pd.read_csv(\"../input/rfcxextras/cornell-train.csv\")\n        self.resampler = torchaudio.transforms.Resample(\n        self.mel = torchaudio.transforms.MelSpectrogram(sample_rate=self.sr, n_mels=self.nmels,\n            TimeShift(sr=self.sr),\n        valid_df = self.tp[self.tp.recording_id == recording_id]\n        valid_df = valid_df[(valid_df.t_min < t1) & (valid_df.t_max > t0)]\n        if len(valid_df):\n            np.put(labels, valid_df.species_id.unique(), 1)\n            end_idx = int((valid_df.t_max.max() - t0)*self.sr)\n        y = self.resampler(torch.from_numpy(y).float()).numpy()\n        # do augmentation"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "        self.resampler = torchaudio.transforms.Resample(\n            melspec_stacked = np.load(fn)\n            y_stacked = np.stack(np.split(y, self.num_splits), 0)\n            melspec_stacked = []\n            for y in y_stacked:\n                y = self.resampler(torch.from_numpy(y).float()).numpy()\n                melspec_stacked.append(melspec)\n            melspec_stacked = np.stack(melspec_stacked)\n            np.save(fn, melspec_stacked)\n            return melspec_stacked, labels\n            melspec_stacked = np.load(fn)\n            return melspec_stacked"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "    # model = torchvision.models.resnext50_32x4d(pretrained=False)\n    # model = torchvision.models.resnext101_32x8d(pretrained=False)\n    model = ResNet(**MODEL_CONFIGS[\"resnest50_fast_1s1x64d\"])\n    # model.load_state_dict(torch.load('resnext50_32x4d_extra_2.pt'))\n    # model.load_state_dict(torch.load('resnext101_32x8d_wsl_extra_4.pt'))\n    model.load_state_dict(torch.load(fn, map_location='cpu'))"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "        pos_weight = torch.ones((24,))\n        self.loss_fn = torch.nn.BCEWithLogitsLoss(pos_weight=pos_weight)\n        train_sampler = WeightedRandomSampler(weights, num_samples=len(train_dataset),\n        optim = torch.optim.AdamW(self.parameters(), lr=self.config.lr,\n        scheduler = {\n            'scheduler': torch.optim.lr_scheduler.ReduceLROnPlateau(optim,\n        self.scheduler = scheduler\n        return [optim], [scheduler]"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "        with torch.no_grad():\n        metrics = {\"train_loss\": loss.item(), \"train_lwlrap\": lwlrap}\n        self.log_dict(metrics,\n    @torch.no_grad()\n    def validation_step(self, batch, batch_idx):\n        for i, x_partial in enumerate(torch.split(x, 1, dim=1)):\n                preds = torch.max(preds, self(x_partial))\n        metrics = {\"val_loss\": val_loss, \"val_lwlrap\": val_lwlrap}\n        self.log_dict(metrics, prog_bar=True,"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "markdown",
+            "snippet": "# Average model weights"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "        m = torch.load(p)['state_dict']"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "markdown",
+            "snippet": "# Model training"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "train_tp = pd.read_csv(osp.join(config.ROOT, 'train_tp.csv'))\nfold_df = pd.read_csv(\nnew_labels = pd.read_csv(fn)\nnum_folds = len(fold_df.fold.unique())\ntrain_fp = pd.read_csv(osp.join(config.ROOT, 'train_fp.csv'))\nfor fold in range(num_folds):\n    print('\\n\\nTraining fold', fold)\n    train_recid = fold_df[fold_df.fold != fold].recording_id\n    val_recid = fold_df[fold_df.fold == fold].recording_id\n    early_stopping = EarlyStopping(monitor='val_lwlrap_epoch', mode='max', patience=5,\n                      callbacks=[checkpoint_callback, early_stopping])"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "markdown",
+            "snippet": "# Model Validation"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "sub = pd.read_csv(osp.join(config.ROOT, 'sample_submission.csv'))\ndevice = torch.device(\"cuda\" if torch.cuda.is_available() else \"cpu\")\nfor fold in range(num_folds):\n    paths = glob(f\"./lightning_logs/version_{fold}/checkpoints/*.ckpt\")\n    train_recid = fold_df[fold_df.fold!=fold].recording_id\n    val_recid = fold_df[fold_df.fold==fold].recording_id\n    with torch.no_grad():\n        fold_preds, labels = [], []\n            for j, x_partial in enumerate(torch.split(im, 1, dim=1)):\n                    preds = torch.max(preds, model(x_partial))\n            fold_preds.extend(o)\n        p = torch.from_numpy(np.array(fold_preds))\n        t = torch.from_numpy(np.array(labels))\n        cv_preds.loc[val_recid, species_cols] = fold_preds\ncv_preds.to_csv('cv_preds.csv')\ncv_preds = torch.from_numpy(cv_preds)\nlabels = torch.from_numpy(labels)"
+          },
+          {
+            "cell_index": 21,
+            "cell_type": "code",
+            "snippet": "sub = pd.read_csv(osp.join(config.ROOT, 'sample_submission.csv'))\ndevice = torch.device(\"cuda\" if torch.cuda.is_available() else \"cpu\")\nfor fold in range(num_folds):\n    paths = glob(f\"./lightning_logs/version_{fold}/checkpoints/*.ckpt\")\n    with torch.no_grad():\n            for i, x_partial in enumerate(torch.split(im, 1, dim=1)):\n                    preds = torch.max(preds, model(x_partial))\nsub.loc[:, species_cols] /= num_folds\nsub.to_csv('submission.csv', index=False)"
+          }
+        ]
+      }
+    }
+  }
+}

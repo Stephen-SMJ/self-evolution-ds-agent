@@ -1,0 +1,243 @@
+{
+  "domain": "RecSys",
+  "competition": "otto-recommender-system",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 1962,
+      "quality": "weak",
+      "score": 20,
+      "reasons": "bad_keyword;submission_only",
+      "source": {
+        "path": "RecSys/otto-recommender-system/rank1962_70pct/ott-submission.ipynb",
+        "file_name": "ott-submission.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 44,
+        "code_cell_count": 23,
+        "markdown_cell_count": 21,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\n# For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "markdown",
+            "snippet": "### Recommendation Systems Overview -  One common architecture for recommendation systems consists of the following components: candidate generation , scoring , re-ranking .\nScoring - Next, another model scores and ranks the candidates in order to select the set of items (on the order of 10) to display to the user .\nRe-ranking - Finally, the system must take into account additional constraints for the final ranking. For example, the system removes items that the user explicitly disliked or boosts the score of fresher content. Re-ranking can also help ensure diversity, freshness, and fairness."
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "markdown",
+            "snippet": "### Candidate Generation Overview -\n\n\nCandidate generation is the first stage of recommendation. Given a query, the system generates a set of relevant candidates. The following table shows two common candidate generation approaches:\n\ncontent-based filtering - \tUses similarity between items to recommend items similar to what the user likes.\n\ncollaborative filtering - Uses similarities between queries and items simultaneously to provide recommendations."
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "markdown",
+            "snippet": "# Content-based Filtering -\nContent-based filtering uses item features to recommend other items similar to what the user likes, based on their previous actions or explicit feedback.\n\n\n# Content-based Filtering Advantages -\nThe model doesn't need any data about other users, since the recommendations are specific to this user. This makes it easier to scale to a large number of users.\n\nThe model can capture the specific interests of a user, and can recommend niche items that very few other users are interested in.\n\n\n# Content-based Filtering Disadvantages -\nSince the feature representation of the items are hand-engineered to some extent, this technique requires a lot of domain knowledge. Therefore, the model can only be as good as the hand-engineered features.\n\nThe model can only make recommendations based on existing interests of the user. In other words, the model has limited ability to expand on the users' existing interests."
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "markdown",
+            "snippet": "# Collaborative Filtering -\nTo address some of the limitations of content-based filtering, collaborative filtering uses similarities between users and items simultaneously to provide recommendations. This allows for serendipitous recommendations; that is, collaborative filtering models can recommend an item to user A based on the interests of a similar user B. Furthermore, the embeddings can be learned automatically, without relying on hand-engineering of features."
+          },
+          {
+            "cell_index": 28,
+            "cell_type": "code",
+            "snippet": "from sklearn.metrics.pairwise import linear_kernel"
+          },
+          {
+            "cell_index": 37,
+            "cell_type": "code",
+            "snippet": "df = pd.DataFrame(R_estimated).to_csv(\"sample.csv\")\ndf = pd.read_csv(\"sample.csv\")"
+          },
+          {
+            "cell_index": 38,
+            "cell_type": "code",
+            "snippet": "submission = pd.read_csv('/kaggle/input/otto-recommender-system/sample_submission.csv')"
+          },
+          {
+            "cell_index": 43,
+            "cell_type": "code",
+            "snippet": "submission.to_csv('submission.csv', index=False, header=True)"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 931,
+      "quality": "strong",
+      "score": 47,
+      "reasons": "",
+      "source": {
+        "path": "RecSys/otto-recommender-system/rank931_40pct/otto-lightgbm-brief-sample-code-with-cudf.ipynb",
+        "file_name": "otto-lightgbm-brief-sample-code-with-cudf.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 20,
+        "code_cell_count": 11,
+        "markdown_cell_count": 9,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "markdown",
+            "snippet": "- https://www.kaggle.com/code/cdeotte/candidate-rerank-model-lb-0-575\n- https://www.kaggle.com/code/greenwolf/lightgbm-fast-recall-20/notebook"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "markdown",
+            "snippet": "- LightGBM ranking training & validation\n- Brief commentary for LightGBM parameter `group`"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "import lightgbm as lgb"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "markdown",
+            "snippet": "    📌For description of loading data, read following notebook: <a href=\"https://www.kaggle.com/code/cdeotte/candidate-rerank-model-lb-0-575\" target=\"_blank\" style=\"color:#ff7f7f;\">Candidate ReRank Model - [LB 0.575] by cdeotte</a>"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "        df['n'] = df.groupby('session').cumcount()"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "fold_size = len(df_concat) // 5"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "val_df = df_concat.iloc[:fold_size]\ntrain_df = df_concat.iloc[fold_size:]"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "train_query = train_df.groupby(by='session', sort=True).size()\nval_query = val_df.groupby(by='session', sort=True).size()"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "    'objective': 'lambdarank',\n#     'metric': '\"None\"', # if use custom metric, specify \"None\"\n    valid_sets=val_dataset,\n#     feval=custom_metric_func,"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 636,
+      "quality": "usable",
+      "score": 25,
+      "reasons": "",
+      "source": {
+        "path": "RecSys/otto-recommender-system/rank636_20pct/easy-recommendation-pandas.ipynb",
+        "file_name": "easy-recommendation-pandas.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 6,
+        "code_cell_count": 3,
+        "markdown_cell_count": 3,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "The only product that needs to be predicted for the click prediction is the **next one** the user will click, for instances: aid1. However, we can submit a list of up to 20 products for prediction; **as long as aid1 is on the list, the score will be awarded.**\nThe maximum size of a prediction is 20, so **even though there are 30 products in the cart, the full score can still be obtained as long as every item on the prediction list appears in the cart**.\nSince 3 products were ordered, I can still **receive a full score as long as all three appear on the prediction list.**"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "df = df.sort_values([\"session\", \"type\", \"ts\"]).groupby([\"session\"]).apply(\nsubmission.to_csv(\"submission.csv\", index=False)"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 227,
+      "quality": "usable",
+      "score": 37,
+      "reasons": "",
+      "source": {
+        "path": "RecSys/otto-recommender-system/rank227_10pct/otto-tr-matrixv2-tail40-top404050-w136.ipynb",
+        "file_name": "otto-tr-matrixv2-tail40-top404050-w136.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 12,
+        "code_cell_count": 7,
+        "markdown_cell_count": 5,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "1. This notebook is originally derived from Chris Deotte notebook at https://www.kaggle.com/code/cdeotte/candidate-rerank-model-lb-0-575\n2. Few modifications were made in the forked version at https://www.kaggle.com/code/hoangnguyen719/candidate-rerank-model-lb-0-575\n3. This notebook, forked from the forked version (2), provides covisitation matrices built using only `train` set. They will be used in training and validation."
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "CLICK_TIME_TOP = 50 # Top candidates for matrix 3 - time-weighted click"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "    # MERGE IS FASTEST PROCESSING CHUNKS WITHIN CHUNKS\n            df['n'] = df.groupby('session').cumcount()\n            df = df.merge(df,on='session')\n            df = df.groupby(['aid_x','aid_y']).wgt.sum()\n    tmp['n'] = tmp.groupby('aid_x').aid_y.cumcount()"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "    # MERGE IS FASTEST PROCESSING CHUNKS WITHIN CHUNKS\n            df['n'] = df.groupby('session').cumcount()\n            df = df.merge(df,on='session')\n            df = df.groupby(['aid_x','aid_y']).wgt.sum()\n    tmp['n'] = tmp.groupby('aid_x').aid_y.cumcount()"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "    # MERGE IS FASTEST PROCESSING CHUNKS WITHIN CHUNKS\n            df['n'] = df.groupby('session').cumcount()\n            df = df.merge(df,on='session')\n            df = df.groupby(['aid_x','aid_y']).wgt.sum()\n    tmp['n'] = tmp.groupby('aid_x').aid_y.cumcount()"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 3,
+      "quality": "strong",
+      "score": 52,
+      "reasons": "",
+      "source": {
+        "path": "RecSys/otto-recommender-system/rank3_1st/3rd-place-team-g-b-d-t-0-604.ipynb",
+        "file_name": "3rd-place-team-g-b-d-t-0-604.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 10,
+        "code_cell_count": 8,
+        "markdown_cell_count": 2,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "This notebook is the 3rd place final submission for Team G&B&D&T for Kaggle's OTTO RecSys competition. Team members are Giba ( @titericz ), Benny ( @benediktschifferer ), Chris Deotte ( @cdeotte ), and Theo ( @theoviel ). This solution is an ensemble of 3 single XGB reranker models. Discussion explaining this solution is [here][1], [here][2], and [here][3]."
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "    pd.read_csv(f).sort_values(['session_type']).reset_index(drop=True) for f in FILES"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "blend = []\n    blend.append(aid)"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "sub['labels'] = blend\nsub.to_csv('submission.csv', index=False)"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "        print(f'Similarity of row {subs[0][\"session_type\"][idx]} between sub {j} & blend : {sim :.3f}')"
+          }
+        ]
+      }
+    }
+  }
+}

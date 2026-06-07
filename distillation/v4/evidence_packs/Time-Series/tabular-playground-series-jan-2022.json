@@ -1,0 +1,258 @@
+{
+  "domain": "Time-Series",
+  "competition": "tabular-playground-series-jan-2022",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 1105,
+      "quality": "strong",
+      "score": 47,
+      "reasons": "",
+      "source": {
+        "path": "Time-Series/tabular-playground-series-jan-2022/rank1105_70pct/tpg-0122.ipynb",
+        "file_name": "tpg-0122.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 45,
+        "code_cell_count": 45,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv('../input/tabular-playground-series-jan-2022/train.csv')\ntest = pd.read_csv('../input/tabular-playground-series-jan-2022/test.csv')"
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "code",
+            "snippet": "from sklearn.preprocessing import OneHotEncoder\nenc = OneHotEncoder(handle_unknown='ignore')"
+          },
+          {
+            "cell_index": 35,
+            "cell_type": "code",
+            "snippet": "from sklearn.ensemble import RandomForestRegressor"
+          },
+          {
+            "cell_index": 36,
+            "cell_type": "code",
+            "snippet": "model = RandomForestRegressor(n_estimators = 1000, max_depth = 10, random_state = 42)"
+          },
+          {
+            "cell_index": 40,
+            "cell_type": "code",
+            "snippet": "submission = pd.read_csv('../input/tabular-playground-series-jan-2022/sample_submission.csv')"
+          },
+          {
+            "cell_index": 44,
+            "cell_type": "code",
+            "snippet": "submission.to_csv('submission.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 637,
+      "quality": "strong",
+      "score": 59,
+      "reasons": "",
+      "source": {
+        "path": "Time-Series/tabular-playground-series-jan-2022/rank637_40pct/basic-xgbregressor.ipynb",
+        "file_name": "basic-xgbregressor.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 21,
+        "code_cell_count": 17,
+        "markdown_cell_count": 4,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv('/kaggle/input/tabular-playground-series-jan-2022/train.csv')\ntest = pd.read_csv('/kaggle/input/tabular-playground-series-jan-2022/test.csv')"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "from sklearn.preprocessing import LabelEncoder\n    le = LabelEncoder()"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "markdown",
+            "snippet": "The graphs had shown that linear methods won't work. It won't handle these ups in the end of any year. Tree-based models could hangle that."
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "from xgboost import XGBRegressor\nmodel = XGBRegressor(eta=0.05)"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "result = pd.read_csv('/kaggle/input/tabular-playground-series-jan-2022/sample_submission.csv')"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "result.to_csv('submission.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 308,
+      "quality": "strong",
+      "score": 55,
+      "reasons": "",
+      "source": {
+        "path": "Time-Series/tabular-playground-series-jan-2022/rank308_20pct/holiday-kernel.ipynb",
+        "file_name": "holiday-kernel.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 24,
+        "code_cell_count": 14,
+        "markdown_cell_count": 10,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "The effect of holidays seems complicated but they are actually simple superpositions of a single kernel (and an additional one for Christmas). This notebook is the 5th-place solution with some visualizations.\n\nMinimum linear regression (5th-place):\nhttps://www.kaggle.com/c/tabular-playground-series-jan-2022/discussion/304369"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv(di + 'train.csv')\ntest = pd.read_csv(di + 'test.csv')\nsubmit = pd.read_csv(di + 'sample_submission.csv')"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "holiday_table = pd.read_csv(io.StringIO("
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "             'country': country,  # binary flag if"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "    g = pd.read_csv('/kaggle/input/gdp-20152019-finland-norway-and-sweden/'\n    # Convert to year, country, GDP format for pd.merge\n    df = pd.merge(df, gdp, how='left', on=['year', 'country'])"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "markdown",
+            "snippet": "   * 10 binary flags for \"today is n (0 ≦ n < 10) days after holiday\"\n   * Similar flag for 10 days after Christmas"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "    # Holiday flag for ith day after holiday\n    # Additional flag for Christmas"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "markdown",
+            "snippet": "The difference among countries can be explaind by the difference in official holidays, e.g.,\n\n- Norway does not have Chrismas Eve and has smaller peak,\n- Finland and Sweden have Epiphany (6 Jan) while Norway do not,\n\nand only 2 kernels are necessary.\n\nPoints are data corrected for basic factors (weekday, store, and product including sinusoidal) and averaged over store and product. Lines are the model.\n\nDecember and January are still easy because the holiday dates are fixed."
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "code",
+            "snippet": "submit.to_csv('submission.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 139,
+      "quality": "usable",
+      "score": 41,
+      "reasons": "",
+      "source": {
+        "path": "Time-Series/tabular-playground-series-jan-2022/rank139_10pct/tps-jan-2022-pycaret.ipynb",
+        "file_name": "tps-jan-2022-pycaret.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 15,
+        "code_cell_count": 15,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "train = cudf.read_csv('../input/tabular-playground-series-jan-2022/train.csv', index_col = 'row_id').to_pandas()\ntest = cudf.read_csv('../input/tabular-playground-series-jan-2022/test.csv', index_col = 'row_id').to_pandas()"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "# Credit to https://www.kaggle.com/ranjeetshrivastav/tps-jan-21-base-xgb"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "blend = blend_models(top)\npredict_model(blend)"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "final_blend = finalize_model(blend)\npredict_model(final_blend)"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "#tuned_blend = blend_models(tuned_top)\n#predict_model(tuned_blend);"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "#final_tuned_blend = finalize_model(tuned_blend)\n#predict_model(final_tuned_blend);"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "unseen_predictions_blend = predict_model(final_blend, data=test)\nunseen_predictions_blend.head()"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "assert(len(test.index)==len(unseen_predictions_blend))\nsub = pd.DataFrame(list(zip(test.index, unseen_predictions_blend.Label)),columns = ['row_id', 'num_sold'])\nsub.to_csv('submission.csv', index = False)"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 3,
+      "quality": "strong",
+      "score": 60,
+      "reasons": "",
+      "source": {
+        "path": "Time-Series/tabular-playground-series-jan-2022/rank3_1st/tpsjan22-fb-prophet-6-12-private-score.ipynb",
+        "file_name": "tpsjan22-fb-prophet-6-12-private-score.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 9,
+        "code_cell_count": 9,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "from prophet.diagnostics import cross_validation,performance_metrics"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv(os.path.join(DIR,'train.csv'))\ntest = pd.read_csv(os.path.join(DIR,'test.csv'))\nsample = pd.read_csv(os.path.join(DIR,'sample_submission.csv'))\ngdp = pd.read_csv('./GDP_data_2015_to_2019_Finland_Norway_Sweden.csv').set_index('year')"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "gdp_map = scaler.stack().to_dict()"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "            res = pd.merge(res, d, on=['date','country','store','product'], how='outer')\nsub.to_csv(\"submission.csv\", index=None)"
+          }
+        ]
+      }
+    }
+  }
+}

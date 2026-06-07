@@ -1,0 +1,358 @@
+{
+  "domain": "Audio",
+  "competition": "freesound-audio-tagging-2019",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 275,
+      "quality": "strong",
+      "score": 61,
+      "reasons": "",
+      "source": {
+        "path": "Audio/freesound-audio-tagging-2019/rank275_70pct/simple-2d-cnn-classifier-with-pytorch.ipynb",
+        "file_name": "simple-2d-cnn-classifier-with-pytorch.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 31,
+        "code_cell_count": 25,
+        "markdown_cell_count": 6,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "import torch\nimport torch.nn as nn\nimport torch.nn.functional as F\nfrom torch.optim import Adam\nfrom torch.optim.lr_scheduler import CosineAnnealingLR\nfrom torch.utils.data import Dataset, DataLoader\nfrom torchvision.transforms import transforms"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "torch.cuda.is_available()"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "    torch.manual_seed(seed)\n    torch.cuda.manual_seed(seed)\n    torch.backends.cudnn.deterministic = True"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "def _one_sample_positive_class_precisions(scores, truth):\n      scores: np.array of (num_classes,) giving the individual classifier scores.\n    num_classes = scores.shape[0]\n    retrieved_classes = np.argsort(scores)[::-1]\n    # class_rankings[top_scoring_class_index] == 0 etc.\n    class_rankings = np.zeros(num_classes, dtype=np.int)\n    class_rankings[retrieved_classes] = range(num_classes)\n    retrieved_class_true[class_rankings[pos_class_indices]] = True\n            retrieved_cumulative_hits[class_rankings[pos_class_indices]] /\n            (1 + class_rankings[pos_class_indices].astype(np.float)))\ndef calculate_per_class_lwlrap(truth, scores):\n    \"\"\"Calculate label-weighted label-ranking average precision.\n      scores: np.array of (num_samples, num_classes) giving the classifier-under-\n        test's real-valued score for each class for each sample.\n    assert truth.shape == scores.shape\n    num_samples, num_classes = scores.shape\n            _one_sample_positive_class_precisions(scores[sample_num, :],\n    #           also = weighted mean of per-class lwlraps, weighted by class label prior across samples"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "    'sample_submission': dataset_dir / 'sample_submission.csv',"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "train_curated = pd.read_csv(csvs['train_curated'])\ntrain_noisy = pd.read_csv(csvs['train_noisy'])"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "test_df = pd.read_csv(csvs['sample_submission'])"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "        label = torch.from_numpy(label).float()"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "    def __init__(self, fnames, mels, transforms, tta=5):\n        self.tta = tta\n        return len(self.fnames) * self.tta"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "markdown",
+            "snippet": "### model"
+          },
+          {
+            "cell_index": 21,
+            "cell_type": "code",
+            "snippet": "        x = torch.mean(x, dim=3)\n        x, _ = torch.max(x, dim=2)"
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "code",
+            "snippet": "    valid_dataset = FATTrainDataset(x_val, y_val, train_transforms)\n    valid_loader = DataLoader(valid_dataset, batch_size=test_batch_size, shuffle=False)\n    scheduler = CosineAnnealingLR(optimizer, T_max=t_max, eta_min=eta_min)\n        valid_preds = np.zeros((len(x_val), num_classes))\n        for i, (x_batch, y_batch) in enumerate(valid_loader):\n            preds = torch.sigmoid(preds)\n            valid_preds[i * test_batch_size: (i+1) * test_batch_size] = preds.cpu().numpy()\n            avg_val_loss += loss.item() / len(valid_loader)\n        score, weight = calculate_per_class_lwlrap(y_val, valid_preds)\n        lwlrap = (score * weight).sum()\n        scheduler.step()\n            torch.save(model.state_dict(), 'weight_best.pt')"
+          },
+          {
+            "cell_index": 28,
+            "cell_type": "code",
+            "snippet": "def predict_model(test_fnames, x_test, test_transforms, num_classes, *, tta=5):\n    test_dataset = FATTestDataset(test_fnames, x_test, test_transforms, tta=tta)\n    model.load_state_dict(torch.load('weight_best.pt'))\n        preds = torch.sigmoid(model(images.cuda()).detach())\n    test_preds = test_preds.groupby(level=0).mean()"
+          },
+          {
+            "cell_index": 29,
+            "cell_type": "code",
+            "snippet": "test_preds = predict_model(test_df['fname'], x_test, transforms_dict['test'], num_classes, tta=20)"
+          },
+          {
+            "cell_index": 30,
+            "cell_type": "code",
+            "snippet": "test_df.to_csv('submission.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 173,
+      "quality": "strong",
+      "score": 73,
+      "reasons": "",
+      "source": {
+        "path": "Audio/freesound-audio-tagging-2019/rank173_40pct/fat-2019-80-place-public-lb-solution-lwlrap-70-2.ipynb",
+        "file_name": "fat-2019-80-place-public-lb-solution-lwlrap-70-2.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 23,
+        "code_cell_count": 19,
+        "markdown_cell_count": 4,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "* Pure CNN with global average pooling to handle different input size at training and inference stage\n* Using SpatialDropout in CNN helped a lot. Using PRelu helped a bit.\n* 5 fold cv was used using skmultilearn.model_selection.IterativeStratification"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "markdown",
+            "snippet": "* https://www.kaggle.com/CVxTz/keras-cnn-starter\n* https://www.kaggle.com/jmourad100/keras-eda-and-cnn-starter"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "from imgaug import augmenters as iaa\nfrom keras.models import Model, Sequential\nfrom keras.layers import (Convolution1D, Input, Dense, Flatten, Dropout, GlobalAveragePooling1D, concatenate,\nfrom keras.callbacks import ModelCheckpoint, EarlyStopping, LearningRateScheduler, Callback\nfrom keras.optimizers import Adam, SGD, RMSprop\nfrom keras.losses import sparse_categorical_crossentropy\nfrom keras.utils.np_utils import to_categorical\nfrom keras.constraints import max_norm, MinMaxNorm"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "# Keras reproduce score (then init all model seed)\nimport tensorflow as tf"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "def pad2d(inp, use_mfcc=True, use_conv2d=True, augment=False, maxshape=maxshape, channels=1):\n    if augment:\n        if augment:"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "import sklearn.metrics\ndef _one_sample_positive_class_precisions(scores, truth):\n    scores: np.array of (num_classes,) giving the individual classifier scores.\n  num_classes = scores.shape[0]\n  retrieved_classes = np.argsort(scores)[::-1]\n  # class_rankings[top_scoring_class_index] == 0 etc.\n  class_rankings = np.zeros(num_classes, dtype=np.int)\n  class_rankings[retrieved_classes] = range(num_classes)\n  retrieved_class_true[class_rankings[pos_class_indices]] = True\n      retrieved_cumulative_hits[class_rankings[pos_class_indices]] /\n      (1 + class_rankings[pos_class_indices].astype(np.float)))\n  def accumulate_samples(self, batch_truth, batch_scores):\n    \"\"\"Cumulate a new batch of samples into the metric.\n      scores: np.array of (num_samples, num_classes) giving the\n        classifier-under-test's real-valued score for each class for each\n    assert batch_scores.shape == batch_truth.shape\n    for truth, scores in zip(batch_truth, batch_scores):\n        _one_sample_positive_class_precisions(scores, truth))"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "        print(\"validation lwrap: \", lwrap.overall_lwlrap())"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "    model.add(Conv2D(filters=nclass, kernel_size=(1,1), padding=\"valid\", trainable = trainable,  kernel_initializer='he_uniform', activation=\"sigmoid\"))\n    model.compile(optimizer=Adam(lr), loss='binary_crossentropy', metrics=['categorical_accuracy'])"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "softened_weights = {0:\"../input/softened-noisy-kfold-fold-0/validation_lwrap_curated_noisy_0_best_weight.h5\",\n                   1:\"../input/softened-noisy-kfold-fold-1/validation_lwrap_curated_noisy_1_best_weight.h5\",\n                   2:\"../input/softened-noisy-kfold-fold-2/validation_lwrap_curated_noisy_2_best_weight.h5\",\n                   3:\"../input/softened-noisy-kfold-fold-3/validation_lwrap_curated_noisy_3_best_weight.h5\",\n                   4:\"../input/softened-noisy-kfold-fold-4/validation_lwrap_curated_noisy_4_best_weight.h5\"}"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "df = pd.read_csv('../input/freesound-audio-tagging-2019/sample_submission.csv')"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "df.to_csv(\"submission.csv\", index=False)"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 100,
+      "quality": "strong",
+      "score": 61,
+      "reasons": "",
+      "source": {
+        "path": "Audio/freesound-audio-tagging-2019/rank100_20pct/cnn-2d-basic-solution-powered-by-fast-ai.ipynb",
+        "file_name": "cnn-2d-basic-solution-powered-by-fast-ai.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 32,
+        "code_cell_count": 23,
+        "markdown_cell_count": 9,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "# CNN 2D Basic Solution Powered by fast.ai\nIt's CNN, even ImageNet pretrained model works fine with audio 2D image like data.\n- Converting audio to 2D image like array, so that we can simply exploit strong CNN classifier.\n- Now fast.ai library ready to use lwlrap as metric: https://colab.research.google.com/drive/1AgPdhSp7ttY18O3fEoHOQKlt_3HJDLi8\n- And TTA! https://github.com/fastai/fastai/blob/master/fastai/vision/tta.py --> Oops, it might not be effective for this problem. Now planning to update one more..."
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\n# For example, running this (by clicking run or pressing Shift+Enter) will list the files in the input directory"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "CSV_SUBMISSION = DATA/'sample_submission.csv'\nfor folder in [WORK, IMG_TRN_CURATED, IMG_TRN_NOISY, IMG_TEST]:\n    Path(folder).mkdir(exist_ok=True, parents=True)\ndf = pd.read_csv(CSV_TRN_CURATED)\ntest_df = pd.read_csv(CSV_SUBMISSION)"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "    # Stack X as [X,X,X]\n    X = np.stack([X, X, X], axis=-1)"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "def _one_sample_positive_class_precisions(scores, truth):\n      scores: np.array of (num_classes,) giving the individual classifier scores.\n    num_classes = scores.shape[0]\n    retrieved_classes = np.argsort(scores)[::-1]\n    # class_rankings[top_scoring_class_index] == 0 etc.\n    class_rankings = np.zeros(num_classes, dtype=np.int)\n    class_rankings[retrieved_classes] = range(num_classes)\n    retrieved_class_true[class_rankings[pos_class_indices]] = True\n            retrieved_cumulative_hits[class_rankings[pos_class_indices]] /\n            (1 + class_rankings[pos_class_indices].astype(np.float)))\ndef calculate_per_class_lwlrap(truth, scores):\n    \"\"\"Calculate label-weighted label-ranking average precision.\n      scores: np.array of (num_samples, num_classes) giving the classifier-under-\n        test's real-valued score for each class for each sample.\n    assert truth.shape == scores.shape\n    num_samples, num_classes = scores.shape\n            _one_sample_positive_class_precisions(scores[sample_num, :],\n    #           also = weighted mean of per-class lwlraps, weighted by class label prior across samples\ndef lwlrap(scores, truth, **kwargs):\n    score, weight = calculate_per_class_lwlrap(to_np(truth), to_np(scores))\n    return torch.Tensor([(score * weight).sum()])"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "src = (ImageList.from_csv(WORK/'image', Path('../../')/CSV_TRN_CURATED, folder='trn_curated')"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "learn = cnn_learner(data, models.resnet18, pretrained=False, metrics=[lwlrap])"
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "code",
+            "snippet": "# https://discuss.pytorch.org/t/how-to-visualize-the-actual-convolution-filters-in-cnn/13850\n    if isinstance(conv1, torch.nn.modules.container.Sequential):"
+          },
+          {
+            "cell_index": 25,
+            "cell_type": "code",
+            "snippet": "learn.save('fat2019_fastai_cnn2d_stage-2')"
+          },
+          {
+            "cell_index": 27,
+            "cell_type": "code",
+            "snippet": "test = ImageList.from_csv(WORK/'image', Path('../..')/CSV_SUBMISSION, folder='test')\npreds, _ = learn.TTA(ds_type=DatasetType.Test) # <== Simply replacing from learn.get_preds()"
+          },
+          {
+            "cell_index": 28,
+            "cell_type": "code",
+            "snippet": "test_df.to_csv('submission.csv', index=False)"
+          },
+          {
+            "cell_index": 29,
+            "cell_type": "code",
+            "snippet": "learn = cnn_learner(data, models.resnet18, pretrained=False, metrics=[lwlrap])\nlearn.load('fat2019_fastai_cnn2d_stage-2');"
+          },
+          {
+            "cell_index": 31,
+            "cell_type": "code",
+            "snippet": "def visualize_cnn_by_cam(learn, data_index):\n    x, _y = learn.data.valid_ds[data_index]\n        y = np.eye(learn.data.valid_ds.c)[y]\n        show_heatmap(img=xb_im, hm=mult, label=str(learn.data.valid_ds.y[data_index]))\n    visualize_cnn_by_cam(learn, idx)"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 43,
+      "quality": "reject",
+      "score": -67,
+      "reasons": "too_short;bad_keyword;submission_only",
+      "source": {
+        "path": "Audio/freesound-audio-tagging-2019/rank43_10pct/sample-submission-all-random.ipynb",
+        "file_name": "sample-submission-all-random.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 2,
+        "code_cell_count": 2,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\ndata = pd.read_csv(\"../input/sample_submission.csv\")\ndata.to_csv(\"submission.csv\", index=False)"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 100,
+      "quality": "strong",
+      "score": 66,
+      "reasons": "",
+      "source": {
+        "path": "Audio/freesound-audio-tagging-2019/rank100_1st/cnn-2d-basic-solution-powered-by-fast-ai.ipynb",
+        "file_name": "cnn-2d-basic-solution-powered-by-fast-ai.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 32,
+        "code_cell_count": 23,
+        "markdown_cell_count": 9,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "# CNN 2D Basic Solution Powered by fast.ai\nIt's CNN, even ImageNet pretrained model works fine with audio 2D image like data.\n- Converting audio to 2D image like array, so that we can simply exploit strong CNN classifier.\n- Now fast.ai library ready to use lwlrap as metric: https://colab.research.google.com/drive/1AgPdhSp7ttY18O3fEoHOQKlt_3HJDLi8\n- And TTA! https://github.com/fastai/fastai/blob/master/fastai/vision/tta.py --> Oops, it might not be effective for this problem. Now planning to update one more..."
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\n# For example, running this (by clicking run or pressing Shift+Enter) will list the files in the input directory"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "CSV_SUBMISSION = DATA/'sample_submission.csv'\nfor folder in [WORK, IMG_TRN_CURATED, IMG_TRN_NOISY, IMG_TEST]:\n    Path(folder).mkdir(exist_ok=True, parents=True)\ndf = pd.read_csv(CSV_TRN_CURATED)\ntest_df = pd.read_csv(CSV_SUBMISSION)"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "    # Stack X as [X,X,X]\n    X = np.stack([X, X, X], axis=-1)"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "def _one_sample_positive_class_precisions(scores, truth):\n      scores: np.array of (num_classes,) giving the individual classifier scores.\n    num_classes = scores.shape[0]\n    retrieved_classes = np.argsort(scores)[::-1]\n    # class_rankings[top_scoring_class_index] == 0 etc.\n    class_rankings = np.zeros(num_classes, dtype=np.int)\n    class_rankings[retrieved_classes] = range(num_classes)\n    retrieved_class_true[class_rankings[pos_class_indices]] = True\n            retrieved_cumulative_hits[class_rankings[pos_class_indices]] /\n            (1 + class_rankings[pos_class_indices].astype(np.float)))\ndef calculate_per_class_lwlrap(truth, scores):\n    \"\"\"Calculate label-weighted label-ranking average precision.\n      scores: np.array of (num_samples, num_classes) giving the classifier-under-\n        test's real-valued score for each class for each sample.\n    assert truth.shape == scores.shape\n    num_samples, num_classes = scores.shape\n            _one_sample_positive_class_precisions(scores[sample_num, :],\n    #           also = weighted mean of per-class lwlraps, weighted by class label prior across samples\ndef lwlrap(scores, truth, **kwargs):\n    score, weight = calculate_per_class_lwlrap(to_np(truth), to_np(scores))\n    return torch.Tensor([(score * weight).sum()])"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "src = (ImageList.from_csv(WORK/'image', Path('../../')/CSV_TRN_CURATED, folder='trn_curated')"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "learn = cnn_learner(data, models.resnet18, pretrained=False, metrics=[lwlrap])"
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "code",
+            "snippet": "# https://discuss.pytorch.org/t/how-to-visualize-the-actual-convolution-filters-in-cnn/13850\n    if isinstance(conv1, torch.nn.modules.container.Sequential):"
+          },
+          {
+            "cell_index": 25,
+            "cell_type": "code",
+            "snippet": "learn.save('fat2019_fastai_cnn2d_stage-2')"
+          },
+          {
+            "cell_index": 27,
+            "cell_type": "code",
+            "snippet": "test = ImageList.from_csv(WORK/'image', Path('../..')/CSV_SUBMISSION, folder='test')\npreds, _ = learn.TTA(ds_type=DatasetType.Test) # <== Simply replacing from learn.get_preds()"
+          },
+          {
+            "cell_index": 28,
+            "cell_type": "code",
+            "snippet": "test_df.to_csv('submission.csv', index=False)"
+          },
+          {
+            "cell_index": 29,
+            "cell_type": "code",
+            "snippet": "learn = cnn_learner(data, models.resnet18, pretrained=False, metrics=[lwlrap])\nlearn.load('fat2019_fastai_cnn2d_stage-2');"
+          },
+          {
+            "cell_index": 31,
+            "cell_type": "code",
+            "snippet": "def visualize_cnn_by_cam(learn, data_index):\n    x, _y = learn.data.valid_ds[data_index]\n        y = np.eye(learn.data.valid_ds.c)[y]\n        show_heatmap(img=xb_im, hm=mult, label=str(learn.data.valid_ds.y[data_index]))\n    visualize_cnn_by_cam(learn, idx)"
+          }
+        ]
+      }
+    }
+  }
+}

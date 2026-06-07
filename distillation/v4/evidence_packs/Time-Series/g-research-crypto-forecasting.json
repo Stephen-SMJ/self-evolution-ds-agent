@@ -1,0 +1,273 @@
+{
+  "domain": "Time-Series",
+  "competition": "g-research-crypto-forecasting",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 1328,
+      "quality": "usable",
+      "score": 37,
+      "reasons": "bad_keyword",
+      "source": {
+        "path": "Time-Series/g-research-crypto-forecasting/rank1328_70pct/tree-based-methods.ipynb",
+        "file_name": "tree-based-methods.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 12,
+        "code_cell_count": 12,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\n# For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "combined = pd.read_csv(\"../input/g-research-crypto-forecasting/train.csv\")"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "asset_details = pd.read_csv(\"../input/g-research-crypto-forecasting/asset_details.csv\")"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "            price.shift(periods=-16) /\n            price.shift(periods=-1)\n    num = targets.multiply(m.values, axis=0).rolling(3734).mean().values\n    denom = m.multiply(m.values, axis=0).rolling(3734).mean().values\n        targets[\"BetaRolling\"+asset_names[i]] = beta[i,:]"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "        targets=pd.merge(targets,data, how=\"left\",on=\"datetime\")"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "features = [\"Bitcoin\",\"BetaRollingBitcoin\"]"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "#lgbm model to predict a regression var\nimport lightgbm as lgb\nparam['metric'] = ['l1']\nlightModel = lgb.train(param, train_data, num_round, valid_sets=[train_data,test_data], early_stopping_rounds=30)"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "       'Maker', 'Dogecoin',\"BetaRollingBitcoin\"]"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "#lgbm model to predict a regression var\nimport lightgbm as lgb\nparam['metric'] = ['l1']\nlightModel = lgb.train(param, train_data, num_round, valid_sets=[train_data,test_data], early_stopping_rounds=30)"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 819,
+      "quality": "weak",
+      "score": 13,
+      "reasons": "bad_keyword",
+      "source": {
+        "path": "Time-Series/g-research-crypto-forecasting/rank819_40pct/random-predictions.ipynb",
+        "file_name": "random-predictions.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 2,
+        "code_cell_count": 1,
+        "markdown_cell_count": 1,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "# Random predictions\n\nThis dummy submission presents random predictions based on a fitted Gaussian on the target distribution across all assets."
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "from scipy.stats import norm\nimport numpy as np\nimport gresearch_crypto\n\ntarget_mean, target_std = (2.40946942906261e-06, 0.004333437997098369)\n\ndef random_prediction(size: int) -> np.array:\n    return norm.rvs(\n        loc = target_mean,\n        scale = target_std,\n        size = size\n    )\n\nenv = gresearch_crypto.make_env()\niter_test = env.iter_test()\n\nfor i, (df_test, df_pred) in enumerate(iter_test):\n    df_pred['Target'] = random_prediction(size = df_pred.shape[0])\n    env.predict(df_pred)"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 363,
+      "quality": "usable",
+      "score": 37,
+      "reasons": "",
+      "source": {
+        "path": "Time-Series/g-research-crypto-forecasting/rank363_20pct/crypto-candle-analysis.ipynb",
+        "file_name": "crypto-candle-analysis.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 40,
+        "code_cell_count": 26,
+        "markdown_cell_count": 14,
+        "snippets": [
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "asset_details = pd.read_csv(data_path + \"asset_details.csv\")"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "            train_single_new = shift(train_single_new.copy(), [\"upper_shadow\", \"lower_shadow\", \"real_body\", \"candle\", \"body_mean\", \"open\", \"close\", \"high\", \"low\",\n# Creating lagged features\ndef shift(df, columns, lags=[]):\n    for lag in lags:\n        df = df.merge(df[columns].shift(lag), left_index=True, right_index=True, suffixes=('', f'_lag{lag}'), how=\"inner\")"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "    moments[\"mean\"] = df[[\"open\", \"high\", \"low\", \"close\"]].groupby(df.index // N).agg(func=np.mean, axis=0).mean(axis=1)\n    moments[\"std\"] = df[[\"open\", \"high\", \"low\", \"close\"]].groupby(df.index // N).agg(func=np.std, axis=0).std(axis=1)"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "def calc_metrics(df, pattern, plot_label=[], col_label=[], thr=None):\n    # z scores"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "def calc_metrics_2(df, pattern, plot_label=[], col_label=[], thr=None):\n    # z scores"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "# calc_metrics_2(coin_df.reset_index(), \"asset_ID\", [\"upper\", \"lower\"], [[6], [6]])\ncalc_metrics(coin_df.reset_index(), \"asset_ID\", [[0, 0], [1, 0], [0, 2]], [[6], [6], [4]])"
+          },
+          {
+            "cell_index": 25,
+            "cell_type": "code",
+            "snippet": "# calc_metrics_2(coin_df2, \"bull_marubozu\", [\"upper\",\"lower\", \"lower left\", \"upper right\", \"lower right\"], [[6], [6], [6], [6], [6]])\ncalc_metrics(coin_df2, \"bull_marubozu\", [[0, 0], [1, 0], [1, 1], [0, 2], [1, 2]], [[6], [6], [6], [6], [6]])"
+          },
+          {
+            "cell_index": 27,
+            "cell_type": "code",
+            "snippet": "# calc_metrics_2(coin_df2, \"bear_marubozu\", [\"upper\", \"lower\", \"upper left\", \"lower left\"], [[4], [4], [4], [4]])\ncalc_metrics(coin_df2, \"bear_marubozu\", [[0, 0], [1, 0], [0, 1], [1, 1]], [[4], [4], [4], [4]])"
+          },
+          {
+            "cell_index": 29,
+            "cell_type": "code",
+            "snippet": "# calc_metrics_2(coin_df2, \"hammer\", [\"upper\", \"lower\", \"upper right\", \"lower right\"], [[6], [6], [6], [6]])\ncalc_metrics(coin_df2, \"hammer\", [[0, 0], [1, 0], [0, 2], [1, 2]], [[6], [6], [6], [6]])"
+          },
+          {
+            "cell_index": 31,
+            "cell_type": "code",
+            "snippet": "# calc_metrics_2(coin_df2, \"hang_man\", [\"upper\", \"lower\"], [[0], [6]])\ncalc_metrics(coin_df2, \"hang_man\", [[0, 0], [1, 0], [1, 1]], [[0], [6], [6]])"
+          },
+          {
+            "cell_index": 33,
+            "cell_type": "code",
+            "snippet": "# calc_metrics_2(coin_df2, \"inv_hammer\", [\"upper\", \"lower\", \"upper left\", \"lower left\"], [[4], [4], [4], [5]])\ncalc_metrics(coin_df2, \"inv_hammer\", [[0, 0], [1, 0], [0, 1], [1, 1]], [[4], [4], [4], [5]])"
+          },
+          {
+            "cell_index": 35,
+            "cell_type": "code",
+            "snippet": "# calc_metrics_2(coin_df2, \"shot_star\", [\"upper\",\"lower\", \"upper left\", \"lower left\", \"upper right\", \"lower right\"], [[5], [5], [6], [5], [4], [5]])\ncalc_metrics(coin_df2, \"shot_star\", [[0, 0], [1, 0], [0, 1], [1, 1], [0, 2], [1, 2]], [[5], [5], [6], [5], [4], [5]])"
+          },
+          {
+            "cell_index": 37,
+            "cell_type": "code",
+            "snippet": "# calc_metrics_2(coin_df2, \"spin_top\", [\"upper\",\"lower\", \"upper left\", \"lower left\", \"upper right\", \"lower right\"], [[5], [5], [6], [5], [4], [5]])\ncalc_metrics(coin_df2, \"spin_top\", [[0, 0], [1, 0], [0, 1], [1, 1], [1, 2]], [[6], [6], [6], [6], [4]])"
+          },
+          {
+            "cell_index": 39,
+            "cell_type": "code",
+            "snippet": "# calc_metrics(coin_df2, \"doji\", \"\")\ncalc_metrics(coin_df2, \"doji\", [[0, 0], [1, 0], [0, 1], [1, 1], [1, 2]], [[6], [4], [6], [4], [4]])"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 112,
+      "quality": "strong",
+      "score": 49,
+      "reasons": "",
+      "source": {
+        "path": "Time-Series/g-research-crypto-forecasting/rank112_10pct/classic-pipeline.ipynb",
+        "file_name": "classic-pipeline.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 8,
+        "code_cell_count": 8,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "supplemental_train = pd.read_csv(\"../input/g-research-crypto-forecasting/supplemental_train.csv\")\nasset_details = pd.read_csv(\"../input/g-research-crypto-forecasting/asset_details.csv\")\nss = pd.read_csv(\"../input/g-research-crypto-forecasting/example_sample_submission.csv\")\nexample_test=  pd.read_csv(\"../input/g-research-crypto-forecasting/example_test.csv\")\ntrain = pd.read_csv(\"../input/g-research-crypto-forecasting/train.csv\")"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "    df = df.groupby(\"Asset_ID\").apply(nans).reset_index(drop = True)"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "                df[gap_name] = df[col].shift(periods=gap, fill_value=0)\n    df = df.groupby(\"Asset_ID\").apply(get_prev, cols, 1, 2)"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "        train = pd.read_csv(\"../input/g-research-crypto-forecasting/train.csv\")\n    train = pd.read_csv(\"../input/g-research-crypto-forecasting/train.csv\")"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 90,
+      "quality": "strong",
+      "score": 64,
+      "reasons": "",
+      "source": {
+        "path": "Time-Series/g-research-crypto-forecasting/rank90_1st/g-research-starter-lgbm-pipeline-lb-0-174.ipynb",
+        "file_name": "g-research-starter-lgbm-pipeline-lb-0-174.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 15,
+        "code_cell_count": 8,
+        "markdown_cell_count": 7,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "# 🪙 G-Research Crypto - Starter LGBM Pipeline\n### Just a simple pipeline going from zero to a valid submission\nWe train one `LGBMRegressor` for each asset over a very very naive set of features (the input dataframe `['Count', 'Open', 'High', 'Low', 'Close', 'Volume', 'VWAP']`), we get the predictions correctly using the iterator and we submit. No validation for now, no cross validation... nothing at all lol: just the bare pipeline!"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "markdown",
+            "snippet": "This is a fork of the original notebook. My intention here to show is what can be done with this method to improve your score."
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "from lightgbm import LGBMRegressor"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "train_df = pd.read_csv(TRAIN_CSV)\nasset_df = pd.read_csv(ASSET_DETAILS_CSV)"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "markdown",
+            "snippet": "## Utility functions to train a model for one asset"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "    model = LGBMRegressor(n_estimators=1000)"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,353 @@
+{
+  "domain": "CV",
+  "competition": "tgs-salt-identification-challenge",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 1908,
+      "quality": "strong",
+      "score": 73,
+      "reasons": "",
+      "source": {
+        "path": "CV/tgs-salt-identification-challenge/rank1908_70pct/tgs-wj.ipynb",
+        "file_name": "tgs-wj.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 47,
+        "code_cell_count": 34,
+        "markdown_cell_count": 13,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "enlarge validation set with 3*3 filter -> 79.56%<br/>"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "import tensorflow as tf\nfrom keras.preprocessing.image import load_img\nfrom keras import Model\nfrom keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau\nfrom keras.models import load_model\nfrom keras.optimizers import Adam\nfrom keras.utils.vis_utils import plot_model\nfrom keras.preprocessing.image import ImageDataGenerator\nfrom keras.layers import Input, Conv2D, Conv2DTranspose, MaxPooling2D, concatenate, Dropout,BatchNormalization,Activation,Add\nfrom keras import backend as K\nfrom keras import optimizers"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "train_df = pd.read_csv(\"../input/train.csv\", index_col=\"id\", usecols=[0])\ndepths_df = pd.read_csv(\"../input/depths.csv\", index_col=\"id\")"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "markdown",
+            "snippet": "Split dataset into training data and validation data"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "ids_train, ids_valid, x_train, x_valid, y_train, y_valid, cov_train, cov_test, depth_train, depth_test = train_test_split("
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "markdown",
+            "snippet": "Define the Structure of model"
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "code",
+            "snippet": "model.compile(loss=\"binary_crossentropy\", optimizer=\"adam\", metrics=[\"accuracy\"])"
+          },
+          {
+            "cell_index": 26,
+            "cell_type": "code",
+            "snippet": "from keras.utils.vis_utils import model_to_dot\nfrom keras.utils import plot_model"
+          },
+          {
+            "cell_index": 28,
+            "cell_type": "code",
+            "snippet": "x_valid = np.append(x_valid, [np.flipud(x) for x in x_valid], axis=0)\ny_valid = np.append(y_valid, [np.flipud(x) for x in y_valid], axis=0)\nx_valid = np.append(x_valid, [np.flipud(x) for x in x_valid], axis=0)\ny_valid = np.append(y_valid, [np.flipud(x) for x in y_valid], axis=0)"
+          },
+          {
+            "cell_index": 30,
+            "cell_type": "markdown",
+            "snippet": "Train the model"
+          },
+          {
+            "cell_index": 31,
+            "cell_type": "code",
+            "snippet": "early_stopping = EarlyStopping(patience=10, verbose=1)\nmodel_checkpoint = ModelCheckpoint(\"./keras.model\", save_best_only=True, verbose=1)\n                    validation_data=[x_valid, y_valid],\n                    callbacks=[early_stopping, model_checkpoint, reduce_lr])"
+          },
+          {
+            "cell_index": 32,
+            "cell_type": "code",
+            "snippet": "ax_loss.plot(history.epoch, history.history[\"val_loss\"], label=\"Validation loss\")\nax_acc.plot(history.epoch, history.history[\"val_acc\"], label=\"Validation accuracy\")\nmodel = load_model(\"./keras.model\")"
+          },
+          {
+            "cell_index": 33,
+            "cell_type": "code",
+            "snippet": "preds_valid = model.predict(x_valid).reshape(-1, img_size_target, img_size_target)\npreds_valid = np.array([downsample(x) for x in preds_valid])\ny_valid_ori = np.array([train_df.loc[idx].masks for idx in ids_valid])"
+          },
+          {
+            "cell_index": 34,
+            "cell_type": "markdown",
+            "snippet": "metric function used to adjust the model"
+          },
+          {
+            "cell_index": 35,
+            "cell_type": "code",
+            "snippet": "# src: https://www.kaggle.com/aglotero/another-iou-metric\ndef iou_metric(y_true_in, y_pred_in, print_table=False):\n    def precision_at(threshold, iou):\n        matches = iou > threshold\n    # Loop over IoU thresholds\ndef iou_metric_batch(y_true_in, y_pred_in):\n    metric = []\n        value = iou_metric(y_true_in[batch], y_pred_in[batch])\n        metric.append(value)\n    return np.mean(metric)"
+          },
+          {
+            "cell_index": 37,
+            "cell_type": "code",
+            "snippet": "thresholds = np.linspace(0, 1, 50)\nious = np.array([iou_metric_batch(y_valid_ori, np.int32(preds_valid > threshold)) for threshold in tqdm_notebook(thresholds)])"
+          },
+          {
+            "cell_index": 38,
+            "cell_type": "code",
+            "snippet": "threshold_best_index = np.argmax(ious[9:-10]) + 9\niou_best = ious[threshold_best_index]\nthreshold_best = thresholds[threshold_best_index]"
+          },
+          {
+            "cell_index": 39,
+            "cell_type": "code",
+            "snippet": "plt.plot(thresholds, ious)\nplt.plot(threshold_best, iou_best, \"xr\", label=\"Best threshold\")\nplt.xlabel(\"Threshold\")\nplt.title(\"Threshold vs IoU ({}, {})\".format(threshold_best, iou_best))"
+          },
+          {
+            "cell_index": 41,
+            "cell_type": "code",
+            "snippet": "# Source https://www.kaggle.com/bguberfain/unet-with-depth"
+          },
+          {
+            "cell_index": 44,
+            "cell_type": "code",
+            "snippet": "pred_dict = {idx: RLenc(np.round(downsample(preds_test[i]) > threshold_best)) for i, idx in enumerate(tqdm_notebook(test_df.index.values))}"
+          },
+          {
+            "cell_index": 45,
+            "cell_type": "code",
+            "snippet": "sub.to_csv('submission.csv')"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 1247,
+      "quality": "strong",
+      "score": 49,
+      "reasons": "bad_keyword",
+      "source": {
+        "path": "CV/tgs-salt-identification-challenge/rank1247_40pct/u-net-image-segmentation.ipynb",
+        "file_name": "u-net-image-segmentation.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 25,
+        "code_cell_count": 21,
+        "markdown_cell_count": 4,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\n# For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "from tensorflow.keras.layers import Dense, Input, Flatten, Dropout,concatenate\nfrom tensorflow.keras.layers import Conv2D,MaxPool2D, BatchNormalization, Conv2DTranspose\nfrom tensorflow.keras.models import Model\nfrom tensorflow.keras.callbacks import EarlyStopping,LearningRateScheduler,ReduceLROnPlateau,ModelCheckpoint\nfrom tensorflow.keras.regularizers import l2\nfrom tensorflow.keras.preprocessing.image import array_to_img, img_to_array, load_img"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "train_df = pd.read_csv(\"/kaggle/input/tgs-salt-identification-challenge/train.csv\", index_col=\"id\", usecols=[0])\ndepths_df = pd.read_csv(\"/kaggle/input/tgs-salt-identification-challenge/depths.csv\", index_col=\"id\")"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "X_train, X_valid, y_train, y_valid = train_test_split(X,y,test_size=0.1, random_state=42)"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "X_train.shape, X_valid.shape"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "markdown",
+            "snippet": "U-Net model"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "def UNet_Model(input_img):"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "model = UNet_Model(input_img)"
+          },
+          {
+            "cell_index": 21,
+            "cell_type": "code",
+            "snippet": "    EarlyStopping(patience=10, verbose=1),"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "results = model.fit(X_train,y_train,batch_size= 32, epochs= 50, callbacks=callbacks,validation_data=(X_valid, y_valid))"
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "code",
+            "snippet": "model.evaluate(X_valid, y_valid, verbose=1)"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 687,
+      "quality": "strong",
+      "score": 73,
+      "reasons": "",
+      "source": {
+        "path": "CV/tgs-salt-identification-challenge/rank687_20pct/tgs-resnet-final1.ipynb",
+        "file_name": "tgs-resnet-final1.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 73,
+        "code_cell_count": 49,
+        "markdown_cell_count": 24,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\nimport tensorflow as tf\n# For example, running this (by clicking run or pressing Shift+Enter) will list the files in the input directory"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv(\"../input/train.csv\","
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "thresholds = [0.5, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95]\nn_thresholds = len(thresholds)\n    for t in thresholds:\n    return hitCnt/n_thresholds\n    scores = []\n        score = meanHit(mask[i], mask_pred[i])\n        scores.append(score)\n    return np.mean(scores)\n# Define IoU metric\n        score, up_opt = tf.metrics.mean_iou(y_true, y_pred_, 2)\n            score = tf.identity(score)\n        prec.append(score)\n    return K.mean(K.stack(prec), axis=0)\n    metric = []\n#             metric.append(0)\n#             metric.append(0)\n#             metric.append(1)\n        thresholds = np.arange(0.5, 1, 0.05)\n        for thresh in thresholds:\n        metric.append(np.mean(s))\n    return np.mean(metric)\ndef my_iou_metric(label, pred):"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "# Testing accuracy metric"
+          },
+          {
+            "cell_index": 26,
+            "cell_type": "markdown",
+            "snippet": "#### Train Validation Split"
+          },
+          {
+            "cell_index": 35,
+            "cell_type": "code",
+            "snippet": "print(\"ValidationX Shape = \", val_X.shape, \"ValidationY Shape = \", val_Y.shape)"
+          },
+          {
+            "cell_index": 37,
+            "cell_type": "code",
+            "snippet": "def augment(X, Y):\nprint(\"Training Augmentation\")\ntrain_X, train_Y = augment(train_X, train_Y)\nval_X, val_Y = augment(val_X, val_Y)"
+          },
+          {
+            "cell_index": 41,
+            "cell_type": "code",
+            "snippet": "import keras\n# keras.backend.set_session(sess)\n# from keras import backend as K\n# K.tensorflow_backend._get_available_gpus()"
+          },
+          {
+            "cell_index": 42,
+            "cell_type": "code",
+            "snippet": "from keras.models import *\nfrom keras.layers import *\nfrom keras.optimizers import *\nfrom keras.callbacks import *"
+          },
+          {
+            "cell_index": 44,
+            "cell_type": "code",
+            "snippet": "optimizer = keras.optimizers.Adam()\n              metrics = [my_iou_metric])"
+          },
+          {
+            "cell_index": 45,
+            "cell_type": "code",
+            "snippet": "import keras\nearlyStopping = EarlyStopping(patience = 20, verbose = 1)\ncheckpointer = ModelCheckpoint('model-tgs-salt-1.h5',monitor = 'val_my_iou_metric',\nreducelr=ReduceLROnPlateau(monitor='val_my_iou_metric',patience=5,\n                    validation_data = (val_X, val_Y),\n                    callbacks=[earlyStopping, checkpointer, reducelr])"
+          },
+          {
+            "cell_index": 46,
+            "cell_type": "code",
+            "snippet": "                   custom_objects = {'my_iou_metric':my_iou_metric})"
+          },
+          {
+            "cell_index": 50,
+            "cell_type": "code",
+            "snippet": "ax_acc.plot(history.history['my_iou_metric'], label = 'train_metric')\nax_acc.plot(history.history['val_my_iou_metric'], label = \"val_metric\")\nax_acc.set_title(\"iou metric\")"
+          },
+          {
+            "cell_index": 51,
+            "cell_type": "markdown",
+            "snippet": "### Predict model on some random validation set images"
+          },
+          {
+            "cell_index": 54,
+            "cell_type": "markdown",
+            "snippet": "#### mean IoU on Validation Set"
+          },
+          {
+            "cell_index": 72,
+            "cell_type": "code",
+            "snippet": "sub.to_csv(\"tgsModel1.csv\", index = False)"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 284,
+      "quality": "weak",
+      "score": 19,
+      "reasons": "",
+      "source": {
+        "path": "CV/tgs-salt-identification-challenge/rank284_10pct/data-generator-with-shift-and-mirror-augmentation.ipynb",
+        "file_name": "data-generator-with-shift-and-mirror-augmentation.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 2,
+        "code_cell_count": 1,
+        "markdown_cell_count": 1,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "def transform_image(X, shift):\n    Return a shifted image with mirrored padding\n    return np.concatenate([X, X[:, np.arange(X.shape[1]-2, 0, -1), :], X], axis=1)[:, shift:shift+X.shape[1], :]\ndef batch_augmentation(X, y, shift_ratio=0.3, mirror_ratio=0.35):\n    Return a batch with randomized augmentation\n        if r < shift_ratio:\n            shift = np.random.randint(2*X.shape[2]-1)\n            X[i] = transform_image(X[i], shift)\n            y[i] = transform_image(y[i], shift)\n        elif r < shift_ratio+mirror_ratio:\ndef batch_generator(X, y, batch_size=32, shift_ratio=0.3, mirror_ratio=0.35):\n            yield batch_augmentation(X[idx], y[idx], shift_ratio, mirror_ratio)"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 4,
+      "quality": "usable",
+      "score": 26,
+      "reasons": "",
+      "source": {
+        "path": "CV/tgs-salt-identification-challenge/rank4_1st/know-your-opponents-well.ipynb",
+        "file_name": "know-your-opponents-well.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 10,
+        "code_cell_count": 10,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "df = pd.read_csv(\"../input/tgslb/tgs.csv\")"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "df=df.sort_values(ascending=False,by=['Score'])"
+          }
+        ]
+      }
+    }
+  }
+}

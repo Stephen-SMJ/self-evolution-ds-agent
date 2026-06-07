@@ -1,0 +1,23 @@
+{
+  "id": "onodera/samp-hm-1st-stage-demo-with-polars-gpu",
+  "id_no": 119243992,
+  "title": "[SAMP-HM] 1st stage demo with polars-gpu",
+  "code_file": "samp-hm-1st-stage-demo-with-polars-gpu.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": true,
+  "keywords": [
+    "gpu"
+  ],
+  "dataset_sources": [],
+  "kernel_sources": [],
+  "competition_sources": [
+    "h-and-m-personalized-fashion-recommendations"
+  ],
+  "model_sources": [],
+  "docker_image": "gcr.io/kaggle-private-byod/python@sha256:00377cd1b3d470a605bc5b0ceca79969e369644e9b36802242a1c70e627372f9",
+  "machine_shape": "NvidiaTeslaT4"
+}

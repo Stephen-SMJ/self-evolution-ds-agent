@@ -1,0 +1,263 @@
+{
+  "domain": "RL",
+  "competition": "halite",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 800,
+      "quality": "usable",
+      "score": 29,
+      "reasons": "",
+      "source": {
+        "path": "RL/halite/rank800_70pct/explore-exploit.ipynb",
+        "file_name": "explore-exploit.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 20,
+        "code_cell_count": 5,
+        "markdown_cell_count": 15,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "from IPython.display import Image\nImage(\"../input/image1/Picture1.png\")"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "markdown",
+            "snippet": "## Table of Content\n\n* [Credits](#tag1)\n\n\n* [Idea](#tag2)\n\n\n* [Helper functions](#tag3)\n\n\n* [Execution](#tag4)\n\n\n* [Improvement](#tag5)\n"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "markdown",
+            "snippet": "<a id='tag1'></a>"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "markdown",
+            "snippet": "## Credits to..."
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "markdown",
+            "snippet": "* [Swarm Intelligence with SDK](https://www.kaggle.com/kwabenantim/swarm-intelligence-with-sdk) I used the Controller() class except a few changes in assigning the actions for the agents. I like its organized structure and the way it keeps track of cells to avoid collision is very smart. Please make sure to check it out!\n* [Getting started with halite](https://www.kaggle.com/alexisbcook/getting-started-with-halite) I used functions from this notebook as well."
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "markdown",
+            "snippet": "<a id='tag2'></a>"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "markdown",
+            "snippet": "## Idea\n\nLots of algorithms in reinforcement learning are derived from the idea of **balancing between exploration and exploitation**(https://en.wikipedia.org/wiki/Multi-armed_bandit). In this game, there are advantages and distadvantages of both strategies:\n\n* Exploration: the ship can look up the surrounding area and find the cells with larger number of halites, but it costs time to travel to the desired area, also it risks getting collision with other ships\n* Exploitation: the ship choose to either stay at the current position to mine or move a little bit to the surround area, but it might find nothing by just looking around aimlessly\n\nThere are differeny ways to achieve the transition between exploration and exploitation, here I used a probability paramter EPSILON to decide which way to go. It is a bit similar with [epsilon-greedy algorithm](https://imaddabbura.github.io/post/epsilon-greedy-algorithm/)"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "markdown",
+            "snippet": "<a id='tag3'></a>"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 445,
+      "quality": "usable",
+      "score": 37,
+      "reasons": "",
+      "source": {
+        "path": "RL/halite/rank445_40pct/halite-result-visualization-from-leaderboard.ipynb",
+        "file_name": "halite-result-visualization-from-leaderboard.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 28,
+        "code_cell_count": 22,
+        "markdown_cell_count": 6,
+        "snippets": [
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "df_merged = pd.concat([df0,df1,df2,df3])"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "df_merged['total_halite'] = df_merged['halite'] + df_merged['cargo']\ndf_merged['cargo_average']  = df_merged['cargo'] / df_merged['ships']\ndf_merged['cargo_percentage'] = df_merged['cargo'] / df_merged['total_halite']"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "df_merged"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "sns.barplot(data=df_merged[df_merged['step']==last_step],x='player',y='halite',ci=None)"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "sns.barplot(data=df_merged,x='player',y='halite',ci=None)"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "sns.barplot(data=df_merged[df_merged['step']==last_step],x='player',y='cargo',ci=None)"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "sns.lineplot(data=df_merged,x='step',y='halite' ,hue='player')"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "sns.lineplot(data=df_merged,x='step',y='halite' ,hue='player')"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "sns.lineplot(data=df_merged,x='step',y='cargo', hue='player')"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "sns.lineplot(data=df_merged,x='step',y='cargo', hue='player')"
+          },
+          {
+            "cell_index": 21,
+            "cell_type": "code",
+            "snippet": "sns.lineplot(data=df_merged,x='step',y='total_halite', hue='player')"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "sns.lineplot(data=df_merged,x='step',y='cargo_percentage', hue='player')"
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "code",
+            "snippet": "sns.lineplot(data=df_merged,x='step',y='shipyards', hue='player')"
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "code",
+            "snippet": "sns.barplot(data=df_merged,x='player',y='shipyards',ci=None)"
+          },
+          {
+            "cell_index": 25,
+            "cell_type": "code",
+            "snippet": "sns.lineplot(data=df_merged,x='step',y='ships', hue='player')"
+          },
+          {
+            "cell_index": 26,
+            "cell_type": "code",
+            "snippet": "sns.barplot(data=df_merged,x='player',y='ships',ci=None)"
+          },
+          {
+            "cell_index": 27,
+            "cell_type": "code",
+            "snippet": "sns.lineplot(data=df_merged,x='step',y='cargo_average', hue='player')"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 225,
+      "quality": "usable",
+      "score": 41,
+      "reasons": "",
+      "source": {
+        "path": "RL/halite/rank225_20pct/halite-bot-aggressive-bot-starter-code.ipynb",
+        "file_name": "halite-bot-aggressive-bot-starter-code.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 4,
+        "code_cell_count": 2,
+        "markdown_cell_count": 2,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "This is the starter code for a strategy that will be focused on attacking other ships with less halite.  Please provide any feedback/suggestion, as they would be much appreciated.\nSo far, it's score has been pretty low, but I think that the functions are still useful and that this strategy still has potential.  I will continue updating the code as I go."
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "# Code to attack closest ship\ndef attackShip(ship, other_ships, size):\n    attack = nearestObject(ship.position, other_ships, size)\n    pos, halite = attack\n# Code to attack shipyard: write if's in agent\n#def attackShipyard(ship, other_shipyards, size):\n#    attack = nearestObject(ship.position, other_shipyards, size)\n#    pos, halite = attack\n                ship_states[ship.id] = \"ATTACK\"\n            if ship_states[ship.id] == \"ATTACK\":\n                direction = attackShip(ship, other_ships, size)"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 118,
+      "quality": "strong",
+      "score": 55,
+      "reasons": "",
+      "source": {
+        "path": "RL/halite/rank118_10pct/pytorch-starter.ipynb",
+        "file_name": "pytorch-starter.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 17,
+        "code_cell_count": 14,
+        "markdown_cell_count": 3,
+        "snippets": [
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "import torch\nmodel.load_state_dict(torch.load(buffer, torch.device(\"cuda\" if torch.cuda.is_available() else \"cpu\")))\ndevice = torch.device(\"cuda\" if torch.cuda.is_available() else \"cpu\")"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "torch.no_grad();\ntorch.set_num_threads(os.cpu_count())"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "    input_stack = getInputStack(step, halite, ship, base, cargo, ph, new_var, prior_actions, action_map,\n    input_stack   = torch.as_tensor(input_stack).unsqueeze(0).to(device)\n    output = model(input_stack)\n    base_prediction = torch.sigmoid( policy_output[:, -1, :] ).detach().numpy()\n    # score matrix -- can only pick valid actions\n        ship_ranked_actions = np.zeros((6,), dtype = np.float32)\n        for rank in range(0, np.sum(ship_pred_actions > 1e-6) ):\n                    ship_ranked_actions[action] = 6 - rank + raw_ship_pred_actions[action];\n        print(list(np.round(ship_ranked_actions, 1)))\n        C[ship_idx, x + 21*y] = ship_ranked_actions[0]\n        C[ship_idx, x + 21*c(y - 1)] = ship_ranked_actions[1]\n        C[ship_idx, c(x + 1) + 21*y] = ship_ranked_actions[2]\n        C[ship_idx, x + 21*c(y + 1)] = ship_ranked_actions[3]\n        C[ship_idx, c(x - 1) + 21*y] = ship_ranked_actions[4]\n            C[ship_idx, 21*21 + ship_idx]= ship_ranked_actions[5] # conversion doesn't use any squares\n #     print(\"{:.0f} ms - rankings\".format((datetime.datetime.now() - start_time).microseconds // 1e3))"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 2,
+      "quality": "strong",
+      "score": 48,
+      "reasons": "",
+      "source": {
+        "path": "RL/halite/rank2_1st/halite-iv-count-win-or-lose-for-each-team.ipynb",
+        "file_name": "halite-iv-count-win-or-lose-for-each-team.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 8,
+        "code_cell_count": 8,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "# (When both are specified, score_threshold_from_best_in_team has more priority than number_of_best_agents.)\n# I don't know about the most suitable threshold to describe real performance.\nscore_threshold_from_best_in_team = None\n# Ranks of opponent teams\n#       to the number of episodes of teams within team_rank_range.\nteam_rank_range = range(1, 13)"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "def get_target_submission_ids_impl(team_k, submission_id_to_team_id, max_scores, update):\n    global score_threshold_from_best_in_team\n        # maybe this sort key is wrong to get latest scores\n            continue  # skip validation\n            updated_score_k_e = agent_k_e_p['updatedScore']\n            if updated_score_k_e is not None:\n                submission_id_candidates_k[submission_id_k_e] = updated_score_k_e\n    max_scores[team_id_k] = sorted_submission_id_candidates_k[0][1]\n    for submission_id_k_s, score_k_s in sorted_submission_id_candidates_k:\n        s = f'team_id={team_id_k} submission_id={submission_id_k_s} score={score_k_s}'\n        if score_threshold_from_best_in_team:\n            if score_k_s < max_scores[team_id_k] - score_threshold_from_best_in_team:\n    teams.sort(key=lambda x: x['publicLeaderboardRank'] or 1e9)\n    max_scores = {}\n    for rank in team_rank_range:\n        k = rank - 1  # rank is 1-indexed\n        get_target_submission_ids_impl(team_k, submission_id_to_team_id, max_scores, update)\n    if your_team['publicLeaderboardRank'] not in team_rank_range:\n        get_target_submission_ids_impl(your_team, submission_id_to_team_id, max_scores, update)\n    return submission_id_to_team_id, max_scores"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "# This method may take a long time if team_rank_range is too wide\nsubmission_id_to_team_id, max_scores = get_target_submission_ids(list_episodes)"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "for team_id in max_scores.keys():\n    match_results[team_id] = {'team_name': team_name, 'max_score': round(max_scores[team_id], 1), 'win': 0, 'draw': 0, 'lose': 0}"
+          }
+        ]
+      }
+    }
+  }
+}

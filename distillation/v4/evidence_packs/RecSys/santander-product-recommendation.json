@@ -1,0 +1,163 @@
+{
+  "domain": "RecSys",
+  "competition": "santander-product-recommendation",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 1246,
+      "quality": "usable",
+      "score": 31,
+      "reasons": "",
+      "source": {
+        "path": "RecSys/santander-product-recommendation/rank1246_70pct/data-visualization-2.ipynb",
+        "file_name": "data-visualization-2.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 29,
+        "code_cell_count": 29,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\n# For example, running this (by clicking run or pressing Shift+Enter) will list the files in the input directory"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "df = pd.read_csv('../input/train_ver2.csv',usecols=['ncodpers'])"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "customer_count = df.groupby('ncodpers').agg('size').value_counts()"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv(\"../input/train_ver2.csv\", dtype='float16',"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv('../input/train_ver2.csv',usecols=['fecha_dato'],parse_dates=['fecha_dato'])"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv('../input/train_ver2.csv',usecols=['fecha_alta'],parse_dates=['fecha_alta'])"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv('../input/train_ver2.csv',usecols=['age'])"
+          },
+          {
+            "cell_index": 21,
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv('../input/train_ver2.csv',usecols = ['renta'])"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 707,
+      "quality": "strong",
+      "score": 48,
+      "reasons": "",
+      "source": {
+        "path": "RecSys/santander-product-recommendation/rank707_40pct/when-less-is-more-asdsd268.py",
+        "file_name": "when-less-is-more-asdsd268.py",
+        "suffix": ".py",
+        "cell_count": 1,
+        "code_cell_count": 1,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import xgboost as xgb\nfrom sklearn import preprocessing, ensemble\ndef getTarget(row):\n\t\t\ttarget_list = getTarget(row)\n\t\t\ttarget_list = getTarget(row)\ndef runXGB(train_X, train_y, seed_val=0):\n\tparam['eval_metric'] = \"mlogloss\"\n\txgtrain = xgb.DMatrix(train_X, label=train_y)\n\tmodel = xgb.train(plst, xgtrain, num_rounds)\n\tmodel = runXGB(train_X, train_y, seed_val=0)\n\txgtest = xgb.DMatrix(test_X)\n\tpreds = np.argsort(preds, axis=1)\n\ttest_id = np.array(pd.read_csv(data_path + \"test_ver2.csv\", usecols=['ncodpers'])['ncodpers'])\n\tout_df.to_csv('sub_xgb_new.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 356,
+      "quality": "strong",
+      "score": 48,
+      "reasons": "",
+      "source": {
+        "path": "RecSys/santander-product-recommendation/rank356_20pct/test-srk.py",
+        "file_name": "test-srk.py",
+        "suffix": ".py",
+        "cell_count": 1,
+        "code_cell_count": 1,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import xgboost as xgb\nfrom sklearn import preprocessing, ensemble\ndef getTarget(row):\n    'GUADALAJARA': 100635,  'HUELVA': 75534,  'HUESCA': 80324,  'JAEN': 67016,  'LEON': 76339,  'LERIDA': 59191,  'LUGO': 68219,  'MADRID': 141381,  'MALAGA': 89534,  'MELILLA': 116469, 'GIPUZKOA': 101850,\ndef processDataMK(in_file_name, cust_dict, lag_cust_dict):\n            target_list = getTarget(row)\n            lag_cust_dict[cust_id] =  target_list[:]\n            target_list = getTarget(row)\n            lag_target_list = lag_cust_dict.get(cust_id, [0]*22)\n            x_vars_list.append(x_vars + prev_target_list + lag_target_list)\n            lag_target_list = lag_cust_dict.get(cust_id, [0]*22)\n            target_list = getTarget(row)\n                        x_vars_list.append(x_vars+prev_target_list+lag_target_list)\n    return x_vars_list, y_vars_list, cust_dict, lag_cust_dict\n\t\t\ttarget_list = getTarget(row)\n\t\t\ttarget_list = getTarget(row)\ndef runXGB(train_X, train_y, seed_val=42):\n\tparam['eval_metric'] = \"mlogloss\"\n\txgtrain = xgb.DMatrix(train_X, label=train_y)\n\tmodel = xgb.train(plst, xgtrain, num_rounds)\n\tx_vars_list, y_vars_list, cust_dict, lag_cust_dict = processDataMK(train_file, {}, {})\n\tx_vars_list, y_vars_list, cust_dict, lag_cust_dict = processDataMK(test_file, cust_dict, lag_cust_dict)\n\tmodel = runXGB(train_X, train_y, seed_val=0)\n\txgtest = xgb.DMatrix(test_X)\n\ttest_id = np.array(pd.read_csv(data_path + \"test_ver2.csv\", usecols=['ncodpers'])['ncodpers'])\n\tpreds = np.argsort(np.array(new_products), axis=1)\n\tout_df.to_csv('sub_xgb_new.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 183,
+      "quality": "weak",
+      "score": 23,
+      "reasons": "",
+      "source": {
+        "path": "RecSys/santander-product-recommendation/rank183_10pct/exploratory-data-analysis-in-korean-180801.ipynb",
+        "file_name": "exploratory-data-analysis-in-korean-180801.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 12,
+        "code_cell_count": 12,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\n# For example, running this (by clicking run or pressing Shift+Enter) will list the files in the input directory"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "trn = pd.read_csv('../input/train_ver2.csv')"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "    label_sum = trn.groupby(['fecha_dato'])[label_cols[i]].agg('sum')"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 5,
+      "quality": "strong",
+      "score": 53,
+      "reasons": "",
+      "source": {
+        "path": "RecSys/santander-product-recommendation/rank5_1st/when-less-is-more-1.py",
+        "file_name": "when-less-is-more-1.py",
+        "suffix": ".py",
+        "cell_count": 1,
+        "code_cell_count": 1,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import xgboost as xgb\nfrom sklearn import preprocessing, ensemble\ndef getTarget(row):\n\t\t\ttarget_list = getTarget(row)\n\t\t\ttarget_list = getTarget(row)\ndef runXGB(train_X, train_y, seed_val=123):\n\tparam['eval_metric'] = \"mlogloss\"\n\txgtrain = xgb.DMatrix(train_X, label=train_y)\n\tmodel = xgb.train(plst, xgtrain, num_rounds)\n\tmodel = runXGB(train_X, train_y, seed_val=0)\n\txgtest = xgb.DMatrix(test_X)\n\tpreds = np.argsort(preds, axis=1)\n\ttest_id = np.array(pd.read_csv(data_path + \"test_ver2.csv\", usecols=['ncodpers'])['ncodpers'])\n\tout_df.to_csv('sub_xgb_new.csv', index=False)"
+          }
+        ]
+      }
+    }
+  }
+}

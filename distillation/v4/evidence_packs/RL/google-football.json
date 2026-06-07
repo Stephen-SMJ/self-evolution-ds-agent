@@ -1,0 +1,238 @@
+{
+  "domain": "RL",
+  "competition": "google-football",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 783,
+      "quality": "usable",
+      "score": 33,
+      "reasons": "",
+      "source": {
+        "path": "RL/google-football/rank783_70pct/gfootball-template-bot-modified.ipynb",
+        "file_name": "gfootball-template-bot-modified.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 6,
+        "code_cell_count": 3,
+        "markdown_cell_count": 3,
+        "snippets": [
+          {
+            "cell_index": 5,
+            "cell_type": "markdown",
+            "snippet": "1. Go to [My Submissions](https://www.kaggle.com/c/football/submissions) to view your score and episodes being played."
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 410,
+      "quality": "strong",
+      "score": 55,
+      "reasons": "",
+      "source": {
+        "path": "RL/google-football/rank410_40pct/gail-football.ipynb",
+        "file_name": "gail-football.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 24,
+        "code_cell_count": 22,
+        "markdown_cell_count": 2,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "markdown",
+            "snippet": "Attempt of high impact work from ( Ho & Ermon, 2016 ) known as Generative Adversarial Imitation Learning ( see https://arxiv.org/abs/1606.03476 ) for football. The implementation is adapted from this useful repository https://github.com/Khrylx/PyTorch-RL.\nIt can be useful also to see how to submit PyTorch agent with a compressed repository .tar.gz\nJust run all this notebook and then compress the model \"actor.pt\" and \"main.py\" in a folder \"submission.tar.gz\". This is a valid format for the Kaggle competition."
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "import torch\n    ratio = torch.exp(log_probs - fixed_log_probs)\n    surr2 = torch.clamp(ratio, 1.0 - clip_epsilon, 1.0 + clip_epsilon) * advantages\n    policy_surr = -torch.min(surr1, surr2).mean()\n    torch.nn.utils.clip_grad_norm_(policy_net.parameters(), 40)"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "tensor = torch.tensor\nDoubleTensor = torch.DoubleTensor\nFloatTensor = torch.FloatTensor\nLongTensor = torch.LongTensor\nByteTensor = torch.ByteTensor\nones = torch.ones\nzeros = torch.zeros\n    flat_params = torch.cat(params)\n    flat_grad = torch.cat(grads)\n    grads = torch.autograd.grad(output, params, retain_graph=retain_graph, create_graph=create_graph)\n    grads = torch.cat(out_grads)\n    rewards, masks, values = to_device(torch.device('cpu'), rewards, masks, values)\n    advantages, returns = to_device(torch.device(\"cpu\"), advantages, returns)\n    entropy = 0.5 + 0.5 * torch.log(2 * var * math.pi)\n            x = np.clip(x, -self.clip, self.clip)"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "    torch.randn(pid)\n            with torch.no_grad():\ndef merge_log(log_list):\n        to_device(torch.device('cpu'), self.policy)\n            log = merge_log(log_list)\n        to_device(torch.device('cpu'), self.policy)\n        log['action_mean'] = np.mean(np.vstack(batch.action), axis=0)\n        log['action_min'] = np.min(np.vstack(batch.action), axis=0)\n        log['action_max'] = np.max(np.vstack(batch.action), axis=0)"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "import torch.nn as nn\nimport torch\n            self.activation = torch.tanh\n            self.activation = torch.relu\n            self.activation = torch.sigmoid\n            self.activation = torch.tanh\n            self.activation = torch.relu\n            self.activation = torch.sigmoid\n        prob = torch.sigmoid(self.logic(x))\n            self.activation = torch.tanh\n            self.activation = torch.relu\n            self.activation = torch.sigmoid\n        self.action_log_std = nn.Parameter(torch.ones(1, action_dim) * log_std)\n        action_std = torch.exp(action_log_std)\n        action = torch.normal(action_mean, action_std)\n            self.activation = torch.tanh\n            self.activation = torch.relu\n            self.activation = torch.sigmoid\n        action_prob = torch.softmax(self.action_head(x), dim=1)\n        kl = action_prob0 * (torch.log(action_prob0) - torch.log(action_prob1))\n        return torch.log(action_prob.gather(1, actions.long().unsqueeze(1)))"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "dtype = torch.float64\ntorch.set_default_dtype(dtype)\ntorch.device('cpu')"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "env = football_env.create_environment(env_name=\"11_vs_11_easy_stochastic\", representation =\"raw\", stacked=False, logdir='/tmp/football', write_goal_dumps=False, write_full_episode_dumps=False, render=False)"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "torch.manual_seed(seed)\noptimizer_policy = torch.optim.Adam(policy_net.parameters(), lr=learning_rate)\noptimizer_value = torch.optim.Adam(value_net.parameters(), lr=learning_rate)\noptimizer_discrim = torch.optim.Adam(discrim_net.parameters(), lr=learning_rate)"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "expert_states = torch.from_numpy(expert_states).to(dtype).to(torch.device(\"cpu\"))\nexpert_actions = torch.from_numpy(expert_actions).to(dtype).to(torch.device(\"cpu\"))"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "torch.cat([expert_states, expert_actions], 1)"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "    state_action = tensor(np.hstack([state, action]), dtype=dtype)\n    with torch.no_grad():"
+          },
+          {
+            "cell_index": 21,
+            "cell_type": "code",
+            "snippet": "    states = torch.from_numpy(np.stack(batch.state)).to(dtype).to(torch.device(\"cpu\"))\n    actions_one_hot = to_categorical(np.stack(batch.action),19)\n    actions_one_hot = torch.from_numpy(actions_one_hot).to(dtype).to(torch.device(\"cpu\"))\n    actions = torch.from_numpy(np.stack(batch.action)).to(dtype).to(torch.device(\"cpu\"))\n    rewards = torch.from_numpy(np.stack(batch.reward)).to(dtype).to(torch.device(\"cpu\"))\n    masks = torch.from_numpy(np.stack(batch.mask)).to(dtype).to(torch.device(\"cpu\"))\n    with torch.no_grad():\n        expert_state_actions = torch.cat([expert_states, expert_actions], 1)\n        g_o = discrim_net(torch.cat([states, actions_one_hot], 1))\n        discrim_loss = discrim_criterion(g_o, ones((states.shape[0], 1), device=torch.device(\"cpu\"))) + \\\n            discrim_criterion(e_o, zeros((expert_states.shape[0], 1), device=torch.device(\"cpu\")))\n        perm = LongTensor(perm).to(torch.device(\"cpu\"))\n        discrim_net.to(torch.device('cpu'))"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "actor_jit = torch.jit.script(agent.policy)\ntorch.jit.save(actor_jit, \"actor.pt\")"
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "code",
+            "snippet": "import torch\nfrom torch import nn\nac = torch.jit.load(\"/kaggle_simulations/agent/actor.pt\")\n    obs = torch.DoubleTensor(obs).unsqueeze(0)"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 226,
+      "quality": "usable",
+      "score": 35,
+      "reasons": "",
+      "source": {
+        "path": "RL/google-football/rank226_20pct/baseline-bot.ipynb",
+        "file_name": "baseline-bot.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 14,
+        "code_cell_count": 10,
+        "markdown_cell_count": 4,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "# Tunable Baseline Bot"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "### This is a fork of https://www.kaggle.com/david1013/tunable-baseline-bot\n\n\n##  Any upvotes below to his original notebook."
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "markdown",
+            "snippet": "### Tunable Parameters"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "%%writefile submission.py\n\n## TUNABLE BASELINE BOT\n\n# Tune Here:\nSPRINT_RANGE = 0.6\n\nSHOT_RANGE_X = 0.7\nSHOT_RANGE_Y = 0.2\n\nGOALIE_OUT = 0.2\nLONG_SHOT_X = 0.4\nLONG_SHOT_Y = 0.2"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "markdown",
+            "snippet": "### Install"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "# Install:\n# Kaggle environments.\n!git clone --quiet https://github.com/Kaggle/kaggle-environments.git\n!cd kaggle-environments && pip install -q .\n\n# GFootball environment.\n!apt-get -qq update -y\n!apt-get -qq install -y libsdl2-gfx-dev libsdl2-ttf-dev\n\n# Make sure that the Branch in git clone and in wget call matches !!\n!git clone --quiet -b v2.3 https://github.com/google-research/football.git\n!mkdir -p football/third_party/gfootball_engine/lib\n\n!wget -q https://storage.googleapis.com/gfootball/prebuilt_gameplayfootball_v2.3.so -O football/third_party/gfootball_engine/lib/prebuilt_gameplayfootball.so\n!cd football && GFOOTBALL_USE_PREBUILT_SO=1 pip3 install -q ."
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "markdown",
+            "snippet": "### Agent"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "%%writefile -a submission.py\n\nfrom kaggle_environments.envs.football.helpers import *\nfrom math import sqrt\n\ndirections = [\n[Action.TopLeft, Action.Top, Action.TopRight],\n[Action.Left, Action.Idle, Action.Right],\n[Action.BottomLeft, Action.Bottom, Action.BottomRight]]\n\ndirsign = lambda x: 1 if abs(x) < 0.01 else (0 if x < 0 else 2)\n\nenemyGoal = [1, 0]\nGOALKEEPER = 0"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 114,
+      "quality": "usable",
+      "score": 43,
+      "reasons": "",
+      "source": {
+        "path": "RL/google-football/rank114_10pct/game-visualization.ipynb",
+        "file_name": "game-visualization.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 9,
+        "code_cell_count": 7,
+        "markdown_cell_count": 2,
+        "snippets": [
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "  res[\"score\"] = obs[\"score\"]"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "  global prev_score_a, prev_score_b\n  score_a, score_b = obs[\"score\"]\n  match_info.set_text(f\"{name_left} {score_a} : {score_b} {name_right}\")"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 2,
+      "quality": "strong",
+      "score": 54,
+      "reasons": "",
+      "source": {
+        "path": "RL/google-football/rank2_1st/google-football-episode-scraper.ipynb",
+        "file_name": "google-football-episode-scraper.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 10,
+        "code_cell_count": 9,
+        "markdown_cell_count": 1,
+        "snippets": [
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "MIN_FINAL_RATING = 1500 # top submission in a match must have reached this score"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "teams_df.sort_values('publicLeaderboardRank', inplace = True)"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "        teams_df.sort_values('publicLeaderboardRank', inplace = True)\n    team_episodes['avg_score'] = -1;\n        agent_scores = [a['updatedScore'] for a in agents if a['updatedScore'] is not None]\n        team_episodes.loc[i, 'updatedScore'] = [a['updatedScore'] for a in agents if a['submission']['teamId'] == team_id][0]\n        if len(agent_scores) > 0:\n            team_episodes.loc[i, 'avg_score'] = np.mean(agent_scores)\n        final_score = max( [r['updatedScore'] for r_idx, (r_index, r) in enumerate(sub_rows.iterrows())\n        team_episodes.loc[sub_rows.index, 'final_score'] = final_score\n    team_episodes.sort_values('avg_score', ascending = False, inplace=True)"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "    team_df = team_df[  (MIN_FINAL_RATING is None or (team_df.final_score > MIN_FINAL_RATING))]\n    print('   {} in score range from {} submissions'.format(len(team_df), len(team_df.submissionId.unique() ) ) )"
+          }
+        ]
+      }
+    }
+  }
+}

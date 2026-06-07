@@ -1,0 +1,21 @@
+{
+  "id": "amelnozieres/final-cnn-kernel",
+  "id_no": 6540532,
+  "title": "Final_Cnn_Kernel",
+  "code_file": "final-cnn-kernel.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": true,
+  "keywords": [],
+  "dataset_sources": [],
+  "kernel_sources": [],
+  "competition_sources": [
+    "rsna-intracranial-hemorrhage-detection"
+  ],
+  "model_sources": [],
+  "docker_image": "gcr.io/kaggle-images/python@sha256:3f301a087ffee48dc31f86c5b708c065e20895dad34d5a8cec78e855f4a80108",
+  "machine_shape": "None"
+}

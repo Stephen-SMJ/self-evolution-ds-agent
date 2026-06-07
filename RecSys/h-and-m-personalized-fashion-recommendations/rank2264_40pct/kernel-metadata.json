@@ -1,0 +1,23 @@
+{
+  "id": "growbigger/recommender-system",
+  "id_no": 78096422,
+  "title": "Recommender System",
+  "code_file": "recommender-system.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": true,
+  "keywords": [
+    "gpu"
+  ],
+  "dataset_sources": [],
+  "kernel_sources": [],
+  "competition_sources": [
+    "h-and-m-personalized-fashion-recommendations"
+  ],
+  "model_sources": [],
+  "docker_image": "gcr.io/kaggle-private-byod/python@sha256:9a6e98e859b480db903deac315740e8d50bd0e85ec96abcc6bd2b470ffa2ba81",
+  "machine_shape": "Gpu"
+}

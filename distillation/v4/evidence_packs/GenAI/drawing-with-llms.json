@@ -1,0 +1,283 @@
+{
+  "domain": "GenAI",
+  "competition": "drawing-with-llms",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 919,
+      "quality": "strong",
+      "score": 59,
+      "reasons": "",
+      "source": {
+        "path": "GenAI/drawing-with-llms/rank919_70pct/fine-tuned-llama-3b.ipynb",
+        "file_name": "fine-tuned-llama-3b.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 7,
+        "code_cell_count": 4,
+        "markdown_cell_count": 3,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "This notebook implements a submission with Gemma 2 9B IT model with some helper code to ensure the generated SVGs conform to the submission requirements. (See the [Evaluation](https://www.kaggle.com/competitions/drawing-with-llms/overview/evaluation) page for details on the submission requirements.)\n\nTo use this notebook interactively, you'll need to install some dependencies. First, *turn on* the Internet under **Session options** to the right. Then select the **Add-ons->Install Dependencies** menu above and click *Run*. A console should pop up with a running `pip` command. Wait for the dependencies to finish installing and then *turn off* the Internet before submitting."
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "import torch\nfrom transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig\nsvg_constraints = kagglehub.package_import('metric/svg-constraints')\nDEVICE = torch.device(\"cuda\" if torch.cuda.is_available() else \"cpu\")\n            bnb_4bit_compute_dtype=torch.float16,\n        self.model_path = kagglehub.model_download(\"felipesens/gemma-3-12b-it-unsloth-bnb-4bit/transformers/4bit-quantized\")\n        self.tokenizer = AutoTokenizer.from_pretrained(self.model_path)\n                    self.tokenizer.apply_chat_template(\n                inputs = self.tokenizer(text=list_of_texts[0], return_tensors=\"pt\").to(DEVICE)\n                inputs = self.tokenizer(text=prompt, return_tensors=\"pt\").to(DEVICE)\n                with torch.no_grad():\n                output_decoded = self.tokenizer.decode(output[0], skip_special_tokens=True)\n            # Check and remove invalid href attributes\n                        'Removing invalid href attribute in element \"%s\".', tag_name\n            # Validate path elements to help ensure SVG conversion\n                # Use regex to validate 'd' attribute format\n                    r'[MmZzLlHhVvCcSsQqTtAa]'  # Valid SVG path commands (adjusted to exclude extra letters)\n                logging.debug('Path element \"d\" attribute validated (regex check).')"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "markdown",
+            "snippet": "The following code tests the above model in a local mock-up of this competition's evaluation pipeline. It runs the model on a sample of 15 instances defined in the `test.csv` file in the `kaggle_evaluation` package folder."
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "markdown",
+            "snippet": "Alternatively, you could use the code below to run the model over `train.csv` and see some generated images along with some debugging info. Feel free to turn down the logging level to `INFO` if you just want to see the images."
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "    train = pl.read_csv('/kaggle/input/drawing-with-llms/train.csv')"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 507,
+      "quality": "strong",
+      "score": 47,
+      "reasons": "",
+      "source": {
+        "path": "GenAI/drawing-with-llms/rank507_40pct/lb-0-52-sd-svg-conversion-using-vtracer.ipynb",
+        "file_name": "lb-0-52-sd-svg-conversion-using-vtracer.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 4,
+        "code_cell_count": 4,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "import torch\nfrom diffusers import StableDiffusionPipeline, DDIMScheduler\nsvg_constraints = kagglehub.package_import('metric/svg-constraints')\n        self.model_name = kagglehub.model_download(\"stabilityai/stable-diffusion-v2/pytorch/1/1\")\n        self.generator = torch.Generator(\"cuda:0\").manual_seed(1024)\n        scheduler = DDIMScheduler.from_pretrained(self.model_name, subfolder=\"scheduler\")\n        self.model = StableDiffusionPipeline.from_pretrained(self.model_name,scheduler=scheduler,torch_dtype=torch.float16,safety_checker=None)\n                    hierarchical=\"cutout\",  # [\"stacked\"] or \"cutout\"\n                    corner_threshold=60,  # default: 60\n                    length_threshold=10,  # in [3.5, 10] default: 4.0\n                    splice_threshold=45,  # default: 45\n            # Check and remove invalid href attributes\n                        'Removing invalid href attribute in element \"%s\".', tag_name\n            # Validate path elements to help ensure SVG conversion\n                # Use regex to validate 'd' attribute format\n                    r'[MmZzLlHhVvCcSsQqTtAa]'  # Valid SVG path commands (adjusted to exclude extra letters)\n                logging.debug('Path element \"d\" attribute validated (regex check).')"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "# train = pl.read_csv('/kaggle/input/drawing-with-llms/train.csv')[:10]"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 249,
+      "quality": "usable",
+      "score": 35,
+      "reasons": "bad_keyword",
+      "source": {
+        "path": "GenAI/drawing-with-llms/rank249_20pct/getting-old-school-with-gemma-2b-it.ipynb",
+        "file_name": "getting-old-school-with-gemma-2b-it.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 5,
+        "code_cell_count": 5,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\n# For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "import torch\nfrom transformers import AutoTokenizer, AutoModelForCausalLM\nsvg_constraints = kagglehub.package_import('metric/svg-constraints')\nDEVICE = torch.device(\"cuda\" if torch.cuda.is_available() else \"cpu\")\n        self.model_path = kagglehub.model_download('google/gemma/Transformers/2b-it/3')\n        self.tokenizer = AutoTokenizer.from_pretrained(self.model_path)\n            torch_dtype=torch.float16,\n        allocated = torch.cuda.memory_allocated() / 1024**3\n        reserved = torch.cuda.memory_reserved() / 1024**3\n        total = torch.cuda.get_device_properties(0).total_memory / 1024**3\nPlease ensure that the generated SVG code is well-formed, valid, and strictly adheres to these constraints. Focus on a clear and concise representation of the input description within the given limitations. Always give the complete SVG code with nothing omitted. Never use an ellipsis.\n                inputs = self.tokenizer(text=prompt, return_tensors=\"pt\").to(DEVICE)\n                with torch.no_grad():\n                output_decoded = self.tokenizer.decode(output[0], skip_special_tokens=True)\n            # Check and remove invalid href attributes\n                        'Removing invalid href attribute in element \"%s\".', tag_name\n            # Validate path elements to help ensure SVG conversion\n                # Use regex to validate 'd' attribute format\n                    r'[MmZzLlHhVvCcSsQqTtAa]'  # Valid SVG path commands (adjusted to exclude extra letters)\n                logging.debug('Path element \"d\" attribute validated (regex check).')"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "    train = pl.read_csv('/kaggle/input/drawing-with-llms/train.csv')"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 123,
+      "quality": "strong",
+      "score": 61,
+      "reasons": "",
+      "source": {
+        "path": "GenAI/drawing-with-llms/rank123_10pct/drawing-with-llms-sdxl-turbo-v2.ipynb",
+        "file_name": "drawing-with-llms-sdxl-turbo-v2.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 46,
+        "code_cell_count": 37,
+        "markdown_cell_count": 9,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "add metric optimize: max(orc_score x aes_score)"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "import torch\nimport torch.nn.functional as F\n# MODIFIED: Added AutoPipelineForText2Image, StableDiffusionPipeline and EulerDiscreteScheduler might be removed if not used elsewhere.\nfrom diffusers import StableDiffusionPipeline, EulerDiscreteScheduler, AutoPipelineForText2Image\nfrom transformers import AutoProcessor, AutoModel\nmetric = kagglehub.package_import('jiazhuang/svg-image-fidelity')"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "# print(f\"Inspecting metric object: {metric}\")\n# print(f\"Type of metric: {type(metric)}\")\n# print(\"Attributes available in metric (excluding private):\")\n# for attr in dir(metric):\n#     print(\"\\n[DEBUG] 'ImageProcessor' IS a direct attribute of metric.\")\n#     METRIC_IMAGE_PROCESSOR = metric.ImageProcessor # 修正の必要なし\n#     print(\"\\n[DEBUG] 'ImageProcessor' IS NOT a direct attribute of metric.\")\n#     if hasattr(metric, 'utils') and hasattr(metric.utils, 'ImageProcessor'):\n#         print(\"[DEBUG] Found: metric.utils.ImageProcessor\")\n#         METRIC_IMAGE_PROCESSOR = metric.utils.ImageProcessor # 仮の修正パス\n#     elif hasattr(metric, 'helpers') and hasattr(metric.helpers, 'ImageProcessor'):\n#         print(\"[DEBUG] Found: metric.helpers.ImageProcessor\")\n#         METRIC_IMAGE_PROCESSOR = metric.helpers.ImageProcessor # 仮の修正パス\n#     elif hasattr(metric, 'preprocessors') and hasattr(metric.preprocessors, 'ImageProcessor'):\n#         print(\"[DEBUG] Found: metric.preprocessors.ImageProcessor\")\n#         METRIC_IMAGE_PROCESSOR = metric.preprocessors.ImageProcessor # 仮の修正パス\n#         # ここでは、エラーを再現させるために、もし見つからなかった場合は元の metric.ImageProcessor を使うようにしておきます。\n#         if 'METRIC_IMAGE_PROCESSOR' not in globals(): # Fallback if not found\n#              METRIC_IMAGE_PROCESSOR = metric.ImageProcessor # This will likely raise the original error if not found"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "def bitmap_score_instance_impl(multiple_choice_qa, image, random_seed=42):\n    image_processor = metric.ImageProcessor(image=image_resize(image), seed=group_seed).apply()\n    aesthetic_score = metric.aesthetic_evaluator.score(image)\n    vqa_score = metric.vqa_evaluator.score(questions, choices, answers, image)\n    ocr_score = metric.vqa_evaluator.ocr(image_processor.image)\n    instance_score = metric.harmonic_mean(vqa_score, aesthetic_score, beta=0.5) * ocr_score\n    return instance_score, vqa_score, ocr_score, aesthetic_score\ndef bitmap_score_instance(multiple_choice_qa, image, random_seed=42):\n    score_df = []\n        instance_score, vqa_score, ocr_score, aesthetic_score = bitmap_score_instance_impl(one_multiple_choice_qa, one_image, random_seed=42)\n        results.append(instance_score)\n        score_df.append([instance_score, vqa_score, ocr_score, aesthetic_score])\n    score_df = pd.DataFrame(score_df, columns=['competition_score', 'vqa_score', 'ocr_score', 'aesthetic_score'])\n        return score_df.iloc[0].to_dict()\n        return float(fidelity), score_df"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "device = \"cuda:1\" if torch.cuda.is_available() else \"cpu\" # Note: \"cuda:1\" implies a multi-GPU setup. For single GPU, \"cuda\" or \"cuda:0\" is common.\nimport torch\nmodel_path = kagglehub.model_download(\"kawchar85/sdxl-turbo/pytorch/default/2\")\n    torch_dtype=torch.float16,"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "train_df = pd.read_csv(f'{drawing_with_llms_path}/train.csv')"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "train_question_df = train_question_df.groupby('id').apply(lambda df: df.to_dict(orient='list'))\ntrain_df = pd.merge(train_df, train_question_df, how='left', on='id')"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "bitmap_score_instance(r.multiple_choice_qa, image, random_seed=42)"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "def extract_features_by_scale(img_np, num_colors=22, merge_kernel: int = 5):\n    order = np.argsort(-counts)\n    k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (merge_kernel, merge_kernel))\n        header_match = re.match(r\"^.*?<svg[^>]*?>\", svg, flags=re.S)"
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "code",
+            "snippet": "# Import the metric package\nmetric = kagglehub.package_import('jiazhuang/svg-image-fidelity') # This was already imported, re-import is fine\naesthetic_evaluator = metric.aesthetic_evaluator\nsvg_to_png = metric.svg_to_png\ndef high_score_svg_resize("
+          },
+          {
+            "cell_index": 26,
+            "cell_type": "code",
+            "snippet": "metric.score_instance(r.multiple_choice_qa, svg_content, random_seed=42)"
+          },
+          {
+            "cell_index": 27,
+            "cell_type": "code",
+            "snippet": "def get_aes_and_ocr_score(svg_content):\n        png_image = metric.svg_to_png(svg_content)\n        if png_image is None: # Handle case where svg_to_png might return None for invalid SVGs\n             return 0.0, 0.0 # Or some other default low score\n        return 0.0, 0.0 # Default low score on error\n    image_processor = metric.ImageProcessor(image=png_image, seed=33).apply()\n    aesthetic_score = metric.aesthetic_evaluator.score(image)\n    ocr_score = metric.vqa_evaluator.ocr(image_processor.image)\n    return aesthetic_score, ocr_score"
+          },
+          {
+            "cell_index": 28,
+            "cell_type": "code",
+            "snippet": "ocr_score, aesthetic_score = get_aes_and_ocr_score(svg_content)\nocr_score, aesthetic_score"
+          },
+          {
+            "cell_index": 29,
+            "cell_type": "markdown",
+            "snippet": "## Implement the package Model class"
+          },
+          {
+            "cell_index": 30,
+            "cell_type": "code",
+            "snippet": "        # self.device = torch.device(\"cuda\" if torch.cuda.is_available() else \"cpu\") # Device is set globally now\n            torch.manual_seed(self.cfg.seed)\n        best_score: float = -1.0\n                 torch.manual_seed(current_seed)\n                #svg = high_score_svg_resize(svg,new_size=384,padding_ratio=0.08) # Can be re-enabled if desired\n                aes_score, ocr_score = get_aes_and_ocr_score(svg)\n                score = aes_score * ocr_score # Consider harmonic mean or other combination if VQA is also part of this internal score\n            print(f\"[Model] Attempt {attempt_num + 1} scores: AES={aes_score:.4f}, OCR={ocr_score:.4f}, Combined={score:.4f}\")\n            if score > best_score:\n                best_score = score\n                print(f\"[Model] New best score: {best_score:.4f} (from attempt {attempt_num + 1})\")"
+          },
+          {
+            "cell_index": 33,
+            "cell_type": "code",
+            "snippet": "metric.score_instance(r.multiple_choice_qa, svg, random_seed=42)"
+          },
+          {
+            "cell_index": 34,
+            "cell_type": "markdown",
+            "snippet": "## Evaluate on train dataset (LB prediction!)"
+          },
+          {
+            "cell_index": 40,
+            "cell_type": "code",
+            "snippet": "train_df['bitmap_score'] = train_df.progress_apply(\n    lambda r: bitmap_score_instance(r.multiple_choice_qa, r.bitmap, random_seed=42),"
+          },
+          {
+            "cell_index": 41,
+            "cell_type": "code",
+            "snippet": "train_df['svg_score'] = train_df.progress_apply(\n    lambda r: metric.score_instance(r.multiple_choice_qa, r.svg, random_seed=42),"
+          },
+          {
+            "cell_index": 42,
+            "cell_type": "code",
+            "snippet": "    b_score = r.bitmap_score['competition_score']\n    b_vqa = r.bitmap_score['vqa_score']\n    b_ocr = r.bitmap_score['ocr_score']\n    b_aesthetic = r.bitmap_score['aesthetic_score']\n    s_score = r.svg_score['competition_score']\n    s_vqa = r.svg_score['vqa_score']\n    s_ocr = r.svg_score['ocr_score']\n    s_aesthetic = r.svg_score['aesthetic_score']\n    plt.title(f'bitmap: score={b_score:.2f}, vqa={b_vqa:.2f}, ocr={b_ocr:.2f}, aes={b_aesthetic:.2f}')\n    plt.imshow(metric.svg_to_png(r.svg))\n    plt.title(f'svg: score={s_score:.2f}, vqa={s_vqa:.2f}, ocr={s_ocr:.2f}, aes={s_aesthetic:.2f}')"
+          },
+          {
+            "cell_index": 43,
+            "cell_type": "code",
+            "snippet": "mean_bitmap_score = pd.DataFrame(train_df['bitmap_score'].tolist()).mean(axis=0)\nmean_bitmap_score"
+          },
+          {
+            "cell_index": 44,
+            "cell_type": "code",
+            "snippet": "mean_svg_score = pd.DataFrame(train_df['svg_score'].tolist()).mean(axis=0)\nmean_svg_score"
+          },
+          {
+            "cell_index": 45,
+            "cell_type": "code",
+            "snippet": "print(f'Original bitmap score: {mean_bitmap_score.competition_score}')\nprint(f'Final svg score: {mean_svg_score.competition_score}')"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 1,
+      "quality": "strong",
+      "score": 66,
+      "reasons": "",
+      "source": {
+        "path": "GenAI/drawing-with-llms/rank1_1st/new-team-name-1st-place-solution.ipynb",
+        "file_name": "new-team-name-1st-place-solution.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 17,
+        "code_cell_count": 11,
+        "markdown_cell_count": 6,
+        "snippets": [
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "import transformers\nimport torch\nimport torch.nn as nn\nimport torch.nn.functional as F\nfrom diffusers import AutoencoderTiny, DPMSolverMultistepScheduler, StableDiffusionXLPipeline\nKH_MODEL_DIFF0 = \"conormacamhlaoibh/segmind-ssd-1b/transformers/default/1\"\nKH_MODEL_DIFF1 = \"conormacamhlaoibh/segmind-ssd-1b/transformers/default/1\"\nKH_MODEL_VAE = \"conormacamhlaoibh/madebyollin-taesd/transformers/default/2\"\nKH_MODEL_CLIP = \"metric/openai-clip-vit-large-patch14\"\nKH_MODEL_AEST = \"metric/sac-logos-ava1-l14-linearmse\"\nDEVICE_0 = torch.device(\"cuda:0\")\nDEVICE_1 = torch.device(\"cuda:1\")\n    \"no shading, no blending, no background elements, \""
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "    torch.backends.cudnn.deterministic = True\n    torch.backends.cudnn.benchmark = False\n    torch.manual_seed(seed)\n    transformers.set_seed(seed)\ng0 = torch.Generator(device=\"cuda:0\").manual_seed(SEED)\ng1 = torch.Generator(device=\"cuda:1\").manual_seed(SEED + 1)"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "    fshift = np.fft.fftshift(f, axes=(0, 1))\n    fshift *= mask[:,:,None]\n    img_back = np.fft.ifft2(np.fft.ifftshift(fshift, axes=(0, 1)), axes=(0, 1))\n    return np.clip(img_back.real, 0, 255).astype(np.uint8)"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "markdown",
+            "snippet": "# Model"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "            torch_dtype=torch.float16,\n            torch_dtype=torch.float16,\n        torch.backends.cuda.matmul.allow_tf32 = True\n        model_diff.scheduler = DPMSolverMultistepScheduler.from_config(model_diff.scheduler.config)\n        state_dict = torch.load(self.path_model_aest, weights_only=True, map_location=DEVICE_0)\n        scores = []\n        tensors = [self.proc_clip(image).to(DEVICE_0) for image in images]\n        with torch.no_grad():\n                x = torch.stack(batch, dim=0)\n                scores.extend(preds.cpu().tolist())\n        n_unique = len(scores) // n_copies\n        scores = np.array(scores).reshape(n_unique, n_copies)\n        mean_scores = np.mean(scores, axis=1).tolist()\n        best_score, best_score_real = 0.0, 0.0\n        for i, _score in enumerate(mean_scores):\n            score = _score - penalty\n            if score > best_score:\n                best_score = score\n                best_score_real = _score\n        return best_idx, best_score_real\n        if self.verbose: print(f\"[+] Best mean aesthetic score: {max_aest:.3f}\")\n        torch.cuda.empty_cache()"
+          }
+        ]
+      }
+    }
+  }
+}

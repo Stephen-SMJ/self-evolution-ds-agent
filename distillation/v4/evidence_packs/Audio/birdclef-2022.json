@@ -1,0 +1,383 @@
+{
+  "domain": "Audio",
+  "competition": "birdclef-2022",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 555,
+      "quality": "usable",
+      "score": 37,
+      "reasons": "bad_keyword",
+      "source": {
+        "path": "Audio/birdclef-2022/rank555_70pct/birdclef2022-simple-starter-code-error-analysis.ipynb",
+        "file_name": "birdclef2022-simple-starter-code-error-analysis.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 25,
+        "code_cell_count": 17,
+        "markdown_cell_count": 8,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "- This notebook is based on inference results on validation set  from [\"PyTorch Simple Starter Using only 21 classes\"](https://www.kaggle.com/code/myso1987/pytorch-simple-starter-using-only-21-classes)"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "import torch\nimport torchaudio"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "df = pd.read_csv(csv_file)"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "markdown",
+            "snippet": "`csv_file` is the output of using the validation set and model of the above code."
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "markdown",
+            "snippet": "The vocab of the scored bird to be classified in 21 species"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "multiclass.to_csv(\"multi_hot.csv\")"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "mel_converter = torchaudio.transforms.MelSpectrogram(sample_rate=SR,n_fft=1024,hop_length=256,n_mels=128)\nspec_converter = torchaudio.transforms.Spectrogram(n_fft=1024)\ndb_converter = torchaudio.transforms.AmplitudeToDB()"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "    return vocab[torch.where(torch.tensor(multiclass[multiclass.filename==x].iloc[:,1:].values).squeeze())]"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "    y,sr = torchaudio.load(file_path)\n    prediction = vocab[torch.where(torch.tensor(multiclass[multiclass.filename==filename].iloc[:,1:].values).squeeze())]"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 331,
+      "quality": "weak",
+      "score": 21,
+      "reasons": "bad_keyword",
+      "source": {
+        "path": "Audio/birdclef-2022/rank331_40pct/birdclef-random-guess-baseline.ipynb",
+        "file_name": "birdclef-random-guess-baseline.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 7,
+        "code_cell_count": 6,
+        "markdown_cell_count": 1,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "# but for now, let's stick with parsing the test_soundscape folder."
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "# Load scored birds\nwith open('../input/birdclef-2022/scored_birds.json') as sbfile:\n    scored_birds = json.load(sbfile)"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "    # Each scored bird gets a random value in our case\n        for bird in scored_birds:\n            # This is our random prediction score for this bird\n            score = np.random.uniform()\n            # Assemble the row_id which we need to do for each scored bird\n            # apply a \"confidence\" threshold of 0.5\n            pred['target'].append(True if score > 0.5 else False)"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "results.to_csv(\"submission.csv\", index=False)"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 175,
+      "quality": "strong",
+      "score": 67,
+      "reasons": "",
+      "source": {
+        "path": "Audio/birdclef-2022/rank175_20pct/birdclef2022pytorch-tpu-doesnt-work-what-is-wrong.ipynb",
+        "file_name": "birdclef2022pytorch-tpu-doesnt-work-what-is-wrong.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 31,
+        "code_cell_count": 25,
+        "markdown_cell_count": 6,
+        "snippets": [
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "!curl https://raw.githubusercontent.com/pytorch/xla/master/contrib/scripts/env-setup.py -o pytorch-xla-env-setup.py  > /dev/null\n!python pytorch-xla-env-setup.py --version 1.8.1 > /dev/null"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "!pip install ../input/torchlibrosa/torchlibrosa-0.0.5-py3-none-any.whl > /dev/null"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "!pip install timm  > /dev/null"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "# fold 1 test run"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "sys.path.append('../input/pytorch-image-models/pytorch-image-models-master')\nimport timm\nimport torch\nimport torch.nn as nn\nimport torch.nn.functional as F\nimport torch.utils.data as torchdata\nfrom sklearn.model_selection import StratifiedKFold, GroupKFold\nfrom sklearn import metrics\nfrom sklearn.metrics import mean_squared_error, roc_auc_score\nfrom albumentations.core.transforms_interface import ImageOnlyTransform\nfrom torchlibrosa.stft import LogmelFilterBank, Spectrogram\nfrom torchlibrosa.augmentation import SpecAugmentation\nimport albumentations as A\nimport albumentations.pytorch.transforms as T"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "import transformers\nfrom torch.cuda.amp import autocast, GradScaler"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "import torch_xla.core.xla_model as xm\nimport torch_xla.distributed.parallel_loader as pl\nimport torch_xla.distributed.xla_multiprocessing as xmp\nimport torch_xla.utils.serialization as xser"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv('../input/birdclef-2022/train_metadata.csv')"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "train = pd.merge(train, path_df, on='filename')"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "Fold = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)\nfor n, (trn_index, val_index) in enumerate(Fold.split(train, train['primary_label'])):\n    train.loc[val_index, 'kfold'] = int(n)\ntrain['kfold'] = train['kfold'].astype(int)"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "train.to_csv('train_folds.csv', index=False)"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "    cutmix_and_mixup_epochs = 18\n    folds = [0] # [0, 1, 2, 3, 4]\n    N_FOLDS = 5\n    valid_bs = 32 # 64\n    base_model_name = \"tf_efficientnet_b0_ns\"\n    EARLY_STOPPING = True\n    main_metric = \"epoch_f1_at_03\""
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "markdown",
+            "snippet": "**魔理沙:modelはefficientnetb0を使ってるな。**\n**霊夢:今回はfold1で学習させるよ**\n**Marisa: The model uses coefficientnet b0.**\n**Reimu: Let's learn with fold1 this time**"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "    # https://github.com/albumentations-team/albumentations/blob/master/albumentations/core/composition.py\n        augmented = (y + noise * noise_level).astype(y.dtype)\n        return augmented\n        augmented = (y + white_noise * 1 / a_white * a_noise).astype(y.dtype)\n        return augmented\n        augmented = (y + pink_noise * 1 / a_pink * a_noise).astype(y.dtype)\n        return augmented\nclass PitchShift(AudioTransform):\n        augmented = librosa.effects.pitch_shift(y, sr, n_steps)\n        return augmented\n        augmented = librosa.effects.time_stretch(y, rate)\n        return augmented"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "    torch.manual_seed(seed)\n    torch.cuda.manual_seed(seed)\n    torch.cuda.manual_seed_all(seed)\n    torch.backends.cudnn.deterministic = True\n    torch.backends.cudnn.benchmark = False\n#device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')\ntorch.set_default_tensor_type('torch.FloatTensor')"
+          },
+          {
+            "cell_index": 21,
+            "cell_type": "code",
+            "snippet": "    return metrics.roc_auc_score(np.array(y_true), np.array(y_pred))\nclass MetricMeter(object):\n        self.f1_03 = metrics.f1_score(np.array(self.y_true), np.array(self.y_pred) > 0.3, average=\"micro\")\n        self.f1_05 = metrics.f1_score(np.array(self.y_true), np.array(self.y_pred) > 0.5, average=\"micro\")\n        probas = torch.sigmoid(preds)"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "    X = np.stack([X, X, X], axis=-1)\n        V = np.clip(X, _min, _max)\n    'valid' : A.Compose([\nclass WaveformDataset(torch.utils.data.Dataset):"
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "code",
+            "snippet": "def interpolate(x: torch.Tensor, ratio: int):\n    resolution reduction in downsampling of a CNN.\ndef pad_framewise_output(framewise_output: torch.Tensor, frames_num: int):\n        norm_att = torch.softmax(torch.tanh(self.att(x)), dim=-1)\n        x = torch.sum(norm_att * cla, dim=2)\n            return torch.sigmoid(x)\nclass TimmSED(nn.Module):\n        self.spec_augmenter = SpecAugmentation(time_drop_width=64//2, time_stripes_num=2,\n        base_model = timm.create_model(\n                x = self.spec_augmenter(x)\n        x = torch.mean(x, dim=3)\n        logit = torch.sum(norm_att * self.att_block.cla(x), dim=2)"
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "code",
+            "snippet": "    bbx1 = np.clip(cx - cut_w // 2, 0, W)\n    bby1 = np.clip(cy - cut_h // 2, 0, H)\n    bbx2 = np.clip(cx + cut_w // 2, 0, W)\n    bby2 = np.clip(cy + cut_h // 2, 0, H)\ndef cutmix(data, targets, alpha):\n    indices = torch.randperm(data.size(0))\ndef mixup(data, targets, alpha):\n    indices = torch.randperm(data.size(0))\ndef cutmix_criterion(preds, new_targets):\ndef mixup_criterion(preds, new_targets):"
+          },
+          {
+            "cell_index": 25,
+            "cell_type": "code",
+            "snippet": "def train_fn(model, data_loader, device, optimizer, scheduler):\n    scores = MetricMeter()\n        scheduler.step()\n        scores.update(targets, outputs)\n    return scores.avg, losses.avg\ndef train_mixup_cutmix_fn(model, data_loader, device, optimizer, scheduler):\n    scores = MetricMeter()\n            inputs, new_targets = mixup(inputs, targets, 0.4)\n            loss = mixup_criterion(outputs, new_targets)\n            inputs, new_targets = cutmix(inputs, targets, 0.4)\n            loss = cutmix_criterion(outputs, new_targets)\n        scheduler.step()\n        scores.update(new_targets[0], outputs)\n    return scores.avg, losses.avg\ndef valid_fn(model, data_loader, device):\n    scores = MetricMeter()\n    valid_preds = []\n    with torch.no_grad():\n            scores.update(targets, outputs)\n    return scores.avg, losses.avg"
+          },
+          {
+            "cell_index": 26,
+            "cell_type": "code",
+            "snippet": "    with torch.no_grad():\n    df = pd.read_csv('train_folds.csv')\n    for fold, model_path in enumerate(model_paths):\n        model = TimmSED(\n        model.load_state_dict(torch.load(model_path))\n        val_df = df[df.kfold == fold].reset_index(drop=True)\n        dataset = WaveformDataset(df=val_df, mode='valid')\n        train_sampler = torch.utils.data.distributed.DistributedSampler(\n        rank=xm.get_ordinal(), #which replica/device/core\n        dataloader = torch.utils.data.DataLoader(\n            dataset, batch_size=CFG.valid_bs, pin_memory=True, shuffle=False, sampler=train_sampler,\n        torch.cuda.empty_cache()\n        f1_03 = metrics.f1_score(np.array(y_true), np.array(y_pred) > 0.3, average=\"micro\")\n    f1_03 = metrics.f1_score(np.array(y_true), np.array(y_pred) > 0.3, average=\"micro\")\n    f1_05 = metrics.f1_score(np.array(y_true), np.array(y_pred) > 0.5, average=\"micro\")"
+          },
+          {
+            "cell_index": 28,
+            "cell_type": "code",
+            "snippet": "for fold in range(5):\n    if fold not in CFG.folds:\n    print(f\"Fold {fold} Training\")\n    trn_df = train[train.kfold != fold].reset_index(drop=True)\n    val_df = train[train.kfold == fold].reset_index(drop=True)\n    train_sampler = torch.utils.data.distributed.DistributedSampler(\n        rank=xm.get_ordinal(), #which replica/device/core\n    train_dataloader = torch.utils.data.DataLoader(\n    valid_dataset = WaveformDataset(df=val_df, mode='valid')\n    valid_sampler = torch.utils.data.distributed.DistributedSampler(\n        valid_dataset,\n        rank=xm.get_ordinal(),\n    valid_dataloader = torch.utils.data.DataLoader(\n        valid_dataset, batch_size=CFG.valid_bs, pin_memory=True, shuffle=False, sampler=valid_sampler,\n    valid_dataloader = pl.MpDeviceLoader(valid_dataloader, device) # puts the valid data onto the current TPU core\n    model = TimmSED(\n    optimizer = transformers.AdamW(model.parameters(), lr=CFG.LR, weight_decay=CFG.WEIGHT_DECAY)\n    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, eta_min=CFG.ETA_MIN, T_max=500)\n    best_score = -np.inf\n        if epoch < CFG.cutmix_and_mixup_epochs:\n            train_avg, train_loss = train_mixup_cutmix_fn(model, train_dataloader, device, optimizer, scheduler)\n            train_avg, train_loss = train_fn(model, train_dataloader, device, optimizer, scheduler)\n        valid_avg, valid_loss = valid_fn(model, valid_dataloader, device)\n        print(f'Epoch {epoch+1} - avg_train_loss: {train_loss:.5f}  avg_val_loss: {valid_loss:.5f}  time: {elapsed:.0f}s')\n        print(f\"Epoch {epoch+1} - train_f1_at_03:{train_avg['f1_at_03']:0.5f}  valid_f1_at_03:{valid_avg['f1_at_03']:0.5f}\")\n        print(f\"Epoch {epoch+1} - train_f1_at_05:{train_avg['f1_at_05']:0.5f}  valid_f1_at_05:{valid_avg['f1_at_05']:0.5f}\")\n \n...[truncated]"
+          },
+          {
+            "cell_index": 29,
+            "cell_type": "code",
+            "snippet": "model_paths = [f'fold-{i}.bin' for i in CFG.folds]"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 80,
+      "quality": "strong",
+      "score": 61,
+      "reasons": "",
+      "source": {
+        "path": "Audio/birdclef-2022/rank80_10pct/hawaii-train-nhah.ipynb",
+        "file_name": "hawaii-train-nhah.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 20,
+        "code_cell_count": 20,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "!pip install ../input/torchlibrosa/torchlibrosa-0.0.5-py3-none-any.whl > /dev/null"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "sys.path.append('../input/pytorch-image-models/pytorch-image-models-master')\nimport timm\nimport torch\nimport torch.nn as nn\nimport torch.nn.functional as F\nimport torch.utils.data as torchdata\nfrom sklearn.model_selection import StratifiedKFold, GroupKFold\nfrom sklearn import metrics\nfrom sklearn.metrics import mean_squared_error, roc_auc_score\nfrom albumentations.core.transforms_interface import ImageOnlyTransform\nfrom torchlibrosa.stft import LogmelFilterBank, Spectrogram\nfrom torchlibrosa.augmentation import SpecAugmentation\nimport albumentations as A\nimport albumentations.pytorch.transforms as T\nimport transformers\nfrom torch.cuda.amp import autocast, GradScaler"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv('../input/birdies/train_NHaH.csv')"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "train = pd.merge(train, path_df, on='filename')"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "Fold = StratifiedKFold(n_splits=32, shuffle=True, random_state=56)\nfor n, (trn_index, val_index) in enumerate(Fold.split(train, train['primary_label'])):\n    train.loc[val_index, 'kfold'] = int(n)\ntrain['kfold'] = train['kfold'].astype(int)"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "train.to_csv('train_folds.csv', index=False)"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "    cutmix_and_mixup_epochs = 20\n    folds = [1]\n    N_FOLDS = 32\n    valid_bs = 32 # 64\n    base_model_name = \"tf_efficientnet_b0_ns\"\n    EARLY_STOPPING = True\n    main_metric = \"epoch_f1_at_03\""
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "        augmented = (y + noise * noise_level).astype(y.dtype)\n        return augmented\n        augmented = (y + white_noise * 1 / a_white * a_noise).astype(y.dtype)\n        return augmented\n        augmented = (y + pink_noise * 1 / a_pink * a_noise).astype(y.dtype)\n        return augmented\nclass PitchShift(AudioTransform):\n        augmented = librosa.effects.pitch_shift(y, sr, n_steps)\n        return augmented\n        augmented = librosa.effects.time_stretch(y, rate)\n        return augmented"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "    torch.manual_seed(seed)\n    torch.cuda.manual_seed(seed)\n    torch.cuda.manual_seed_all(seed)\n    torch.backends.cudnn.deterministic = True\n    torch.backends.cudnn.benchmark = False\ndevice = torch.device('cuda' if torch.cuda.is_available() else 'cpu')"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "    return metrics.roc_auc_score(np.array(y_true), np.array(y_pred))\nclass MetricMeter(object):\n        self.f1_03 = metrics.f1_score(np.array(self.y_true), np.array(self.y_pred) > 0.3, average=\"micro\")\n        self.f1_05 = metrics.f1_score(np.array(self.y_true), np.array(self.y_pred) > 0.5, average=\"micro\")\n        probas = torch.sigmoid(preds)\n    X = np.stack([X, X, X], axis=-1)\n        V = np.clip(X, _min, _max)\n                   'valid' : A.Compose([A.Normalize(mean, std),]), }\nclass WaveformDataset(torch.utils.data.Dataset):"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "def interpolate(x: torch.Tensor, ratio: int):\ndef pad_framewise_output(framewise_output: torch.Tensor, frames_num: int):\n        norm_att = torch.softmax(torch.tanh(self.att(x)), dim=-1)\n        x = torch.sum(norm_att * cla, dim=2)\n            return torch.sigmoid(x)\nclass TimmSED(nn.Module):\n        self.spec_augmenter = SpecAugmentation(time_drop_width=64//2, time_stripes_num=2,\n        base_model = timm.create_model(base_model_name, pretrained=pretrained, in_chans=in_channels)\n                x = self.spec_augmenter(x)\n        x = torch.mean(x, dim=3)\n        logit = torch.sum(norm_att * self.att_block.cla(x), dim=2)"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "def interpolate(x: torch.Tensor, ratio: int):\ndef pad_framewise_output(framewise_output: torch.Tensor, frames_num: int):\n        norm_att = torch.softmax(torch.tanh(self.att(x)), dim=-1)\n        x = torch.sum(norm_att * cla, dim=2)\n            return torch.sigmoid(x)\nclass TimmSED(nn.Module):\n        self.spec_augmenter = SpecAugmentation(time_drop_width=64//2, time_stripes_num=2,\n        base_model = timm.create_model(base_model_name, pretrained=pretrained, in_chans=in_channels)\n                x = self.spec_augmenter(x)\n        x = torch.mean(x, dim=3)\n        logit = torch.sum(norm_att * self.att_block.cla(x), dim=2)"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "    bbx1 = np.clip(cx - cut_w // 2, 0, W)\n    bby1 = np.clip(cy - cut_h // 2, 0, H)\n    bbx2 = np.clip(cx + cut_w // 2, 0, W)\n    bby2 = np.clip(cy + cut_h // 2, 0, H)\ndef cutmix(data, targets, alpha):\n    indices = torch.randperm(data.size(0))\ndef mixup(data, targets, alpha):\n    indices = torch.randperm(data.size(0))\ndef cutmix_criterion(preds, new_targets):\ndef mixup_criterion(preds, new_targets):"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "def train_fn(model, data_loader, device, optimizer, scheduler):\n    scores = MetricMeter()\n        scheduler.step()\n        scores.update(targets, outputs)\n    return scores.avg, losses.avg\ndef train_mixup_cutmix_fn(model, data_loader, device, optimizer, scheduler):\n    scores = MetricMeter()\n            inputs, new_targets = mixup(inputs, targets, 0.4)\n                loss = mixup_criterion(outputs, new_targets)\n            inputs, new_targets = cutmix(inputs, targets, 0.4)\n                loss = cutmix_criterion(outputs, new_targets)\n        scheduler.step()\n        scores.update(new_targets[0], outputs)\n    return scores.avg, losses.avg\ndef valid_fn(model, data_loader, device):\n    scores = MetricMeter()\n    valid_preds = []\n    with torch.no_grad():\n            scores.update(targets, outputs)\n    return scores.avg, losses.avg\n    with torch.no_grad():\n    df = pd.read_csv('train_folds.csv')\n    for fold, model_path in enumerate(model_paths):\n        model = TimmSED(base_model_name=CFG.base_model_name, pretrained=CFG.pretrained,\n        model.load_state_dict(torch.load(model_path))\n        val_df = df[df.kfold == fold].reset_index(drop=True)\n        dataset = WaveformDataset(df=val_df, mode='valid')\n        dataloader = torch.utils.data.DataLoader(dataset, batch_size=CFG.valid_bs, num_workers=0,\n        torch.cuda.empty_cache()\n        f1_03 = metrics.f1_score(np.array(y_true), np.array(y_pred) > 0.3, average=\"micro\")\n    f1_03 = metrics.f1_score(np.array(y_true), np.array(y_pred) > 0.3, average=\"micro\")\n    f1_05 = metrics.f1_score(np.array(y_true), np.array(y_pred) > 0.5, average=\"micro\")"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "for fold in range(32):\n    if fold not in CFG.folds:\n    print(f\"Fold {fold} Training\")\n    trn_df = train[train.kfold != fold].reset_index(drop=True)\n    val_df = train[train.kfold == fold].reset_index(drop=True)\n    train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=CFG.train_bs,\n    valid_dataset = WaveformDataset(df=val_df, mode='valid')\n    valid_dataloader = torch.utils.data.DataLoader(valid_dataset, batch_size=CFG.valid_bs,\n    model = TimmSED(base_model_name=CFG.base_model_name, pretrained=CFG.pretrained,\n    optimizer = transformers.AdamW(model.parameters(), lr=CFG.LR, weight_decay=CFG.WEIGHT_DECAY)\n    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, eta_min=CFG.ETA_MIN, T_max=500)\n    best_score = -np.inf\n        if epoch < CFG.cutmix_and_mixup_epochs:\n            train_avg, train_loss = train_mixup_cutmix_fn(model, train_dataloader, device, optimizer, scheduler)\n            train_avg, train_loss = train_fn(model, train_dataloader, device, optimizer, scheduler)\n        valid_avg, valid_loss = valid_fn(model, valid_dataloader, device)\n        print(f'Epoch {epoch+1} - avg_train_loss: {train_loss:.5f}  avg_val_loss: {valid_loss:.5f}  time: {elapsed:.0f}s')\n        print(f\"Epoch {epoch+1} - train_f1_at_03:{train_avg['f1_at_03']:0.5f}  valid_f1_at_03:{valid_avg['f1_at_03']:0.5f}\")\n        print(f\"Epoch {epoch+1} - train_f1_at_05:{train_avg['f1_at_05']:0.5f}  valid_f1_at_05:{valid_avg['f1_at_05']:0.5f}\")\n        if valid_avg['f1_at_03'] > best_score:\n            print(f\">>>>>>>> Model Improved From {best_score} ----> {valid_avg['f1_at_03']}\")\n            print(f\"other scores here... {valid_avg['f1_at_03']}, {valid_avg['f1_at_05']}\")\n            torch.save(model.state_dict(), f'fold-{fold}.bin')\n            best_score = valid_\n...[truncated]"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "model_paths = [f'fold-{i}.bin' for i in CFG.folds]"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 1,
+      "quality": "usable",
+      "score": 38,
+      "reasons": "",
+      "source": {
+        "path": "Audio/birdclef-2022/rank1_1st/birdnet-inference.ipynb",
+        "file_name": "birdnet-inference.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 13,
+        "code_cell_count": 10,
+        "markdown_cell_count": 3,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "markdown",
+            "snippet": "## Note 2: The ensemble of the ensemble of our own model could also reach gold zone, and we published all trained model (refer: https://www.kaggle.com/code/leonshangguan/private-7-8-final-of-submission Version 6)"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "    data = pd.read_csv(file, sep='\\t')"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "sample_submission = pd.read_csv('../input/birdclef-2022/sample_submission.csv')\nsample_submission"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "for i in range(len(sample_submission)):\n    sample = sample_submission.row_id[i]\n        sample_submission.iat[i, 1] = (target_bird in pred_dicts[key])"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "sample_submission.to_csv(\"submission.csv\", index=False)"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "sample_submission"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,158 @@
+{
+  "domain": "RecSys",
+  "competition": "expedia-hotel-recommendations",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 1378,
+      "quality": "usable",
+      "score": 36,
+      "reasons": "",
+      "source": {
+        "path": "RecSys/expedia-hotel-recommendations/rank1378_70pct/ehr-1-with-comments.py",
+        "file_name": "ehr-1-with-comments.py",
+        "suffix": ".py",
+        "cell_count": 1,
+        "code_cell_count": 1,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "    # Increase score of a hotel cluster, giving the key (user_id, user_location_city, srch_destination_id, hotel_country, hotel_market)\n    # Increase score of a hotel cluster, giving the key (user_id, srch_destination_id, hotel_country, hotel_market)\n    # Increase score of a hotel cluster, giving the key (user_id, user_location_city, srch_destination_id, hotel_country, hotel_market)\n    # Increase score of a hotel cluster, giving the key (user_location_city, orig_destination_distance)\n    # Increase score of a hotel cluster, giving the key (srch_destination_id,hotel_country,hotel_market)\n    # Increase score of a hotel cluster, giving the key (hotel_country)\n    # Increase the overall score of a hotel cluster\n    This function will produce a guess from a dictionary of scores, filling 'filled' if the guess is not present on it\n    :param d: dictionary where keys are hotel_cluster and values are scores"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 762,
+      "quality": "usable",
+      "score": 27,
+      "reasons": "",
+      "source": {
+        "path": "RecSys/expedia-hotel-recommendations/rank762_40pct/map-k-demo.ipynb",
+        "file_name": "map-k-demo.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 6,
+        "code_cell_count": 4,
+        "markdown_cell_count": 2,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\nimport ml_metrics as metrics"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "print('AP@5 =',metrics.apk(actual,predicted,5) )\nprint('AP@5 =',metrics.apk(actual,predicted,5) )\nprint('AP@5 =',metrics.apk(actual,predicted,5) )\nprint('AP@5 =',metrics.apk(actual,predicted,5) )\nprint('AP@5 =',metrics.apk(actual,predicted,5) )"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "print('AP@5 =',metrics.apk(actual,predicted,5) )\nprint('AP@5 =',metrics.apk(actual,predicted,5) )\nprint('AP@5 =',metrics.apk(actual,predicted,5) )\nprint('AP@5 =',metrics.apk(actual,predicted,5) )\nprint('AP@5 =',metrics.apk(actual,predicted,5) )"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "markdown",
+            "snippet": "As you see from the above example, the \"earlier\" you predict the correct answer 1, the higher your score."
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "metrics.mapk([[1],[1],[1],[1],[1]],[[1,2,3,4,5],[2,1,3,4,5],[3,2,1,4,5],[4,2,3,1,5],[4,2,3,5,1]], 5)"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 391,
+      "quality": "weak",
+      "score": 24,
+      "reasons": "",
+      "source": {
+        "path": "RecSys/expedia-hotel-recommendations/rank391_20pct/valium-1.py",
+        "file_name": "valium-1.py",
+        "suffix": ".py",
+        "cell_count": 1,
+        "code_cell_count": 1,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "# coding: utf-8\n__author__ = 'Ravi: https://kaggle.com/company'\n\nimport datetime\nfrom heapq import nlargest\nfrom operator import itemgetter\nimport math\n\ndef prepare_arrays_match():\n    f = open(\"../input/train.csv\", \"r\")\n    f.readline()\n\n    best_hotels_od_ulc = dict()\n    best_hotels_uid_miss = dict()\n    best_hotels_search_dest = dict()\n    best_hotels_country = dict()\n    popular_hotel_cluster = dict()\n    best_s00 = dict()\n    best_s01 = dict()\n    total = 0\n\n    # Calc counts\n    while 1:\n        line = f.readline().strip()\n        total += 1\n\n        if total % 2000000 == 0:\n            print('Read {} lines...'.format(total))\n\n        if line == '':\n            break\n\n        arr = line.split(\",\")\n\n        if arr[11] != '':\n            book_year = int(arr[11][:4])\n            book_month = int(arr[11][5:7])\n        else:\n            book_year = int(arr[0][:4])\n            book_month = int(arr[0][5:7])\n\n        if book_month<1 or book_month>12 or book_year<2012 or book_year>2015:\n            #print(book_month)\n            #print(book_year)\n            #print(line)\n            continue\n\n        user_location_city = arr[5]\n        orig_destination_distance = arr[6]\n        user_id = arr[7]\n        is_package = arr[9]\n        srch_destination_id = arr[16]\n        hotel_country = arr[21]\n        hotel_market = arr[22]\n        is_booking = float(arr[18])\n        hotel_cluster = arr[23]\n\n        append_0 = ((book_year - 2012)*12 + (book_month - 12))\n        if not (append_0>0 and append_0<=36):\n            #print(book_year)\n            #print(book_month)\n            print(line)\n            #print(append_0)\n            continue\n\n        append_1 = pow(math.log(append_0), 1.35) * (-0.1+0.95*pow(append_0, 1.46)) * (3.5*((book_year - 2012)/2) + 17.55*is_booking)\n        appe\n...[truncated]"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 762,
+      "quality": "usable",
+      "score": 27,
+      "reasons": "",
+      "source": {
+        "path": "RecSys/expedia-hotel-recommendations/rank762_10pct/map-k-demo.ipynb",
+        "file_name": "map-k-demo.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 6,
+        "code_cell_count": 4,
+        "markdown_cell_count": 2,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\nimport ml_metrics as metrics"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "print('AP@5 =',metrics.apk(actual,predicted,5) )\nprint('AP@5 =',metrics.apk(actual,predicted,5) )\nprint('AP@5 =',metrics.apk(actual,predicted,5) )\nprint('AP@5 =',metrics.apk(actual,predicted,5) )\nprint('AP@5 =',metrics.apk(actual,predicted,5) )"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "print('AP@5 =',metrics.apk(actual,predicted,5) )\nprint('AP@5 =',metrics.apk(actual,predicted,5) )\nprint('AP@5 =',metrics.apk(actual,predicted,5) )\nprint('AP@5 =',metrics.apk(actual,predicted,5) )\nprint('AP@5 =',metrics.apk(actual,predicted,5) )"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "markdown",
+            "snippet": "As you see from the above example, the \"earlier\" you predict the correct answer 1, the higher your score."
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "metrics.mapk([[1],[1],[1],[1],[1]],[[1,2,3,4,5],[2,1,3,4,5],[3,2,1,4,5],[4,2,3,1,5],[4,2,3,5,1]], 5)"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 2,
+      "quality": "reject",
+      "score": 9,
+      "reasons": "",
+      "source": {
+        "path": "RecSys/expedia-hotel-recommendations/rank2_1st/last-week-xkcd.py",
+        "file_name": "last-week-xkcd.py",
+        "suffix": ".py",
+        "cell_count": 1,
+        "code_cell_count": 1,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "from matplotlib import pyplot as plt\nimport numpy as np\n\nplt.rcParams['figure.figsize'] = [12, 8]\nplt.xkcd()\n\nfig = plt.figure()\nax = fig.add_subplot(1, 1, 1)\nax.bar(range(4), [4, 6, 40, 50], 0.6)\nax.spines['right'].set_color('none')\nax.spines['top'].set_color('none')\nax.xaxis.set_ticks_position('bottom')\nax.set_xticks(np.arange(4) + 0.3)\nax.set_ylim([0, 60])\nax.set_xticklabels(['RESTARTING TRAINING\\nJOBS ON EC2',\n                    'TRYING TO ADD\\nNEW FEATURES',\n                    'THINKING ABOUT HOW\\nIS IT EVEN POSSIBLE\\nTO REACH 0.6 MAP@5??',\n                    'REFRESHING THE\\nLEADERBOARD'])\nplt.ylabel('TIME')\nplt.yticks([])\nplt.title(\"MY LAST WEEK IN THE COMPETITION\")\nplt.show()\nplt.savefig('last_week_xkcd.png')"
+          }
+        ]
+      }
+    }
+  }
+}

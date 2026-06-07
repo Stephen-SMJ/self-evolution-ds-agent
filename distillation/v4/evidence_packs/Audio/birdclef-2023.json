@@ -1,0 +1,438 @@
+{
+  "domain": "Audio",
+  "competition": "birdclef-2023",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 779,
+      "quality": "strong",
+      "score": 55,
+      "reasons": "",
+      "source": {
+        "path": "Audio/birdclef-2023/rank779_70pct/transform-yamnet-log-mel-to-tfrecord.ipynb",
+        "file_name": "transform-yamnet-log-mel-to-tfrecord.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 23,
+        "code_cell_count": 23,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import tensorflow as tf\nimport tensorflow_io as tfio"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "    valid_dir = os.path.join(output, \"validation\")"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "df = pd.read_csv(Config.metada_file)"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "import tensorflow_hub as hub\nyamnetlayer = hub.KerasLayer('https://tfhub.dev/google/yamnet/1', trainable=False)"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "        examples = map(create_example, tf.unstack(fl, axis=0), tf.unstack(ll, axis=0))\n    dff.to_csv(os.path.join(Config.output, f\"{name}.csv\"))"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "    df_train, df_valid = None, None\n            dff_train, dff_valid = train_test_split(dff, test_size=test_size, random_state=random_state)\n            df_valid = dff_valid if df_valid is None else pd.concat([df_valid, dff_valid])\n    return df_train, df_valid"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "train_df, valid_df = train_split_label_balanced(df, labels=df[\"primary_label\"].unique(), test_size=0.3)"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "Config.valid_dir"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "print(\"Validation size | Size: \", len(valid_df))\nfilepaths = valid_df[\"filepath\"]\nlabels = valid_df[\"label\"]\nframe2records(filepaths, labels, path_records=Config.valid_dir, record_size=Config.records_size, name=\"validation\")"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "df_train_metadata = pd.read_csv(os.path.join(\"/kaggle/working/birdclef-2023\", \"train.csv\"))"
+          },
+          {
+            "cell_index": 21,
+            "cell_type": "code",
+            "snippet": "df_train_metadata = pd.read_csv(os.path.join(\"/kaggle/working/birdclef-2023\", \"validation.csv\"))"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 437,
+      "quality": "usable",
+      "score": 43,
+      "reasons": "",
+      "source": {
+        "path": "Audio/birdclef-2023/rank437_40pct/notedta-2.ipynb",
+        "file_name": "notedta-2.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 13,
+        "code_cell_count": 13,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import torch\nimport torch.nn as nn\nimport torchvision\nimport torchaudio  # importing torchaudio library for audio processing\nimport torch.nn.functional as F\nimport torch.nn.init as init\nimport torch.optim as optim\nfrom torchvision import transforms\nfrom torch.optim.lr_scheduler import ReduceLROnPlateau\nfrom torch.utils.data import Dataset, DataLoader, random_split"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "cfg.data_folder = ''\ncfg.train_data_folder = cfg.data_dir + \"train_audio/\"\ncfg.val_data_folder = cfg.data_dir + \"train_audio/\"\ncfg.test_data_folder = cfg.data_dir + \"test_soundscapes/soundscape_29201.ogg\""
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "        sig, sr = torchaudio.load(audio_file)\n          resig = torch.cat([sig, sig, sig])\n        resig = torchaudio.transforms.Resample(sr, newsr)(sig[:1,:])\n        # Resample the second channel and merge both channels\n            retwo = torchaudio.transforms.Resample(sr, newsr)(sig[1:,:])\n            resig = torch.cat([resig, retwo])\n            pad_begin = torch.zeros((num_rows, pad_begin_len))\n            pad_end = torch.zeros((num_rows, pad_end_len))\n            sig = torch.cat((pad_begin, sig, pad_end), 1)\n    def time_shift(aud, shift_limit):\n        shift_amt = int(random.random() * shift_limit * sig_len)\n        return (sig.roll(shift_amt), sr)\n        spec = torchaudio.transforms.MelSpectrogram(sr, n_fft=n_fft, hop_length=hop_len, n_mels=n_mels)(sig)\n        spec = torchaudio.transforms.AmplitudeToDB(top_db=top_db)(spec)\n    def spectro_augment(spec, max_mask_pct=0.1, n_freq_masks=1, n_time_masks=1):\n            aug_spec = torchaudio.transforms.FrequencyMasking(freq_mask_param)(aug_spec, mask_value)\n            aug_spec = torchaudio.transforms.TimeMasking(time_mask_param)(aug_spec, mask_value)"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "    shift_pct = 0.4\n    shift_aud = AudioUtil.time_shift(dur_aud, shift_pct)\n    sgram = AudioUtil.spectro_gram(shift_aud, n_mels=64, n_fft=1024, hop_len=None)\n    aug_sgram = AudioUtil.spectro_augment(sgram, max_mask_pct=0.1, n_freq_masks=2, n_time_masks=2)"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "    __train_data_path = cfg.train_data_folder\n    __train_df = pd.read_csv(cfg.train_df)\n    __le=preprocessing.LabelEncoder()\n            #RawData.__le = preprocessing.LabelEncoder()\n            #RawData.__labels_t = torch.as_tensor(targets)"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "        #audio = torch.tensor(audio)\n        chunks = audio.unfold(1, frame_length, frame_step).transpose(0, 1)"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "train_df = pd.read_csv(cfg.train_df)"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "    loadpath = cfg.train_data_folder+ data['filename']\n    aud,sr = torchaudio.load(loadpath)\n    torch.save(signal,savepath)"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "'''train_df = pd.read_csv(cfg.train_df)\n    loadpath = cfg.train_data_folder+ data['filename']\n    aud,sr = torchaudio.load(loadpath)\n        torch.save(signal,savepath)"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "pd_lists.to_csv(save_data_path+'lists.csv',index=False)"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 197,
+      "quality": "strong",
+      "score": 67,
+      "reasons": "",
+      "source": {
+        "path": "Audio/birdclef-2023/rank197_20pct/baseline-clf.ipynb",
+        "file_name": "baseline-clf.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 56,
+        "code_cell_count": 32,
+        "markdown_cell_count": 24,
+        "snippets": [
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "!pip install timm"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "# Pytorch Imports\nimport torch\nimport torch.nn as nn\nimport torch.optim as optim\nimport torch.nn.functional as F\nfrom torch.optim import lr_scheduler\nfrom torch.utils.data import Dataset, DataLoader\nfrom torch.cuda import amp\nimport torchaudio\nfrom torchaudio.transforms import MelSpectrogram, Resample\nfrom sklearn.preprocessing import LabelEncoder\nfrom sklearn.model_selection import StratifiedKFold\nfrom sklearn.metrics import average_precision_score\nimport timm"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "markdown",
+            "snippet": "<img src=\"https://i.imgur.com/gb6B4ig.png\" width=\"400\" alt=\"Weights & Biases\" />\n\n<span style=\"color: #000508; font-family: Segoe UI; font-size: 1.2em; font-weight: 300;\"> Weights & Biases (W&B) is a set of machine learning tools that helps you build better models faster. <strong>Kaggle competitions require fast-paced model development and evaluation</strong>. There are a lot of components: exploring the training data, training different models, combining trained models in different combinations (ensembling), and so on.</span>\n\n> <span style=\"color: #000508; font-family: Segoe UI; font-size: 1.2em; font-weight: 300;\">⏳ Lots of components = Lots of places to go wrong = Lots of time spent debugging</span>\n\n<span style=\"color: #000508; font-family: Segoe UI; font-size: 1.2em; font-weight: 300;\">To learn more about Weights and Biases check out this <strong><a href=\"https://www.kaggle.com/ayuraj/experiment-tracking-with-weights-and-biases\">kernel</a></strong>.</span>"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "      \"model_name\": \"tf_efficientnet_b0_ns\",\n      \"valid_batch_size\": 128,\n      \"scheduler\": 'CosineAnnealingLR',\n      \"n_fold\": 5,\n      \"device\": torch.device(\"cuda:0\" if torch.cuda.is_available() else \"cpu\"),"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "    torch.manual_seed(seed)\n    torch.cuda.manual_seed(seed)\n    torch.backends.cudnn.deterministic = True\n    torch.backends.cudnn.benchmark = False"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "df = pd.read_csv(f\"{ROOT_DIR}/train_metadata.csv\")"
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "code",
+            "snippet": "encoder = LabelEncoder()"
+          },
+          {
+            "cell_index": 25,
+            "cell_type": "code",
+            "snippet": "skf = StratifiedKFold(n_splits=CONFIG['n_fold'])\nfor fold, ( _, val_) in enumerate(skf.split(X=df, y=df.primary_label)):\n      df.loc[val_ , \"kfold\"] = fold"
+          },
+          {
+            "cell_index": 26,
+            "cell_type": "code",
+            "snippet": "assert(df.groupby(\"kfold\").size().sum() == df.shape[0])\ndf.groupby(\"kfold\").size()"
+          },
+          {
+            "cell_index": 28,
+            "cell_type": "code",
+            "snippet": "        audio, sample_rate = torchaudio.load(filepath)\n        label_onehot = torch.zeros(CONFIG['num_classes'])\n        label_onehot[self.labels[index]] = 1\n        label = torch.tensor(self.labels[index])\n        image = torch.stack([mel, mel, mel])\n        max_val = torch.abs(image).max()\n            label_onehot=label_onehot,\n        return torch.mean(audio, axis=0)"
+          },
+          {
+            "cell_index": 30,
+            "cell_type": "code",
+            "snippet": "        self.p = nn.Parameter(torch.ones(1)*p)"
+          },
+          {
+            "cell_index": 31,
+            "cell_type": "markdown",
+            "snippet": "# <span><h1 style = \"font-family: garamond; font-size: 40px; font-style: normal; letter-spcaing: 3px; background-color: #f6f5f5; color :#fe346e; border-radius: 100px 100px; text-align:center\">Create Model</h1></span>"
+          },
+          {
+            "cell_index": 32,
+            "cell_type": "code",
+            "snippet": "        self.model = timm.create_model(model_name, pretrained=pretrained)"
+          },
+          {
+            "cell_index": 37,
+            "cell_type": "code",
+            "snippet": "def train_one_epoch(model, optimizer, scheduler, dataloader, device, epoch):\n            if scheduler is not None:\n                scheduler.step()"
+          },
+          {
+            "cell_index": 38,
+            "cell_type": "markdown",
+            "snippet": "# <span><h1 style = \"font-family: garamond; font-size: 40px; font-style: normal; letter-spcaing: 3px; background-color: #f6f5f5; color :#fe346e; border-radius: 100px 100px; text-align:center\">Validation Function</h1></span>"
+          },
+          {
+            "cell_index": 39,
+            "cell_type": "code",
+            "snippet": "    score = average_precision_score(\n    return score"
+          },
+          {
+            "cell_index": 40,
+            "cell_type": "code",
+            "snippet": "@torch.inference_mode()\ndef valid_one_epoch(model, dataloader, device, epoch):\n        labels = data['label_onehot'].to(device)\n        bar.set_postfix(Epoch=epoch, Valid_Loss=epoch_loss,\n    LABELS = np.vstack(LABELS)\n    PREDS = np.vstack(PREDS)"
+          },
+          {
+            "cell_index": 42,
+            "cell_type": "code",
+            "snippet": "def run_training(model, optimizer, scheduler, device, num_epochs):\n    if torch.cuda.is_available():\n        print(\"[INFO] Using GPU: {}\\n\".format(torch.cuda.get_device_name()))\n            model, optimizer, scheduler,\n        val_epoch_loss, val_epoch_cmap = valid_one_epoch(\n            valid_loader,\n        history['Valid Loss'].append(val_epoch_loss)\n        history['Valid CMAP'].append(val_epoch_cmap)\n        # Log the metrics\n        wandb.log({\"Valid Loss\": val_epoch_loss})\n        wandb.log({\"Valid CMAP\": val_epoch_cmap})\n            print(f\"{b_}Validation CMAP Improved ({best_epoch_cmap} ---> {val_epoch_cmap})\")\n            run.summary[\"Best CMAP Score\"] = best_epoch_cmap\n            torch.save(model.state_dict(), PATH)"
+          },
+          {
+            "cell_index": 43,
+            "cell_type": "code",
+            "snippet": "def fetch_scheduler(optimizer):\n    if CFG.scheduler == 'CosineAnnealingLR':\n        scheduler = lr_scheduler.CosineAnnealingLR(optimizer,T_max=CFG.T_max,\n    elif CFG.scheduler == 'CosineAnnealingWarmRestarts':\n        scheduler = lr_scheduler.CosineAnnealingWarmRestarts(optimizer,T_0=CFG.T_0,\n    elif CFG.scheduler == None:\n    return scheduler"
+          },
+          {
+            "cell_index": 44,
+            "cell_type": "code",
+            "snippet": "def prepare_loaders(df, fold):\n    df_train = df[df.kfold != fold].reset_index(drop=True)\n    df_valid = df[df.kfold == fold].reset_index(drop=True)\n    valid_dataset = BirdCLEFDataset(df_valid, target_sample_rate=CFG.sample_rate, max_time=CFG.max_time)\n    valid_loader = DataLoader(\n        valid_dataset,\n        batch_size=CFG.valid_batch_size,\n    return train_loader, valid_loader"
+          },
+          {
+            "cell_index": 46,
+            "cell_type": "code",
+            "snippet": "train_loader, valid_loader = prepare_loaders(df, fold=0)"
+          },
+          {
+            "cell_index": 48,
+            "cell_type": "code",
+            "snippet": "scheduler = fetch_scheduler(optimizer)"
+          },
+          {
+            "cell_index": 51,
+            "cell_type": "code",
+            "snippet": "    scheduler,"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 113,
+      "quality": "strong",
+      "score": 55,
+      "reasons": "",
+      "source": {
+        "path": "Audio/birdclef-2023/rank113_10pct/google-bird-model-embeddings-predictions-score.ipynb",
+        "file_name": "google-bird-model-embeddings-predictions-score.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 16,
+        "code_cell_count": 12,
+        "markdown_cell_count": 4,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import tensorflow_hub as hub\nimport tensorflow as tf\nimport torchaudio\nimport torch\nfrom torch.utils.data import DataLoader, Dataset\ndf = pd.read_csv('/kaggle/input/birdclef-2023/train_metadata.csv')\nmodel = hub.load('https://kaggle.com/models/google/bird-vocalization-classifier/frameworks/TensorFlow2/variations/bird-vocalization-classifier/versions/2')\nmodel_labels_df = pd.read_csv(hub.resolve('https://kaggle.com/models/google/bird-vocalization-classifier/frameworks/tensorFlow2/variations/bird-vocalization-classifier/versions/2') + \"/assets/label.csv\")"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "# use a torch dataloader to decode audio in parallel on CPU while GPU is running\n        audio = torchaudio.load(AUDIO_PATH / filename)[0].numpy()[0]\n        all_embeddings[filename] = np.stack(file_embeddings)\n        all_predictions[filename] = np.stack(file_predictions)\ntorch.save(all_embeddings, 'embeddings.pt')\ntorch.save(all_predictions, 'predictions.pt')"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "markdown",
+            "snippet": "# Scores of predictions on the first 5 seconds of each recording"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "predicted_classes = torch.tensor([row[0].argmax() for row in all_predictions.values()])\nactual_classes = torch.tensor([label_to_index[label] for label in df.primary_label])"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "logits = torch.stack([torch.tensor(row[0]) for row in all_predictions.values()])\nce_loss = torch.nn.CrossEntropyLoss()(logits, actual_classes)"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "actual_probs = torch.eye(len(bc2023_labels))[actual_classes]\nbce_loss = torch.nn.BCEWithLogitsLoss()(logits, actual_probs)"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "import sklearn.metrics\n    score = sklearn.metrics.average_precision_score(\n    return score"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "    submission=pd.DataFrame(torch.softmax(logits, 1).numpy(), columns=bc2023_labels),"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "    submission=pd.DataFrame(torch.sigmoid(logits).numpy(), columns=bc2023_labels),"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "import torchaudio\ncompute_melspec = torchaudio.transforms.MelSpectrogram(\npower_to_db = torchaudio.transforms.AmplitudeToDB(\n    audio = torchaudio.load(AUDIO_PATH / df.filename[index], start, start+WINDOW)[0][0]\nprobs = torch.sigmoid(logits)\n    rank = 1 + sorted(probs[i], reverse=True).index(predicted_prob_for_correct_label)\n    print(f'correct was {correct_class}, given prob {predicted_prob_for_correct_label} and ranked #{rank}')"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 2,
+      "quality": "strong",
+      "score": 54,
+      "reasons": "",
+      "source": {
+        "path": "Audio/birdclef-2023/rank2_1st/bird-clef-2023-inference-v1.ipynb",
+        "file_name": "bird-clef-2023-inference-v1.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 39,
+        "code_cell_count": 30,
+        "markdown_cell_count": 9,
+        "snippets": [
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "sys.path.append('/kaggle/input/bird-clef-2023-code/main_folder/main_folder/')"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "import torch\nfrom code_base.models import WaveCNNClasifier, WaveCNNAttenClasifier\nfrom code_base.utils import load_json, compose_submission_dataframe, groupby_np_array, stack_and_max_by_samples\nfrom code_base.utils.metrics import padded_cmap_numpy"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "    \"run_validation\": False,\n    \"folds\":[0],\n#     \"label_map_data_path\": \"/kaggle/input/bird-clef-2023-models/xc_birds_202x_only_scored.json\",\n#     \"model_class\": WaveCNNAttenClasifier,\nif \"folds\" not in CONFIG:\n    CONFIG[\"folds\"] = list(range(CONFIG[\"n_folds\"]))"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "if CONFIG[\"run_validation\"]:\n    df = pd.read_csv(CONFIG[\"train_df_path\"])\n    val_df = [df.iloc[split[fold_id][1]].reset_index(drop=True) for fold_id in CONFIG[\"folds\"]]"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "if CONFIG[\"run_validation\"]:\n       \"validate_sr\": 32_000\n        \"validate_sr\": 32_000"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "if CONFIG[\"run_validation\"]:"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "if CONFIG[\"run_validation\"]:\n    loader_val = [torch.utils.data.DataLoader(\n    loader_test = torch.utils.data.DataLoader("
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "markdown",
+            "snippet": "# Model"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "        t_chkp = torch.load(model_chkp, map_location=\"cpu\")"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "#         model_chkp=f\"/kaggle/input/bird-clef-2023-models/{CONFIG['exp_name']}/{CONFIG['exp_name']}/fold_{m_i}/checkpoints/{CONFIG['chkp_name']}\",\n# ) for m_i in CONFIG[\"folds\"]]"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "if CONFIG[\"run_validation\"]:"
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "code",
+            "snippet": "    sample_submission = pd.read_csv(\"/kaggle/input/birdclef-2023/sample_submission.csv\")\n    if test_pred_df.shape[1] > sample_submission.shape[1]:\n        test_pred_df = test_pred_df[sample_submission.columns]"
+          },
+          {
+            "cell_index": 28,
+            "cell_type": "code",
+            "snippet": "    val_loader_check = torch.utils.data.DataLoader(\n    test_preds_check_grouped = groupby_np_array(\n        groupby_f=test_dfidx_check,\n        apply_f=stack_and_max_by_samples,"
+          },
+          {
+            "cell_index": 32,
+            "cell_type": "code",
+            "snippet": "# test_pred_df = test_pred_df.groupby(\"id\").apply(modify_probabilities).reset_index(drop=True)"
+          },
+          {
+            "cell_index": 38,
+            "cell_type": "code",
+            "snippet": "sample_submission = pd.read_csv(\"/kaggle/input/birdclef-2023/sample_submission.csv\")\nassert set(sample_submission.columns) == set(test_pred_df.columns)\ntest_pred_df = test_pred_df[sample_submission.columns]\ntest_pred_df.to_csv(\"submission.csv\", index=False)"
+          }
+        ]
+      }
+    }
+  }
+}

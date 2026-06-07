@@ -1,0 +1,408 @@
+{
+  "domain": "Medical",
+  "competition": "rsna-breast-cancer-detection",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 1184,
+      "quality": "strong",
+      "score": 49,
+      "reasons": "",
+      "source": {
+        "path": "Medical/rsna-breast-cancer-detection/rank1184_70pct/rsna-breast-baseline-inference.ipynb",
+        "file_name": "rsna-breast-baseline-inference.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 25,
+        "code_cell_count": 17,
+        "markdown_cell_count": 8,
+        "snippets": [
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "SAVE_FOLDER = \"/kaggle/tmp/output/\"\nos.makedirs(SAVE_FOLDER, exist_ok=True)"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "def process(f, size=512, save_folder=\"\", extension=\"png\"):\n    if dicom.PhotometricInterpretation == \"MONOCHROME1\":\n    cv2.imwrite(save_folder + f\"{patient}_{image}.{extension}\", (img * 255).astype(np.uint8))"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "    delayed(process)(uid, size=SIZE, save_folder=SAVE_FOLDER, extension=EXTENSION)"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "df = pd.read_csv(\"/kaggle/input/rsna-breast-cancer-detection/test.csv\")\ndf['path'] = SAVE_FOLDER + df[\"patient_id\"].astype(str) + \"_\" + df[\"image_id\"].astype(str) + \".png\""
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "EXP_FOLDERS = ["
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "import torch\nimport torch.nn as nn\nfrom torchvision import transforms as T"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "from torchvision import models\nimport torch\nimport torch.nn as nn\nfrom torchvision import transforms as T\n        'm': models.efficientnet_b0,\n        'm': models.efficientnet_b0,\n    'resnet18': {\n        'm': models.resnet18,\n    'resnet50': {\n        'm': models.resnet50,\n        max_value, _ = torch.max(X_mask.view(*shape[:2], -1), dim = -1)\n        one = torch.ones_like(X)\n        checkpoint = torch.load(model_cf['weight'], map_location=self.device)\n        imgs = torch.stack([self.to_tensor(img) for img in imgs]).to(device = self.device)\n        with torch.no_grad():\n        pred_label = [torch.softmax(output, dim = 1).cpu().tolist() for output in outputs]"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "config={'weight': '/kaggle/input/weights/resnet50_cut256_2cls.pt',\n            'backbone': 'resnet50',"
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "code",
+            "snippet": "sub = df[['prediction_id', 'cancer']].groupby(\"prediction_id\").mean().reset_index()\n# sub.to_csv('submission.csv', index=False)\nsub.to_csv('/kaggle/working/submission.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 676,
+      "quality": "strong",
+      "score": 61,
+      "reasons": "",
+      "source": {
+        "path": "Medical/rsna-breast-cancer-detection/rank676_40pct/train-pytorch-lightning-gpu-tpu-w-b-kfolds.ipynb",
+        "file_name": "train-pytorch-lightning-gpu-tpu-w-b-kfolds.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 27,
+        "code_cell_count": 15,
+        "markdown_cell_count": 12,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "# PyTorch Lightning GPU & TPU Trainer with KFolds and F1 Loss + W&B logging ⚡️"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "# ! curl https://raw.githubusercontent.com/pytorch/xla/master/contrib/scripts/env-setup.py -o pytorch-xla-env-setup.py\n# ! python pytorch-xla-env-setup.py --version 1.7 --apt-packages libomp5 libopenblas-dev\n# ! python pytorch-xla-env-setup.py --apt-packages libomp5 libopenblas-dev\n# !pip install cloud-tpu-client==0.10 https://storage.googleapis.com/tpu-pytorch/wheels/torch_xla-1.7-cp36-cp36m-linux_x86_64.whl\n# !pip install cloud-tpu-client==0.10 https://storage.googleapis.com/tpu-pytorch/wheels/torch_xla-1.9-cp37-cp37m-linux_x86_64.whl"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "!pip install timm\n!pip install albumentations\n!pip install --upgrade torchmetrics\n!pip install --upgrade pytorch-lightning"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "import torch_xla"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "import timm\nimport torch\nimport transformers\nimport torch.nn as nn\nimport torch.nn.functional as F\nfrom torch.autograd import Variable\nfrom torch.utils.data import DataLoader, Dataset\nimport torchmetrics\nimport pytorch_lightning as pl\nfrom pytorch_lightning.callbacks import ModelCheckpoint\nfrom sklearn.model_selection import StratifiedGroupKFold\nfrom albumentations import (\nfrom albumentations.pytorch import ToTensorV2"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "    'VALID_BS': 16,\n    'EVAL_METRIC': 'F1',"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "markdown",
+            "snippet": "We will use their tools to log hyperparameters and output metrics from your runs, then visualize and compare results and quickly share findings with your colleagues.<br><br></p>"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "#     project='pytorch_lightning',"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "        https://github.com/clcarwin/focal_loss_pytorch\n        if isinstance(alpha,(float,int)): self.alpha = torch.Tensor([alpha,1-alpha])\n        if isinstance(alpha,list): self.alpha = torch.Tensor(alpha)\n    https://www.kaggle.com/code/awsaf49/rsna-bcd-efficientnet-tf-tpu-1vm-train\n    preds = preds.clip(0, 1)"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "    def __init__(self, df, img_folder, augments=None, is_test=False):\n        self.augments = augments\n        self.img_folder = img_folder\n        img_path = os.path.join(self.img_folder, self.df['img_name'][idx])\n        if self.augments:\n            img = self.augments(image=img)['image']\n        img = torch.tensor(img, dtype=torch.float)\n            target = torch.tensor(target, dtype=torch.float)"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "class Augments:\n    Contains Train, Validation Augments\n    train_augments = Compose([\n    valid_augments = Compose(["
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "markdown",
+            "snippet": "## Model Class using `pl.LightningModule` ⚡️"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "        self.model = timm.create_model(model_name, pretrained=pretrained)"
+          },
+          {
+            "cell_index": 21,
+            "cell_type": "code",
+            "snippet": "#         self.model = timm.create_model(Config['MODEL_NAME'], pretrained=pretrained)\n        self.valid_loss = nn.BCEWithLogitsLoss()\n        # Metric\n        self.f1 = torchmetrics.F1Score(task='binary')\n    def validation_step(self, batch, batch_idx):\n        valid_loss = self.valid_loss(out, target)\n        self.log('f1_valid_epoch', self.f1, on_epoch=True, on_step=True)\n#         wandb_log(val_step_loss=valid_loss.item(), f1_step_valid=f1_current)\n        return {'val_loss': valid_loss, 'f1_score': f1_current}\n    def validation_end(self, outputs):\n        avg_loss = torch.stack([x['val_loss'] for x in outputs]).mean()\n        opt = torch.optim.Adam(self.parameters(), lr=Config['LR'])\n        sch = torch.optim.lr_scheduler.CosineAnnealingLR("
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "markdown",
+            "snippet": "## CSV File loading and Model Training"
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "code",
+            "snippet": "df = pd.read_csv(\"/kaggle/input/rsna-breast-cancer-detection/train.csv\")"
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "code",
+            "snippet": "    kfold = StratifiedGroupKFold(n_splits=Config['SPLITS'])\n    for fold_, (train_idx, valid_idx) in enumerate(kfold.split(df, df['cancer'].values, df['patient_id'].values)):\n        print(f\"{'='*40} Fold: {fold_} / 5 {'='*40}\")\n        valid_df = df.loc[valid_idx].reset_index(drop=True)\n            img_folder = Config['PARENT_PATH']\n        valid_dataset = RSNAData(\n            df = valid_df,\n            img_folder = Config['PARENT_PATH'],\n        valid_loader = DataLoader(\n            valid_dataset,\n            batch_size=Config['VALID_BS'],\n        trainer.fit(model, train_loader, valid_loader)"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 333,
+      "quality": "usable",
+      "score": 29,
+      "reasons": "",
+      "source": {
+        "path": "Medical/rsna-breast-cancer-detection/rank333_20pct/rsna-eda-and-nii-files.ipynb",
+        "file_name": "rsna-eda-and-nii-files.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 14,
+        "code_cell_count": 8,
+        "markdown_cell_count": 6,
+        "snippets": [
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "df = pd.read_csv(csv_path)"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "output_train_folder = '/kaggle/working/train_imgs/'\nif os.path.exists(output_train_folder) == False:\n    os.mkdir(output_train_folder)\n    folder_name = str(dfvalue[2])+'_'+ str(dfvalue[4])\n    #print(folder_name)\n    output_folder = '/kaggle/working/train_imgs/'+folder_name\n    if os.path.exists(output_folder) == False:\n        os.mkdir(output_folder)\n    dst = output_folder+'/'+str(dfvalue[2])+'.dcm'"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "output_nii_folder = '/kaggle/working/nii_img/'\nif os.path.exists(output_nii_folder) == False:\n    os.mkdir(output_nii_folder)\n        sitk.WriteImage(img, output_nii_folder+image_dir+'.nii.gz')"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "for img_folder in os.listdir(main_input_dir):\n    print(img_folder)\n    dicom2nifti(main_input_dir, img_folder)"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "len(os.listdir(output_nii_folder))"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 125,
+      "quality": "strong",
+      "score": 65,
+      "reasons": "",
+      "source": {
+        "path": "Medical/rsna-breast-cancer-detection/rank125_10pct/logistic-regression-tabular-data.ipynb",
+        "file_name": "logistic-regression-tabular-data.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 25,
+        "code_cell_count": 20,
+        "markdown_cell_count": 5,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "from sklearn.linear_model import LogisticRegression"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "markdown",
+            "snippet": "### Create the feature dataset with meta data features"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "        meta_df = pd.read_csv(f'{data_path}/train.csv')\n        meta_df = pd.read_csv(f'{data_path}/test.csv')\n    valid_views = {'MLO', 'CC'}\n    is_valid_view = meta_df['view'].isin(valid_views)\n    meta_df = meta_df.loc[is_valid_view, :]\n    meta_df = meta_df.groupby('patient_id').agg(list)"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "markdown",
+            "snippet": "### NOTE: Here we would add the training image predictions to the train_df when we have them, as an additional feature."
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "markdown",
+            "snippet": "### NOTE: Here we will get the test set image predictions and add them as an additional feature"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "# # create tensorflow datasets\n#     model = tf.keras.models.load_model(path)"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "clf = LogisticRegression(max_iter=500)"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "    preds = preds.clip(0, 1)"
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "code",
+            "snippet": "submission_df = test_df.groupby('prediction_id')['cancer'].agg(max)\nsubmission_df.to_csv('submission.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 1,
+      "quality": "strong",
+      "score": 72,
+      "reasons": "",
+      "source": {
+        "path": "Medical/rsna-breast-cancer-detection/rank1_1st/rsna-mammo-rejection-ensemble-v2-ishikei.ipynb",
+        "file_name": "rsna-mammo-rejection-ensemble-v2-ishikei.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 43,
+        "code_cell_count": 34,
+        "markdown_cell_count": 9,
+        "snippets": [
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "%%writefile /opt/conda/lib/python3.7/site-packages/nvidia/dali/plugin/pytorch.py\nimport torch\nimport torch.utils.dlpack as torch_dlpack\nto_torch_type = {\n    types.DALIDataType.FLOAT:   torch.float32,\n    types.DALIDataType.FLOAT64: torch.float64,\n    types.DALIDataType.FLOAT16: torch.float16,\n    types.DALIDataType.UINT8:   torch.uint8,\n    types.DALIDataType.INT8:    torch.int8,\n    types.DALIDataType.UINT16:  torch.int16,\n    types.DALIDataType.INT16:   torch.int16,\n    types.DALIDataType.INT32:   torch.int32,\n    types.DALIDataType.INT64:   torch.int64\n    Copy contents of DALI tensor to PyTorch's Tensor.\n    `arr` : torch.Tensor\n    `cuda_stream` : torch.cuda.Stream, cudaStream_t or any value that can be cast to cudaStream_t.\n                    In most cases, using pytorch's current stream is expected (for example,\n                    if we are copying to a tensor allocated with torch.zeros(...))\n    dali_type = to_torch_type[dali_tensor.dtype]\n                                    \" doesn't match the element type of the target PyTorch Tensor: \"\n        (\"Shapes do not match: DALI tensor has size {0}, but PyTorch Tensor has size {1}\".\n    General DALI iterator for PyTorch. It can return any number of\n    outputs from the DALI pipeline in the form of PyTorch's Tensors.\n                Setting this flag to False will cause the iterator to return\n            category_torch_type = dict()\n            torch_gpu_device = None\n            torch_cpu_device = torch.device('cpu')\n                category_torch_type[category] = to_torch_type[category_tensors[category].dtype]\n                    if not torch_gpu_device:\n                        torch_gpu_device = torch.device('cuda', dev_id)\n                    category_device[category] = torch_gpu_device\n                    cate\n...[truncated]"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "J2K_FOLDER = Path(\"/tmp/j2k/\")"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "import torch\nimport torch.nn.functional as F\nfrom nvidia.dali.plugin.pytorch import feed_ndarray, to_torch_type\ndef convert_dicom_to_j2k(file, save_folder):\n        with open(save_folder/f\"{patient}_{image}.jp2\", \"wb\") as binary_file:\n        with open(save_folder/f\"{patient}_{image}.jp2\", \"wb\") as binary_file:\n    if dataset.PhotometricInterpretation == \"MONOCHROME1\":\n    if dataset[\"PhotometricInterpretation\"] == \"MONOCHROME1\":\ndef torch_voi_lut(img, dataset):\n        img = y_range / (1 + torch.exp(-4 * (img - center) / width)) + y_min\n        between = torch.logical_and(~below, ~above)"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "    J2K_FOLDER.mkdir(exist_ok=True)\n        delayed(convert_dicom_to_j2k)(img, save_folder=J2K_FOLDER)\n    j2kfiles = list(J2K_FOLDER.glob(\"*.jp2\"))\n            # Dali -> Torch\n            img_torch = torch.empty(img.shape(), dtype=torch.int16, device=\"cuda\")\n            feed_ndarray(img, img_torch, cuda_stream=torch.cuda.current_stream(device=0))\n            img = img_torch.float()\n            img = torch_voi_lut(img, dicom)\n            if dicom.PhotometricInterpretation == \"MONOCHROME1\":\n    shutil.rmtree(J2K_FOLDER)"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "def process(f, size=2048, save_folder=\"\"):\n    cv2.imwrite(str(save_folder/f\"{patient}_{image}.png\"), (img * 255).astype(np.uint8))"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "    delayed(process)(img, size=SIZE, save_folder=EXPORT_DIR)"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "!ln -s ../input/rsna-mammo-2023/dataset/timm/\n!ln -s ../input/rsna-mammo-2023/dataset/segmentation_models_pytorch/\nfrom timm.layers import convert_sync_batchnorm\nfrom metrics import Pfbeta, PercentilePfbeta\nfrom torch.cuda import amp"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "import torch\nimport torch.nn.functional as F\nimport torch.utils.checkpoint as checkpoint\nimport timm\nfrom timm.models.layers import DropPath, trunc_normal_\nfrom timm.models import register_model\nfrom torch import nn\ndef merge_pre_bn(module, pre_bn_1, pre_bn_2=None):\n    \"\"\" Merge pre BN to reduce inference runtime.\n        zeros = torch.zeros(module.out_channels, device=weight.device).type(weight.type())\n    def merge_bn(self, pre_norm):\n        merge_pre_bn(self.conv1, pre_norm)\n        self.is_bn_merged = False\n    def merge_bn(self):\n        if not self.is_bn_merged:\n            self.mlp.merge_bn(self.norm)\n            self.is_bn_merged = True\n        if not torch.onnx.is_in_onnx_export() and not self.is_bn_merged:\n        self.is_bn_merged = False\n    def merge_bn(self, pre_bn):\n        merge_pre_bn(self.q, pre_bn)\n            merge_pre_bn(self.k, pre_bn, self.norm)\n            merge_pre_bn(self.v, pre_bn, self.norm)\n            merge_pre_bn(self.k, pre_bn)\n            merge_pre_bn(self.v, pre_bn)\n        self.is_bn_merged = True\n            if not torch.onnx.is_in_onnx_export() and not self.is_bn_merged:\n        self.is_bn_merged = False\n    def merge_bn(self):\n        if not self.is_bn_merged:\n            self.e_mhsa.merge_bn(self.norm1)\n            self.mlp.merge_bn(self.norm2)\n            self.is_bn_merged = True\n        if not torch.onnx.is_in_onnx_export() and not self.is_bn_merged:\n        x = torch.cat([x, out], dim=1)\n        if not torch.onnx.is_in_onnx_export() and not self.is_bn_merged:\n        dpr = [x.item() for x in torch.linspace(0, path_dropout, sum(depths))]  # stochastic depth decay rule\n    def merge_bn(self):\n                module.merge_bn()\n        x = torch.flatten(x, 1)\n        # self.register_buffer('mean', torch.FloatTensor([0.5, 0.5, 0.5]\n...[truncated]"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "!ln -s ../input/rsna-mammo-2023/dataset/timm/\nimport albumentations as A\nfrom albumentations.pytorch.transforms import ToTensorV2\nimport torch\nimport torch.nn as nn\nimport torch.nn.functional as F\nfrom torch import Tensor\nfrom torch.utils.data import Dataset, DataLoader\n        forward_features.add_module(\"relu\", torch.nn.PReLU())\n    ckpt = torch.load(weight_path, map_location=\"cpu\")\n    def get_roi_crop(self, image, threshold=0.1, buffer=30):\n        y_slice = np.where(y_mean > threshold)[0]\n        x_slice = np.where(x_mean > threshold)[0]\n            image, threshold=th, buffer=buffer\n        images = torch.concat([self.apply_transform(image) for image in images])"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv('../input/rsna-breast-cancer-detection/train.csv')\ntest = pd.read_csv('../input/rsna-breast-cancer-detection/test.csv')"
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "code",
+            "snippet": "    def get_oof_path(self, cfg):\n        return Path('../input/rsna-oof/kuma_oofs_v3/')/f'kuma_{cfg.name}.csv'\n            test_loader: pytorch dataloader\n            pd.DataFrame([{'name': 'dummy', 'xmin': 0, 'ymin': 0, 'xmax':0, 'ymax':0}]).to_csv(\n        folds=None,\n            folds: list of folds to include\n            if isinstance(input_t, torch.Tensor):\n            with torch.no_grad():\n        if folds is None:\n            folds = list(range(cfg.cv))\n        for fold in range(cfg.cv):\n            if not fold in folds:\n            checkpoint = torch.load(proj_dir/f'fold{fold}.pt', 'cpu')\n            ys = np.stack(ys, axis=0) # (cv, bs, 1)\n        torch.cuda.empty_cache()\n        for plr, pdf in df.groupby(['patient_id', 'laterality']):\n        agg_predictions = agg_predictions.groupby('prediction_id').agg({\n    def inference_block(self, cfg, test_df, batch_size_ratio=1, fp16=True, extend=0, threshold_params={}):"
+          },
+          {
+            "cell_index": 25,
+            "cell_type": "code",
+            "snippet": "    def get_oof_path(self, cfg):\n        return list(Path('../input/rsna-oof/ariyasu/').glob(f'{cfg.file_name}*.csv'))[0]\n        device = torch.device(\"cuda:0\" if torch.cuda.is_available() else \"cpu\")\n                model = timm.create_model(model_name, pretrained=False, num_classes=cfg.num_classes)\n            state_dict = torch.load(model_path, map_location=torch.device('cpu'))['state_dict']\n            torch_state_dict = {}\n                torch_state_dict[k[6:]] = v\n            model.load_state_dict(torch_state_dict)\n            #     model = torch_tensorrt.compile(model, inputs = [torch_tensorrt.Input(min_shape=[1, 3, image_size[1], image_size[0]],opt_shape=[cfg.batch_size, 3, image_size[1], image_size[0]],max_shape=[cfg.batch_size, 3, image_size[1], image_size[0]],dtype=torch.float32)],\n            #         enabled_precisions = torch.float32, # Run with FP32\n        torch.cuda.empty_cache()\n    def inference_block(self, cfg, test, threshold_params={}, fp16=True):\n        assert cfg.tta == 1\n        device = torch.device(\"cuda:0\" if torch.cuda.is_available() else \"cpu\")\n        print('tta:', cfg.tta)\n        with torch.no_grad():\n                ys = np.stack(ys) # (cv, bs, 1)\n        del models; torch.cuda.empty_cache()\n        test[[f'pred_fold_{fold}' for fold in range(4)]] = preds[:,:,0].T\n        for fold in range(4):\n            df = pd.DataFrame(test.groupby('prediction_id')[f'pred_fold_{fold}'].mean()).reset_index()\n            del test[f'pred_fold_{fold}']\n            test = test.merge(df, on='prediction_id')\n        predictions = df[[f'pred_fold_{fold}' for fold in range(4)]].values.T\n        df[cfg.file_name] = df[[f'pred_fold_{fold}' for fold in range(4)]].mean(1)\n        for col in [f'pred_fold_{fold}' for fold in range(4)]:"
+          },
+          {
+            "cell_index": 26,
+            "cell_type": "code",
+            "snippet": "    def get_oof_path(self, cfg):\n        return list(Path('../input/rsna-oof/ishikei_002/').glob(f'{cfg.name}*.csv'))[0]\n        folds = list(range(cfg.cv))\n        for fold in folds:\n            print(f\"load: {str(proj_dir/f'fold{fold}.pt')}\")\n            checkpoint = torch.load(proj_dir/f'fold{fold}.pt', 'cpu')\n        with torch.no_grad():\n                ys = np.stack(ys) # (cv, bs, 1)\n        gc.collect(); torch.cuda.empty_cache()\n    def inference_block(self, cfg, test_df, batch_size=None, fp16=True, threshold_params={}):"
+          },
+          {
+            "cell_index": 27,
+            "cell_type": "code",
+            "snippet": "    def get_oof_path(self, cfg):\n        return Path('../input/rsna-oof/charm/')/f'{cfg.name}.csv'\n        cfg_path = f\"{model_path}/fold_0/config.yaml\"\n    def infer_model(self, config, test_dataloader, folds=[0,1,2,3]):\n        cfg_path_list = [f\"{model_path}/fold_{i}/config.yaml\" for i in folds]\n        model_path_list = [f\"{model_path}/fold_{i}/model_weights_ema.pth\" for i in folds]\n            with torch.cuda.amp.autocast(enabled=True):\n                with torch.no_grad():\n        torch.cuda.empty_cache()\n                preds_l_list[i] = np.hstack(preds_l_list[i])\n                preds_r_list[i] = np.hstack(preds_r_list[i])\n                preds_list[i] = np.hstack([preds_l_list[i], preds_r_list[i]])\n                preds_list[i] = np.hstack(preds_list[i])\n            torch.cuda.empty_cache()\n        torch.cuda.empty_cache()\n        for ifold, (preds, prediction_ids_lr) in enumerate(zip(preds_list, prediction_ids_lr_list)):\n            pred_df = pd.DataFrame(data={\"prediction_id\": prediction_ids_lr, f\"pred{ifold}\": preds})\n    def inference_block(self, cfg, test_df, fp16=False, threshold_params={}, batch_size=2, folds=[0,1,2,3]):\n        test_master = test_master.groupby('prediction_id').agg({'site_id': 'max'}).reset_index()\n        preds = self.infer_model(cfg, test_dataloader, folds)\n        torch.cuda.empty_cache()\n        preds = preds.merge(test_master, on='prediction_id', how='left')"
+          },
+          {
+            "cell_index": 28,
+            "cell_type": "code",
+            "snippet": "def weighted_average(df, weights):\n            results_all = results_all.merge(results.drop('site_id', axis=1), on='prediction_id', how='left')"
+          },
+          {
+            "cell_index": 31,
+            "cell_type": "code",
+            "snippet": "THRESHOLD_MODE = 'value'\nensemble_configs = ["
+          },
+          {
+            "cell_index": 33,
+            "cell_type": "code",
+            "snippet": "for istage, stage_cfg in enumerate(ensemble_configs):\n        results_all = results_all.merge(results_stage, on=['prediction_id', 'site_id'], how='inner')\n    results_all['cancer'] = weighted_average(results_all[models_all], weights_all)"
+          },
+          {
+            "cell_index": 34,
+            "cell_type": "code",
+            "snippet": "def simulate_threshold(ensemble_configs, threshold_mode, final_results=None):\n    def merge_all(dfs):\n                res = res.merge(df.rename({'pred': models_all[i]}, axis=1), on=['prediction_id', 'fold', 'site_id'], how='left')\n    train = pd.read_csv('../input/rsna-misc/train_with_fold.csv').rename({'cancer': 'target'}, axis=1)\n    train = train.groupby('prediction_id').agg(\n        {'target': 'max', 'fold': 'max', 'difficult_negative_case': 'max'}).reset_index()\n    metric = PercentilePfbeta(percentile_range=(97.5, 99.0), n_trials=30)\n    oof_agg_fold = {0: [], 1: [], 2: [], 3:[]}\n    for stage_cfg in ensemble_configs:\n            oof = pd.read_csv(predictor.get_oof_path(cfg))\n            for fold in range(4):\n                oof_agg_fold[fold].append(oof.query('fold == @fold'))\n    thresholds_site1 = []\n    thresholds_site2 = []\n    for fold in range(4):\n        merged_fold = merge_all(oof_agg_fold[fold]).merge(\n        # display(merged_fold)\n        oof_pred = weighted_average(merged_fold[models_all], weights_all)\n        oof_target = merged_fold['target'].values\n        oof_site = merged_fold['site_id'].values\n        score_1, percentile_1, threshold_1 = metric(oof_pred[oof_site == 1], oof_target[oof_site == 1])\n        score_2, percentile_2, threshold_2 = metric(oof_pred[oof_site == 2], oof_target[oof_site == 2])\n        if threshold_mode == 'value':\n            thresholds_site1.append(threshold_1)\n            thresholds_site2.append(threshold_2)\n        elif threshold_mode == 'proportional':\n            thresholds_site1.append(percentile_1)\n            thresholds_site2.append(percentile_2)\n    if threshold_mode == 'value':\n        return [np.mean(thresholds_site1), np.mean(thresholds_site2)]\n    elif threshold_mode == 'proportional':\n        print(thresholds_s\n...[truncated]"
+          },
+          {
+            "cell_index": 35,
+            "cell_type": "code",
+            "snippet": "thresholds = simulate_threshold(ensemble_configs, THRESHOLD_MODE, final_results)\nthresholds"
+          },
+          {
+            "cell_index": 38,
+            "cell_type": "code",
+            "snippet": "        (final_results.loc[final_results['site_id'] == 1, 'cancer'] > thresholds[0]).astype(float)\n        (final_results.loc[final_results['site_id'] == 2, 'cancer'] > thresholds[1]).astype(float)"
+          },
+          {
+            "cell_index": 39,
+            "cell_type": "code",
+            "snippet": "final_results[['prediction_id', 'cancer']].to_csv('submission.csv', index=False)"
+          },
+          {
+            "cell_index": 40,
+            "cell_type": "code",
+            "snippet": "    debug_df = pd.DataFrame(debug_df).merge(\n    metric = Pfbeta(binarize=False)\n    print('PFB', metric(debug_df['cancer'].values, debug_df['target'].values))"
+          },
+          {
+            "cell_index": 42,
+            "cell_type": "code",
+            "snippet": "!rm timm segmentation_models_pytorch kuma_utils global_objectives iterstrat"
+          }
+        ]
+      }
+    }
+  }
+}

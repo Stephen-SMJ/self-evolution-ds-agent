@@ -1,0 +1,263 @@
+{
+  "domain": "Medical",
+  "competition": "prostate-cancer-grade-assessment",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 709,
+      "quality": "usable",
+      "score": 43,
+      "reasons": "",
+      "source": {
+        "path": "Medical/prostate-cancer-grade-assessment/rank709_70pct/getting-started-with-the-panda-dataset.ipynb",
+        "file_name": "getting-started-with-the-panda-dataset.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 48,
+        "code_cell_count": 28,
+        "markdown_cell_count": 20,
+        "snippets": [
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "train_labels = pd.read_csv('/kaggle/input/prostate-cancer-grade-assessment/train.csv').set_index('image_id')"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "markdown",
+            "snippet": "Running the cell below loads four example biopsies using OpenSlide. Some things you can notice:\n\n- The image dimensions are quite large (typically between 5.000 and 40.000 pixels in both x and y).\n- Each slide has 3 levels you can load, corresponding to a downsampling of 1, 4 and 16. Intermediate levels can be created by downsampling a higher resolution level.\n- The dimensions of each level differ based on the dimensions of the original image.\n- Biopsies can be in different rotations. This rotation has no clinical value, and is only dependent on how the biopsy was collected in the lab.\n- There are noticable color differences between the biopsies, this is very common within pathology and is caused by different laboratory procedures."
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "    print(f\"Gleason score: {train_labels.loc[case_id, 'gleason_score']}\\n\\n\")"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "markdown",
+            "snippet": "Using the `level` argument we can easily load in data from any level that is present in the slide. Coordinates passed to `read_region` are always relative to level 0 (the highest resolution)."
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 311,
+      "quality": "usable",
+      "score": 43,
+      "reasons": "",
+      "source": {
+        "path": "Medical/prostate-cancer-grade-assessment/rank311_40pct/mi-zero-demo.ipynb",
+        "file_name": "mi-zero-demo.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 32,
+        "code_cell_count": 32,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "!pip install assets/timm_ctp.tar --no-deps"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "import torch\nimport torch.nn as nn\nfrom torch.utils.data import DataLoader, Dataset\nfrom torchvision import transforms\nimport torch.nn.functional as F"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "def load_ctranspath_clip(ckpt_path, img_size = 224, return_trsforms = True):\n    def clean_state_dict_clip(state_dict):\n    state_dict = torch.load(ckpt_path, map_location=\"cpu\")['state_dict']\n    state_dict = clean_state_dict_clip(state_dict)\nckpt_path = \"/kaggle/input/mizerow/ctranspath_448_bioclinicalbert/ctranspath_448_bioclinicalbert/checkpoints/epoch_50.pt\"\nmodel, trsforms = load_ctranspath_clip(ckpt_path, img_size = 224)"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "with torch.inference_mode():"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "features_ = torch.cat(features_)"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "def tokenize(tokenizer, texts=[\"a histopathological image of adipocytes\"]):\n    tokens = tokenizer.batch_encode_plus(texts,\nfrom transformers import AutoTokenizer\nmodel_name = 'emilyalsentzer/Bio_ClinicalBERT'\ntokenizer = AutoTokenizer.from_pretrained(model_name, fast=True)"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "        device: torch.device = torch.device('cpu'),\n    with open(\"./src/model_configs/ctranspath_448_bioclinicalbert.json\") as f:\n    model = CLIP(**model_cfg)\n    state_dict = torch.load(model_checkpoint, map_location='cpu')['state_dict']"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "texts, attention_mask = tokenize(tokenizer,texts=[\"a histopathological image of prostate cancer\"]) # Tokenize with custom tokenizer\ntexts = torch.from_numpy(np.array(texts))#.to(device)\nattention_mask = torch.from_numpy(np.array(attention_mask)).to(device)"
+          },
+          {
+            "cell_index": 21,
+            "cell_type": "code",
+            "snippet": "texts, attention_mask = tokenize(tokenizer,texts=[\"a histopathological image of adipose tissue\"]) # Tokenize with custom tokenizer\ntexts = torch.from_numpy(np.array(texts))#.to(device)\nattention_mask = torch.from_numpy(np.array(attention_mask)).to(device)"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "texts, attention_mask = tokenize(tokenizer,texts=[\"adipose\"]) # Tokenize with custom tokenizer\ntexts = torch.from_numpy(np.array(texts))#.to(device)\nattention_mask = torch.from_numpy(np.array(attention_mask)).to(device)"
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "code",
+            "snippet": "texts, attention_mask = tokenize(tokenizer,texts=[\"stromal\"]) # Tokenize with custom tokenizer\ntexts = torch.from_numpy(np.array(texts))#.to(device)\nattention_mask = torch.from_numpy(np.array(attention_mask)).to(device)"
+          },
+          {
+            "cell_index": 26,
+            "cell_type": "code",
+            "snippet": "import torch.nn as nn"
+          },
+          {
+            "cell_index": 28,
+            "cell_type": "code",
+            "snippet": "for idx in torch.argsort(output).numpy()[::-1][:10]:"
+          },
+          {
+            "cell_index": 29,
+            "cell_type": "code",
+            "snippet": "for idx in torch.argsort(output2).numpy()[::-1][:10]:"
+          },
+          {
+            "cell_index": 30,
+            "cell_type": "code",
+            "snippet": "for idx in torch.argsort(output3).numpy()[::-1][:10]:"
+          },
+          {
+            "cell_index": 31,
+            "cell_type": "code",
+            "snippet": "for idx in torch.argsort(output_stromal).numpy()[::-1][:10]:"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 202,
+      "quality": "strong",
+      "score": 55,
+      "reasons": "",
+      "source": {
+        "path": "Medical/prostate-cancer-grade-assessment/rank202_20pct/panda-stain-norm-downsample12x64x64-inference.ipynb",
+        "file_name": "panda-stain-norm-downsample12x64x64-inference.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 20,
+        "code_cell_count": 15,
+        "markdown_cell_count": 5,
+        "snippets": [
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "SAMPLE = '../input/prostate-cancer-grade-assessment/sample_submission.csv'"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "markdown",
+            "snippet": "# Model"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "    model = ResNet(block, layers, **kwargs)\n        #m = torch.hub.load('facebookresearch/semi-supervised-ImageNet1K-models', arch)"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "    state_dict = torch.load(path,map_location=torch.device('cpu'))"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "def get_tissue_mask(I, luminosity_threshold=0.8):\n    mask = L < luminosity_threshold\ndef get_stain_matrix(I, luminosity_threshold=0.8, angular_percentile=99):\n    tissue_mask = get_tissue_mask(I, luminosity_threshold=luminosity_threshold).reshape((-1,))\n    # Eigenvectors of cov in OD space (orthogonal as cov symmetric)"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "    idxs = np.argsort(img.reshape(img.shape[0],-1).sum(-1))[:N]\n#mean = torch.tensor([1.0-0.90949707, 1.0-0.8188697, 1.0-0.87795304])\n#std = torch.tensor([0.36357649, 0.49984502, 0.40477625])\nmean = torch.tensor([1.0-0.90008685, 1.0-0.80557228, 1.0-0.88988811])\nstd = torch.tensor([0.3247047, 0.41417728, 0.33721329])\n        self.names = list(pd.read_csv(test).image_id)\n        #tiles = torch.Tensor(1.0 - TMP/255.0)\n        tiles = torch.Tensor(1.0 - img_resized/255.0)"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "sub_df = pd.read_csv(SAMPLE)\n    with torch.no_grad():\n            #dihedral TTA\n            x = torch.stack([x,x.flip(-1),x.flip(-2),x.flip(-1,-2),\n            p = torch.stack(p,1)\n    probs = torch.cat(probs).numpy()\n    preds = torch.cat(preds).numpy()\n    sub_df.to_csv('submission.csv', index=False)\n    #with torch.no_grad():\n    #        #dihedral TTA\n    #        x = torch.stack([x,x.flip(-1),x.flip(-2),x.flip(-1,-2),\n    #        p = torch.stack(p,1)\n    #probs = torch.cat(probs).numpy()\n    #preds = torch.cat(preds).numpy()\n    #sub_df.to_csv('submission.csv', index=False)"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "sub_df.to_csv(\"submission.csv\", index=False)"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 103,
+      "quality": "usable",
+      "score": 37,
+      "reasons": "",
+      "source": {
+        "path": "Medical/prostate-cancer-grade-assessment/rank103_10pct/tile-factory.ipynb",
+        "file_name": "tile-factory.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 15,
+        "code_cell_count": 12,
+        "markdown_cell_count": 3,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "It aggregates several public tile strategies and provides pipeline for finding optimal SIZE, COLS, ROWS params form the human perspective. It also shows how to save the results.\n\nderives from\n* https://www.kaggle.com/iafoss/panda-16x128x128-tiles\n* https://www.kaggle.com/akensert/panda-optimized-tiling-tf-data-dataset\n* https://www.kaggle.com/debanga/let-s-enhance-the-images\n* https://www.kaggle.com/harupy/visualization-panda-16x128x128-tiles\n* https://www.kaggle.com/raghaw/panda-medium-resolution-dataset-25x256x256\n\noutput dataset examples\n* 6x6 256 lafoss_tiles https://www.kaggle.com/dlarionov/prostate-cancer-tiles-medium\n* 4x4 312 akensert_tiles https://www.kaggle.com/dlarionov/akensert-1-312-4x4 (this kernel result)"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "df = pd.read_csv('../input/prostate-cancer-grade-assessment/train.csv')"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "    idxs_selected = np.argsort(sums)[:N]\n    merged = join_tiles(selected)\n    return merged\n    # merge tiles to one image\n    merged = join_tiles(selected)\n        return merged, img\n        return merged"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "    img_enhanced = cv2.addWeighted(image, contrast, image, 0, brightness)\n    return cv2.addWeighted(img, 1.8, img_gaussian, -0.8, 0, img)\ndef _mask_tissue(image, kernel_size=(7, 7), gray_threshold=220):\n    mask = np.where(gray < gray_threshold, 1, 0).astype(np.uint8)\n    shift = excess // 2\n        i * patch_size + start - shift\n        min_decimal_keep : Threshold for decimal point for removing \"excessive\" patch"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 6,
+      "quality": "strong",
+      "score": 46,
+      "reasons": "",
+      "source": {
+        "path": "Medical/prostate-cancer-grade-assessment/rank6_1st/panda-submit-clas-twodl.ipynb",
+        "file_name": "panda-submit-clas-twodl.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 3,
+        "code_cell_count": 3,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "!pip install /kaggle/input/pytorchimagemodels120\n!pip install /kaggle/input/efficientnet\n#!pip install /kaggle/input/pytorch-lightning-075/pytorch_lightning-0.7.5-py3-none-any.whl\n!pip install /kaggle/input/pytorch-lightning-081-whl/pytorch_lightning-0.8.1-py3-none-any.whl\n!pip install /kaggle/input/albumentations\n!mkdir -p /root/.cache/torch/checkpoints/\n!cp /kaggle/input/efficientnetb0355c32eb/efficientnet-b0-355c32eb.pth /root/.cache/torch/checkpoints\n!cp /kaggle/input/my-efficientnetb008094119/my_efficientnet-b0-08094119.pth /root/.cache/torch/checkpoints"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "import torch\nfrom torch.utils.data import DataLoader as DataLoaderPytorch\n# This together with tta=6 resulted in error\n#df_train = pd.read_csv(os.path.join(data_dir, 'train.csv'))\ndf_train = pd.read_csv(data_dir / 'train.csv')\ndf_test = pd.read_csv(data_dir / 'test.csv')\nimage_folder = data_dir / 'test_images'\nis_test = os.path.exists(image_folder)  # IF test_images is not exists, we will use some train images.\nimage_folder = image_folder if is_test else data_dir / 'train_images'\n# Works with tta_nr=1\n# Works with tta_nr=4\n# Works with tta_nr=1\ntta_nr = 1\n#tta_nr = 4\n#tta_nr = 6  # might need too much RAM\ndevice = torch.device('cuda')\nif tta_nr > 1:\n    # Use color augmentations in TTA\ndataset_256 = TileDataset(image_folder, df, 256, 256, 144, tile_mode=tile_mode,\n                      inference=True, input_type=input_type, overwrite_image_folder=False, tta_nr=tta_nr,\nloader_256 = DataLoaderPytorch(dataset_256, batch_size=batch_size, num_workers=num_workers, shuffle=False)\ndataset_512 = TileDataset(image_folder, df, 512, 512, 36, tile_mode=tile_mode,\n                      inference=True, input_type=input_type, overwrite_image_folder=False, tta_nr=tta_nr,\nloader_512 = DataLoaderPytorch(dataset_512, batch_size=batch_size, num_workers=num_workers, shuffle=False)\nwith torch.no_grad():\n            for tta_idx in range(tta_nr):\n                if tta_nr > 1:\n                    data_tta = data[\"data\"][tta_idx].to(device)\n                    data_tta = data[\"data\"].to(device)\n                data_raw = model(data_tta)\n            for tta_idx in range(tta_nr):\n                if tta_nr > 1:\n                    data_tta = data[\"data\"][tta_idx].to(device)\n                    data_tta = data[\"data\"].to(device)\n                data_raw = model(data_tta)\n        logits_batch_ens = n\n...[truncated]"
+          }
+        ]
+      }
+    }
+  }
+}

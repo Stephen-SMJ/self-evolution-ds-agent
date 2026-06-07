@@ -1,0 +1,21 @@
+{
+  "id": "andreashsieh/valium-1",
+  "id_no": 69874,
+  "title": "Valium_1",
+  "code_file": "valium-1.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": false,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "keywords": [],
+  "dataset_sources": [],
+  "kernel_sources": [],
+  "competition_sources": [
+    "expedia-hotel-recommendations"
+  ],
+  "model_sources": [],
+  "docker_image": "",
+  "machine_shape": "None"
+}

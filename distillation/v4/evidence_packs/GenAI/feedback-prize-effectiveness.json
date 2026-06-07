@@ -1,0 +1,388 @@
+{
+  "domain": "GenAI",
+  "competition": "feedback-prize-effectiveness",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 1059,
+      "quality": "strong",
+      "score": 55,
+      "reasons": "",
+      "source": {
+        "path": "GenAI/feedback-prize-effectiveness/rank1059_70pct/feedback-prize-eda-bert-baseline.ipynb",
+        "file_name": "feedback-prize-eda-bert-baseline.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 27,
+        "code_cell_count": 20,
+        "markdown_cell_count": 7,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "from sklearn.metrics import (accuracy_score,\n                             f1_score,\n                             recall_score,\n# PyTorch\nimport torch\nfrom torch.utils.data import DataLoader, Dataset\nfrom torch.optim import Adam\nimport torch.nn.functional as F\nimport torch.nn as nn\n# BERT\nfrom transformers import BertTokenizer, BertModel, BertConfig\nimport transformers\ntransformers.logging.set_verbosity_error()"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "submission_csv = os.path.join(input_dir, 'sample_submission.csv')\ntrain = pd.read_csv(train_csv)\ntest = pd.read_csv(test_csv)\nsubmission = pd.read_csv(submission_csv)"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "    #model_cfg = BertConfig()\n    tokenizer = BertTokenizer.from_pretrained('../input/huggingface-bert-variants/bert-base-uncased/bert-base-uncased')\n    #model = BertModel(model_cfg)\n    model = BertModel.from_pretrained('../input/huggingface-bert-variants/bert-base-uncased/bert-base-uncased', return_dict=True)\n    def __init__(self, data, max_len, tokenizer, data_path):\n        self.tokenizer = tokenizer\n                         self.tokenizer.sep_token,\n                         self.tokenizer.sep_token,\n        inputs = self.tokenizer.encode_plus(text.lower(),\n        targets = torch.FloatTensor(self.targets[index])"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "markdown",
+            "snippet": "## Creating Train-Validation Sets"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "print(f'Validation: {val_df.shape} \\n')"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "                                     tokenizer = config.tokenizer,\nvalid_dataset = FeedbackPrizeDataset(val_df,\n                                     tokenizer = config.tokenizer,\nval_data_loader = DataLoader(valid_dataset,"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "markdown",
+            "snippet": "## Building Model"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "class FeedbackPrizeModel(torch.nn.Module):\n        self.bert_model = config.model\n        self.dropout = torch.nn.Dropout(0.3)\n        self.linear = torch.nn.Linear(768, len(target_list))\n        output = self.bert_model(input_ids,"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "    return torch.nn.BCEWithLogitsLoss()(outputs, targets)\n    optimizer = torch.optim.Adam(filter(lambda x: x.requires_grad, net.parameters()),"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "markdown",
+            "snippet": "## Train Model"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "            input_ids = batch['input_ids'].to(device, dtype = torch.long)\n            attention_mask = batch['attention_mask'].to(device, dtype = torch.long)\n            token_type_ids = batch['token_type_ids'].to(device, dtype = torch.long)\n            targets = batch['targets'].to(device, dtype = torch.float)\n            if torch.cuda.is_available():\n                torch.cuda.empty_cache()\n        print(f' Epoch: {epoch + 1} - Validation Set '.center(50, '='))\n        with torch.no_grad():\n                input_ids = data['input_ids'].to(device, dtype = torch.long)\n                attention_mask = data['attention_mask'].to(device, dtype = torch.long)\n                token_type_ids = data['token_type_ids'].to(device, dtype = torch.long)\n                targets = data['targets'].to(device, dtype = torch.float)\n                val_outputs.extend(torch.sigmoid(outputs).cpu().detach().numpy().tolist())\n                if torch.cuda.is_available():\n                    torch.cuda.empty_cache()\n            print('Epoch: {} \\tAvgerage Training Loss: {:.6f} \\tAverage Validation Loss: {:.6f} \\n'.format(\n            if torch.cuda.is_available():\n                torch.cuda.empty_cache()"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "accuracy = accuracy_score(val_targets_labels, val_outputs_labels)\nrecall_micro = recall_score(val_targets_labels, val_outputs_labels, average = 'micro')\nrecall_macro = recall_score(val_targets_labels, val_outputs_labels, average = 'macro')\nf1_score_micro = f1_score(val_targets_labels, val_outputs_labels, average='micro')\nf1_score_macro = f1_score(val_targets_labels, val_outputs_labels, average='macro')\nprint(f\"Accuracy Score: {round(accuracy, 4)}\")\nprint(f\"F1 Score (Micro): {round(f1_score_micro, 4)}\")\nprint(f\"F1 Score (Macro): {round(f1_score_macro, 4)} \\n\")"
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "code",
+            "snippet": "    def __init__(self, data, max_len, tokenizer, data_path):\n        self.tokenizer = tokenizer\n                         self.tokenizer.sep_token,\n                         self.tokenizer.sep_token,\n        inputs = self.tokenizer.encode_plus(text.lower(),\n                                        tokenizer = config.tokenizer,"
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "code",
+            "snippet": "    with torch.no_grad():\n            input_ids = data['input_ids'].to(device, dtype = torch.long)\n            attention_mask = data['attention_mask'].to(device, dtype = torch.long)\n            token_type_ids = data['token_type_ids'].to(device, dtype = torch.long)\n            preds.extend(torch.sigmoid(outputs).cpu().detach().numpy().tolist())\n            if torch.cuda.is_available():\n                torch.cuda.empty_cache()"
+          },
+          {
+            "cell_index": 25,
+            "cell_type": "code",
+            "snippet": "submission.to_csv('submission.csv', index = False)"
+          },
+          {
+            "cell_index": 26,
+            "cell_type": "code",
+            "snippet": "torch.save(model.state_dict(), 'bert-base.pth')"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 628,
+      "quality": "strong",
+      "score": 55,
+      "reasons": "",
+      "source": {
+        "path": "GenAI/feedback-prize-effectiveness/rank628_40pct/train-detectai-deberta.ipynb",
+        "file_name": "train-detectai-deberta.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 27,
+        "code_cell_count": 26,
+        "markdown_cell_count": 1,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "import transformers"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "model_checkpoint = \"/kaggle/input/deberta-v3-large\" #base model"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "df_ai = pd.read_csv('/kaggle/input/daigt-external-dataset/daigt_external_dataset.csv')"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "df_ai = pd.read_csv('/kaggle/input/daigt-external-dataset/daigt_external_dataset.csv')\ndf_valid = df_ai[-200:]\nv1['text'] = df_valid.source_text\nv2['text'] = df_valid.text\nvalid = pd.concat([v1,v2]).sample(frac=1).reset_index(drop=True)"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "llm7prompt = pd.read_csv(\"/kaggle/input/llm-7-prompt-training-dataset/train_essays_RDizzl3_seven_v1.csv\")"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "feedback_1 = pd.read_csv(\"/kaggle/input/feedback21-and-fb-effectiveness/feedback-prize-2021.csv\")\nfeedback_2 = pd.read_csv(\"/kaggle/input/feedback21-and-fb-effectiveness/feedback-prize-effectiveness.csv\")"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "h2o = pd.read_csv(\"/kaggle/input/h2oai-predict-the-llm/train.csv\")[np.invert(pd.read_csv(\"/kaggle/input/h2oai-predict-the-llm/train.csv\").Response.isnull())].rename(columns={\"Response\":\"text\"})[[\"text\"]]"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "train2 = pd.read_csv(\"/kaggle/input/daigt-v2-train-dataset/train_v2_drcat_02.csv\", sep=',')"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "                   valid],\n                   valid],"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "palm = pd.read_csv(\"/kaggle/input/llm-generated-essay-using-palm-from-google-gen-ai/LLM_generated_essay_PaLM.csv\")[[\"text\"]]\nmistral = pd.read_csv(\"/kaggle/input/llm-mistral-7b-instruct-texts/Mistral7B_CME_v7_15_percent_corruption.csv\")[[\"text\"]]\nllama = pd.read_csv(\"/kaggle/input/daigt-data-llama-70b-and-falcon180b/llama_falcon_v3.csv\")[[\"text\"]]\nclaude = pd.read_csv(\"/kaggle/input/hello-claude-1000-essays-from-anthropic/persuade15_claude_instant1.csv\")[[\"essay_text\"]]"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "from sklearn.model_selection import StratifiedKFold"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "sk = StratifiedKFold(n_splits=10,shuffle=True,random_state=42)"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "    valid = train0.iloc[val]"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "valid.label.value_counts()"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "valid.text = valid.text.apply(lambda x: x.strip('\\n'))"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "ds_valid = Dataset.from_pandas(valid)"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "from transformers import AutoTokenizer\n# tokenizer = AutoTokenizer.from_pretrained(model_checkpoint, use_fast=True)\ntokenizer = AutoTokenizer.from_pretrained(model_checkpoint)"
+          },
+          {
+            "cell_index": 21,
+            "cell_type": "code",
+            "snippet": "    return tokenizer(examples['text'], max_length=128, padding=True, truncation=True)\nds_valid_enc = ds_valid.map(preprocess_function, batched=True)"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "from transformers import AutoModelForSequenceClassification, TrainingArguments, Trainer\nimport torch\ndevice = torch.device(\"cuda:0\" if torch.cuda.is_available() else \"cpu\")\nfrom transformers import EarlyStoppingCallback\nearly_stopping = EarlyStoppingCallback(early_stopping_patience=2)"
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "code",
+            "snippet": "metric_name = \"roc_auc\"\nmodel_name = \"distilroberta\"#\"deberta-large\"\n    lr_scheduler_type = \"cosine\",\n    optim=\"adamw_torch\",\n    metric_for_best_model=metric_name,"
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "code",
+            "snippet": "from sklearn.metrics import roc_auc_score\ndef compute_metrics(eval_pred):\n    auc = roc_auc_score(labels, probs[:,1], multi_class='ovr')"
+          },
+          {
+            "cell_index": 25,
+            "cell_type": "code",
+            "snippet": "    eval_dataset=ds_valid_enc,\n    tokenizer=tokenizer,\n    callbacks = [early_stopping],\n    compute_metrics=compute_metrics"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 339,
+      "quality": "strong",
+      "score": 67,
+      "reasons": "",
+      "source": {
+        "path": "GenAI/feedback-prize-effectiveness/rank339_20pct/copetition1.ipynb",
+        "file_name": "copetition1.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 35,
+        "code_cell_count": 35,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import tensorflow as tf\nfrom tensorflow.keras.layers import Dense, Input, Dropout\nfrom tensorflow.keras.optimizers import Adam\nfrom tensorflow.keras.models import Model\nfrom transformers import TFBertModel\nimport transformers"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "df = pd.read_csv(\"../input/feedback-prize-effectiveness/train.csv\")"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "eff = pd.read_csv('../input/compet00/ef.csv')\nineff = pd.read_csv('../input/compet00/inef.csv')\nadq = pd.read_csv('../input/compet00/ad (1).csv')"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "def bert_encode(texts, tokenizer, max_len=MAX_LEN):\n        token = tokenizer(text, max_length=max_len, truncation=True, padding='max_length',"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "# First load the real tokenizer\ntokenizer = transformers.BertTokenizer.from_pretrained('../input/huggingface-bert-variants/bert-base-cased/bert-base-cased')\n# Save the loaded tokenizer locally\ntokenizer.save_pretrained('.')"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "sep = tokenizer.sep_token"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "X_train, X_valid, y_train, y_valid = train_test_split(df['inputs'], df['label'], test_size=0.01, random_state=42)"
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "code",
+            "snippet": "X_train = bert_encode(X_train.astype(str), tokenizer)\nX_valid = bert_encode(X_valid.astype(str), tokenizer)\ny_valid = y_valid.values"
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "code",
+            "snippet": "valid_dataset = (\n    .from_tensor_slices((X_valid, y_valid))"
+          },
+          {
+            "cell_index": 25,
+            "cell_type": "code",
+            "snippet": "def build_model(bert_model, max_len=MAX_LEN):\n    sequence_output = bert_model(input_ids, token_type_ids=token_type_ids, attention_mask=attention_mask)[0]\n    model.compile(Adam(lr=1e-5), loss='sparse_categorical_crossentropy', metrics=['accuracy'])"
+          },
+          {
+            "cell_index": 26,
+            "cell_type": "code",
+            "snippet": "transformer_layer = (TFBertModel.from_pretrained('../input/huggingface-bert-variants/bert-base-cased/bert-base-cased'))"
+          },
+          {
+            "cell_index": 27,
+            "cell_type": "code",
+            "snippet": "    validation_data=valid_dataset,"
+          },
+          {
+            "cell_index": 28,
+            "cell_type": "code",
+            "snippet": "test = pd.read_csv(\"../input/feedback-prize-effectiveness/test.csv\")"
+          },
+          {
+            "cell_index": 30,
+            "cell_type": "code",
+            "snippet": "test_text = bert_encode(test.text.astype(str), tokenizer)"
+          },
+          {
+            "cell_index": 32,
+            "cell_type": "code",
+            "snippet": "sample = pd.read_csv(\"../input/feedback-prize-effectiveness/sample_submission.csv\")"
+          },
+          {
+            "cell_index": 34,
+            "cell_type": "code",
+            "snippet": "#sample.to_csv('submission.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 174,
+      "quality": "usable",
+      "score": 41,
+      "reasons": "",
+      "source": {
+        "path": "GenAI/feedback-prize-effectiveness/rank174_10pct/all-essays-for-3-feedback-competitions.ipynb",
+        "file_name": "all-essays-for-3-feedback-competitions.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 24,
+        "code_cell_count": 17,
+        "markdown_cell_count": 7,
+        "snippets": [
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "train_1 = pd.read_csv('../input/feedback-prize-2021/train.csv')\ntrain_2 = pd.read_csv('../input/feedback-prize-effectiveness/train.csv')\ntrain_3 = pd.read_csv('../input/feedback-prize-english-language-learning/train.csv')"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "all_data.to_csv('./feedbackprize_full_essays.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 1,
+      "quality": "reject",
+      "score": -9,
+      "reasons": "too_short",
+      "source": {
+        "path": "GenAI/feedback-prize-effectiveness/rank1_1st/exp08-del-dataset-part-1.ipynb",
+        "file_name": "exp08-del-dataset-part-1.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 4,
+        "code_cell_count": 4,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "model = \"exp-08-del-8folds-kd-part-1\"\nshutil.copytree('../input/exp-08-deberta-large-kd-part-1', f'./{model}/')"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "# model = \"a-prod-fpe-dexl-8-folds\"\n# shutil.copytree(\"../input/a-prod-fpe-dexl-8-folds\", f'./{model}/')"
+          }
+        ]
+      }
+    }
+  }
+}

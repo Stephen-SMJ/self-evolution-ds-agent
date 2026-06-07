@@ -1,0 +1,348 @@
+{
+  "domain": "RL",
+  "competition": "lux-ai-2021",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 819,
+      "quality": "strong",
+      "score": 61,
+      "reasons": "",
+      "source": {
+        "path": "RL/lux-ai-2021/rank819_70pct/delux-ai-zero.ipynb",
+        "file_name": "delux-ai-zero.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 30,
+        "code_cell_count": 17,
+        "markdown_cell_count": 13,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "markdown",
+            "snippet": "## Notes about MuZero\n\nInputs:\n- current and past game states\n\nModel Functions:\n- Representation function h(observation) -> hidden state\n- Prediction function f(hidden state) -> policy and value\n- Dynamic function g(hidden state, action) -> reward and next hidden state\n\nThings to predict:\n\n- policy\n- value\n- reward"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "import tensorflow as tf"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "class MultiHeadAttention(tf.keras.layers.Layer):\n        self.wq = tf.keras.layers.Dense(d_input)\n        self.wk = tf.keras.layers.Dense(d_input)\n        self.wv = tf.keras.layers.Dense(d_input)\n        self.dense = tf.keras.layers.Dense(d_input, activation=tf.nn.elu)"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "class UnitEncoder(tf.keras.layers.Layer):\n        self.conv = tf.keras.layers.Conv1D(16, 1)\n        self.dense = tf.keras.layers.Dense(16, activation=tf.nn.elu)"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "class SpatialEncoder(tf.keras.layers.Layer):\n        self.project = tf.keras.layers.Conv2D(32, 1, activation=tf.nn.elu)\n        self.conv1 = tf.keras.layers.Conv2D(4, 5, activation=tf.nn.elu, padding='same')\n        self.conv2 = tf.keras.layers.Conv2D(4, 5, activation=tf.nn.elu, padding='same')\n        self.conv3 = tf.keras.layers.Conv2D(2, 5, activation=tf.nn.elu, padding='same')\n        self.dense = tf.keras.layers.Dense(64, activation=tf.nn.elu)\n        self.flatten = tf.keras.layers.Flatten()\n        self.conv_scatter = tf.keras.layers.Conv1D(4, 1, activation=tf.nn.elu)"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "class ScalarEncoder(tf.keras.layers.Layer):\n        self.dense1 = tf.keras.layers.Dense(32, activation=tf.nn.elu)\n        self.dense2 = tf.keras.layers.Dense(16, activation=tf.nn.elu)"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "markdown",
+            "snippet": "# Model Building"
+          },
+          {
+            "cell_index": 21,
+            "cell_type": "code",
+            "snippet": "    def get_ucb_score(self, parent_node):\n        ucb_score = [0]*32\n                ucb_score[i] = c_1 + np.log((parent_node.visit_count + c_2 + 1)/c_2)\n                ucb_score[i] *= parent_node.P[i].numpy() * np.sqrt(parent_node.visit_count)\n                ucb_score[i] = c_1 + np.log((parent_node.visit_count + c_2 + 1)/c_2)\n                ucb_score[i] *= parent_node.P[i].numpy() * (np.sqrt(parent_node.visit_count))/(1+parent_node.children[i].visit_count)\n                ucb_score[i] += parent_node.children[i].Q\n        return tf.constant(ucb_score)\n            ucb_score = self.get_ucb_score(selected_node)\n            #print(ucb_score)\n            selected_policy_index = np.argmax(ucb_score)"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "markdown",
+            "snippet": "## Model class\nRepresentation model\n\nremove residual block and use conv for now\n\nInputs: game state map\nOutputs: list of actions\n\nsince the muzero is designed for singe agent game, we have to improvise a bit.\n\nMethods:\n- Self play\n- Learn from replay buffer"
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "code",
+            "snippet": "class Delux(tf.keras.Model):\n        self.loss_cce = tf.keras.losses.CategoricalCrossentropy()\n        self.loss_mse = tf.keras.losses.MeanSquaredError()\n        self.optimizer = tf.keras.optimizers.Adam(0.05)\n        f_input = tf.keras.Input(shape=(96))\n        f = tf.keras.layers.Dense(48, activation=tf.nn.elu)(f_input)\n        v = tf.keras.layers.Dense(8, activation=tf.nn.elu)(f)\n        v = tf.keras.layers.Dense(1)(v)\n        p = tf.keras.layers.Dense(32, activation=tf.nn.elu)(f)\n        p = tf.keras.layers.Dense(32, activation=tf.nn.softmax)(p)\n        self.Prediction = tf.keras.Model([f_input], [p, v], name='Prediction Model')\n        g_hidden_state = tf.keras.Input(shape=(96))\n        g_hidden_actions = tf.keras.Input(shape=(32))\n        g = tf.keras.layers.Dense(96, activation=tf.nn.elu)(g_input)\n        g = tf.keras.layers.Dense(96, activation=tf.nn.elu)(g_input)\n        r = tf.keras.layers.Dense(32, activation=tf.nn.elu)(g)\n        r = tf.keras.layers.Dense(8, activation=tf.nn.elu)(r)\n        r = tf.keras.layers.Dense(1)(r)\n        self.Dynamic = tf.keras.Model([g_hidden_state, g_hidden_actions], [g, r], name='Dynamic Model')\n        h_input = tf.keras.Input(shape=(192))\n        h = tf.keras.layers.Dense(96, activation=tf.nn.elu)(h_input)\n        h = tf.keras.layers.Dense(96, activation=tf.nn.elu)(h)\n        h = tf.keras.layers.Dense(96, activation=tf.nn.elu)(h)\n        self.Representation = tf.keras.Model(h_input, h, name='Representation Model')\n        e_input = tf.keras.Input(shape=(23))\n        e = tf.keras.layers.Dense(32, activation=tf.nn.elu)(e_input)\n        e = tf.keras.layers.Dense(32, activation=tf.nn.elu)(e)\n        e = tf.keras.layers.Dense(32, activation=tf.nn.softmax)(e)\n        self.policyEncoder = tf.keras.Model(e_input, e, name='Policy Encode\n...[truncated]"
+          },
+          {
+            "cell_index": 27,
+            "cell_type": "code",
+            "snippet": "            player_score = game_state.players[0].city_tile_count * 3 + len(game_state.players[0].units) + game_state.players[0].research_points / 100\n            opponent_score = game_state.players[1].city_tile_count * 3 + len(game_state.players[1].units) + game_state.players[1].research_points / 100\n            print(f\"Episode {i}\\nPlayer score: {player_score}\\nOpponent score: {opponent_score}\\nSurvived turn: {obs.step}\")"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 438,
+      "quality": "strong",
+      "score": 61,
+      "reasons": "",
+      "source": {
+        "path": "RL/lux-ai-2021/rank438_40pct/lux-ai-deep-learning-imitate-the-strategy.ipynb",
+        "file_name": "lux-ai-deep-learning-imitate-the-strategy.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 35,
+        "code_cell_count": 23,
+        "markdown_cell_count": 12,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "- [ ] custom loss and metrics"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "markdown",
+            "snippet": "The inputs of the model will be the map of the features, The output also will be a map of actions as matrix."
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "The agent which was uploaded from Github follow a good strategy and save automatically the history in snapshots folder."
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "    # stacking all in one array\n    E = np.dstack([M,U_opponent,U_player,C_opponent,C_player])"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "from tensorflow.keras.utils import  plot_model ,Sequence\n    'Generates data for Keras'"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "import tensorflow as tf\nfrom tensorflow import keras\nfrom keras import layers\nimport tensorflow_hub as hub\nfrom tensorflow.keras import backend as K\n    is_unit = tf.keras.backend.max(y_units_true,axis = -1)\n    is_city = tf.keras.backend.max(y_cities_true,axis = -1)\n    y_units_pred*= K.stack([is_unit]*6, axis=-1)\n    y_cities_pred*= K.stack([is_city]*2, axis=-1)\n    is_unit = tf.keras.backend.max(y_units_true,axis = -1)\n    y_units_pred*= K.stack([is_unit]*6, axis=-1)\n    is_city = tf.keras.backend.max(y_cities_true,axis = -1)\n    y_cities_pred*= K.stack([is_city]*2, axis=-1)"
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "markdown",
+            "snippet": "# Model"
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "code",
+            "snippet": "# from keras import  models"
+          },
+          {
+            "cell_index": 25,
+            "cell_type": "code",
+            "snippet": "# from keras.models import Model"
+          },
+          {
+            "cell_index": 26,
+            "cell_type": "code",
+            "snippet": "# autoencoder.fit_generator(train_generator, steps_per_epoch=5,epochs= 10,validation_data=val_generator,validation_steps=5)"
+          },
+          {
+            "cell_index": 27,
+            "cell_type": "code",
+            "snippet": "from tensorflow.keras import activations\n    inputs = keras.Input(shape=get_inputs(game_state).shape,name = 'The game map')\n    model = keras.Model(inputs = inputs, outputs = output)\n    opt = keras.optimizers.Adam(learning_rate=0.000001)\n    model.compile(optimizer= \"adam\", loss= custom_mean_squared_error ,metrics = [\"accuracy\"])"
+          },
+          {
+            "cell_index": 28,
+            "cell_type": "code",
+            "snippet": "tf.keras.utils.plot_model(\n    rankdir=\"TB\","
+          },
+          {
+            "cell_index": 29,
+            "cell_type": "code",
+            "snippet": "model.compile(optimizer= \"adam\", loss= custom_mean_squared_error ,metrics = [])\nresults = model.fit_generator(train_generator, steps_per_epoch=5,epochs= 50,validation_data=val_generator,validation_steps=5)"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 272,
+      "quality": "usable",
+      "score": 43,
+      "reasons": "",
+      "source": {
+        "path": "RL/lux-ai-2021/rank272_20pct/lux-ai-rule-based-agent.ipynb",
+        "file_name": "lux-ai-rule-based-agent.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 36,
+        "code_cell_count": 22,
+        "markdown_cell_count": 14,
+        "snippets": [
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "        self.attached_player_city_tiles_pos = set()\n        self.attached_opponent_city_tiles_pos = set()\n        new_cluster.attached_player_city_tiles_pos = set.union(self.attached_player_city_tiles_pos,\n                                                               other.attached_player_city_tiles_pos)\n        new_cluster.attached_opponent_city_tiles_pos = set.union(self.attached_opponent_city_tiles_pos,\n                                                                 other.attached_opponent_city_tiles_pos)\n                self.attached_player_city_tiles_pos.add(pos)\n                self.attached_opponent_city_tiles_pos.add(pos)\n        if len(self.attached_player_city_tiles_pos) > 0:\n            if len(self.attached_opponent_city_tiles_pos) > 0:\n            if len(self.attached_opponent_city_tiles_pos) > 0:"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "        Builds a grid of possible expansion spots with specific expansion values depending on the amount of attached\n                    # exclude all expansion positions if they are not attached to wood tiles.\n                max_num_expansions = cluster.size - len(cluster.attached_player_city_tiles_pos)\n                # get attached district mayors:\n                attached_district_majors = set()\n                    for pos in cluster.attached_player_city_tiles_pos:\n                            attached_district_majors.add(dist_major)\n                    for att_dist_mayor in attached_district_majors:\n                    Attached cities. But we need to protect this gate!"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "                                          if st not in cluster.attached_player_city_tiles_pos]"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "        c) And we ensure that expansion spots ar not only attached to coal or uranium tiles. Otherwise they might be\n            # use only expansion positions that are not attached to a wood cluster and that are not closing a cyrcle.\n                # use only expansion positions that are not attached to a wood cluster"
+          },
+          {
+            "cell_index": 21,
+            "cell_type": "code",
+            "snippet": "                        # add units to harvesters if they are not part of an coal cluster that is under attack\n                if len(cluster.attached_player_city_tiles_pos) >= 2:\n                                            and (len(c.attached_player_city_tiles_pos) < 2)\n                                            and (len(c.attached_player_city_tiles_pos) < 2)\n        First of all we need to know in which state we are. In terms of night and day shift.\n                if (len(cluster.attached_player_city_tiles_pos) == 2) and (cluster.num_surrounding_units == 2):\n                elif (len(cluster.attached_player_city_tiles_pos) == 3) and (cluster.num_surrounding_units > 2):\n                elif (len(cluster.attached_player_city_tiles_pos) == 4) and (cluster.num_surrounding_units > 2):\n                num_city_tiles_to_support = len(cluster.attached_player_city_tiles_pos)\n                for tile_pos in cluster.attached_player_city_tiles_pos:\n            if (len(cluster.attached_player_city_tiles_pos) == 2) and (cluster.num_surrounding_units == 2):\n            elif (len(cluster.attached_player_city_tiles_pos) == 3) and (cluster.num_surrounding_units > 2):\n            elif (len(cluster.attached_player_city_tiles_pos) >= 3) and (cluster.num_surrounding_units > 2):\n                    and (len(spot.other_cluster.attached_player_city_tiles_pos) == 0):"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 117,
+      "quality": "strong",
+      "score": 73,
+      "reasons": "",
+      "source": {
+        "path": "RL/lux-ai-2021/rank117_10pct/fast-il-in-keras.ipynb",
+        "file_name": "fast-il-in-keras.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 20,
+        "code_cell_count": 15,
+        "markdown_cell_count": 5,
+        "snippets": [
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "import tensorflow as tf\nfrom tensorflow.keras.utils import Sequence\nfrom tensorflow.keras.models import Model\nfrom tensorflow.keras import layers"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "    x_shift = (32 - width) // 2\n    y_shift = (32 - height) // 2\n            x = int(strs[4]) + x_shift\n            y = int(strs[5]) + y_shift\n            x = int(strs[3]) + x_shift\n            y = int(strs[4]) + y_shift\n            x = int(strs[2]) + x_shift\n            y = int(strs[3]) + y_shift\n    b[x_shift:32 - x_shift, y_shift:32 - y_shift, 19] = 1\n            shift = (32 - size) // 2\n            x = unit_pos[0] + shift\n            y = unit_pos[1] + shift"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "    metrics=['accuracy']\nmodel_checkpoint = tf.keras.callbacks.ModelCheckpoint("
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "    validation_data=val_seq,"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "plt.plot(epochs, val_accuracy, label='Validation accuracy')\nplt.title('Training and validation accuracy')"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "import tensorflow as tf\nmodel = tf.keras.models.load_model(f'{path}/model.h5')\n    x_shift = (32 - width) // 2\n    y_shift = (32 - height) // 2\n            x = int(strs[4]) + x_shift\n            y = int(strs[5]) + y_shift\n            x = int(strs[3]) + x_shift\n            y = int(strs[4]) + y_shift\n            x = int(strs[2]) + x_shift\n            y = int(strs[3]) + y_shift\n    b[x_shift:32 - x_shift, y_shift:32 - y_shift, 19] = 1\n    for label in np.argsort(policy)[::-1]:"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 5,
+      "quality": "usable",
+      "score": 42,
+      "reasons": "bad_keyword",
+      "source": {
+        "path": "RL/lux-ai-2021/rank5_1st/select-agents-for-downloading-matches.ipynb",
+        "file_name": "select-agents-for-downloading-matches.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 50,
+        "code_cell_count": 29,
+        "markdown_cell_count": 21,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "markdown",
+            "snippet": "Other scraping strategies can be implemented, but not here. Like download max X matches per submission or per team per day, or ignore certain teams or ignore where some scores < X, or only download some teams."
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "episodes_df = pd.read_csv(META + \"Episodes.csv\")\nepagents_df = pd.read_csv(META + \"EpisodeAgents.csv\")"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "submission_id_to_episode_id = epagents_df.groupby('SubmissionId').head()[['SubmissionId', 'EpisodeId']]"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "# teams = pd.read_csv(META + \"Teams.csv\")"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "#submissions = pd.read_csv(META + \"Submissions.csv\")"
+          },
+          {
+            "cell_index": 27,
+            "cell_type": "code",
+            "snippet": "leaderboard = epagents_df.groupby('SubmissionId').tail(1)\nleaderboard = leaderboard[~leaderboard.UpdatedScore.isna()]\nleaderboard = leaderboard.sort_values('UpdatedScore', ascending=False)"
+          },
+          {
+            "cell_index": 28,
+            "cell_type": "markdown",
+            "snippet": "So we have 8k agents with a numeric score. Let's see the distribution of scores."
+          },
+          {
+            "cell_index": 29,
+            "cell_type": "code",
+            "snippet": "plt.hist(leaderboard.UpdatedScore, bins=1000, log=True, cumulative=-1, histtype='stepfilled');"
+          },
+          {
+            "cell_index": 30,
+            "cell_type": "markdown",
+            "snippet": "We can see that there are around 250 agents above 1500 score."
+          },
+          {
+            "cell_index": 35,
+            "cell_type": "code",
+            "snippet": "    if verbose: print('Scrolling results...')\n    scrolling_element = browser.find_element(\n        browser.execute_script('arguments[0].scrollTop = arguments[0].scrollHeight', scrolling_element)"
+          },
+          {
+            "cell_index": 37,
+            "cell_type": "markdown",
+            "snippet": "To download the files I need the episode id. I only want to download matches from the agents with the highest ranking.\nThus I'm going to update `epagents_df` to include the final ranking and later remove agents with low score."
+          },
+          {
+            "cell_index": 38,
+            "cell_type": "code",
+            "snippet": "submission_id_to_final_scores = {key: value for key, value in zip(leaderboard.SubmissionId, leaderboard.UpdatedScore)}\nepagents_df['FinalScore'] = epagents_df['SubmissionId'].apply(lambda x: submission_id_to_final_scores.get(x, -100))"
+          },
+          {
+            "cell_index": 39,
+            "cell_type": "code",
+            "snippet": "SCORE_THRESHOLD = 1750\nselection = epagents_df[epagents_df['FinalScore'] > SCORE_THRESHOLD]\nselection.sort_values('FinalScore', ascending=False, inplace=True)"
+          },
+          {
+            "cell_index": 44,
+            "cell_type": "code",
+            "snippet": "selection.to_csv('agent_selection_%s.csv' % time.strftime(\"%Y%m%d\"), index=False)"
+          },
+          {
+            "cell_index": 47,
+            "cell_type": "code",
+            "snippet": "selection.groupby('SubmissionId').tail(1)[['FinalScore', 'UpdatedConfidence', 'Team', 'CreateTime', 'SubmissionId']].head(50)"
+          },
+          {
+            "cell_index": 48,
+            "cell_type": "code",
+            "snippet": "selection.groupby('SubmissionId').tail(1)[['FinalScore', 'UpdatedConfidence', 'Team', 'CreateTime', 'SubmissionId']].to_csv("
+          }
+        ]
+      }
+    }
+  }
+}

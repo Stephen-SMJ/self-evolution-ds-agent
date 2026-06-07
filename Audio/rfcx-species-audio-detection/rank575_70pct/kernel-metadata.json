@@ -1,0 +1,21 @@
+{
+  "id": "minghuang/recensementoiseauxamazonie",
+  "id_no": 15772968,
+  "title": "recensementOiseauxAmazonie",
+  "code_file": "recensementoiseauxamazonie.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": true,
+  "keywords": [],
+  "dataset_sources": [],
+  "kernel_sources": [],
+  "competition_sources": [
+    "rfcx-species-audio-detection"
+  ],
+  "model_sources": [],
+  "docker_image": "gcr.io/kaggle-images/python@sha256:576cb2833a48cd4badc3c23b3b4bb455f265fed516e8260178064e984690b30e",
+  "machine_shape": "None"
+}

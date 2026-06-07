@@ -1,0 +1,25 @@
+{
+  "id": "tunguz/elo-deep-automl",
+  "id_no": 18278369,
+  "title": "Elo Deep AutoML",
+  "code_file": "elo-deep-automl.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": true,
+  "keywords": [
+    "pandas"
+  ],
+  "dataset_sources": [],
+  "kernel_sources": [
+    "tunguz/mitsuru-features-only-train-and-test"
+  ],
+  "competition_sources": [
+    "elo-merchant-category-recommendation"
+  ],
+  "model_sources": [],
+  "docker_image": "gcr.io/kaggle-images/python@sha256:648f97c8be132f304cff3d397339f2d815de79721f3695f43c08a6aec3bc0a5d",
+  "machine_shape": "None"
+}

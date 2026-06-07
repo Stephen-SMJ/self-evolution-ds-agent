@@ -1,0 +1,308 @@
+{
+  "domain": "GenAI",
+  "competition": "kaggle-llm-science-exam",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 1916,
+      "quality": "strong",
+      "score": 67,
+      "reasons": "",
+      "source": {
+        "path": "GenAI/kaggle-llm-science-exam/rank1916_70pct/2023kagglellm-deberta-v3-large-model1-inference.ipynb",
+        "file_name": "2023kagglellm-deberta-v3-large-model1-inference.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 7,
+        "code_cell_count": 6,
+        "markdown_cell_count": 1,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "This DeBERTa-V3-Large model was trained using:"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "import torch\nfrom transformers import AutoTokenizer\nfrom transformers.tokenization_utils_base import PreTrainedTokenizerBase, PaddingStrategy\nfrom transformers import AutoModelForMultipleChoice, TrainingArguments, Trainer"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "    tokenized_example = tokenizer(first_sentence, second_sentence, truncation=True)\n    tokenizer: PreTrainedTokenizerBase\n        batch = self.tokenizer.pad(\n        batch['labels'] = torch.tensor(labels, dtype=torch.int64)\n    sorted_answer_indices = np.argsort(-predictions)\n#test_df = pd.read_csv('/kaggle/input/kaggle-llm-science-exam/test.csv')\ntest_df_all = pd.read_csv('/kaggle/input/more-data/train_3000.csv')"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "model_dir = '/kaggle/input/2023kagglellm-deberta-v3-large-model1'\ntokenizer = AutoTokenizer.from_pretrained(model_dir)\n    tokenizer=tokenizer,\n    data_collator=DataCollatorForMultipleChoice(tokenizer=tokenizer),\nsubmission_df.to_csv('submission.csv', index=False)"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "def score(prediction,answer,num):\n#print(score(subm\nscore(submission_df,test_df,1251) #  #0.673(original)"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "test_df = pd.read_csv('/kaggle/input/kaggle-llm-science-exam/test.csv')\nsubmission_df.to_csv('submission.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 1096,
+      "quality": "strong",
+      "score": 61,
+      "reasons": "",
+      "source": {
+        "path": "GenAI/kaggle-llm-science-exam/rank1096_40pct/explained-platypus2-70b-wikipedia-rag.ipynb",
+        "file_name": "explained-platypus2-70b-wikipedia-rag.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 23,
+        "code_cell_count": 8,
+        "markdown_cell_count": 15,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "# Explained Platypus2-70B + Wikipedia RAG\n\n## Introduction 🌟\nWelcome to this Jupyter notebook developed for Kaggle - LLM Science Exam This notebook is designed to help you participate in the competition and to Use LLMs to answer difficult science questions\n\n\n### Inspiration and Credits 🙌\nThis notebook is inspired by the work of simjeg\n, available at [this Kaggle project](https://www.kaggle.com/code/simjeg/platypus2-70b-with-wikipedia-rag/notebook). I extend my gratitude to simjeg\n for sharing their insights and code.\n\n🌟 Explore my profile and other public projects, and don't forget to share your feedback!\n👉 [Visit my Profile](https://www.kaggle.com/zulqarnainali) 👈\n\n🙏 Thank you for taking the time to review my work, and please give it a thumbs-up if you found it valuable! 👍\n\n## Purpose 🎯\nThe primary purpose of this notebook is to:\n- Load and preprocess the competition data 📁\n- Engineer relevant features for model training 🏋️‍♂️\n- Train predictive models to make target variable predictions 🧠\n- Submit predictions to the competition environment 📤\n\n## Notebook Structure 📚\nThis notebook is structured as follows:\n1. **Data Preparation**: In this section, we load and preprocess the competition data.\n2. **Feature Engineering**: We generate and select relevant features for model training.\n3. **Model Training**: We train machine learning models on the prepared data.\n4. **Prediction and Submission**: We make predictions on the test data and submit them for evaluation.\n\n\n"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "markdown",
+            "snippet": "- Libraries include standard Python libraries (e.g., `gc`, `logging`, `time`) and popular data science libraries (e.g., `numpy`, `pandas`, `torch`)."
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "import torch\nimport torch.nn.functional as F\nfrom torch.utils.data import DataLoader\nfrom transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer, AutoModel\nfrom safetensors.torch import load_file"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "    torch.cuda.empty_cache()\ndf = pd.read_csv(\"/kaggle/input/kaggle-llm-science-exam/test.csv\", index_col=\"id\")\n# df = pd.read_csv(\"/kaggle/input/kaggle-llm-science-exam/train.csv\", index_col=\"id\")"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "markdown",
+            "snippet": "- In the `__init__` method, the pre-trained model and tokenizer are loaded based on the specified checkpoint.\n- The `transform` method tokenizes and preprocesses sentences using the tokenizer."
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "        self.tokenizer = AutoTokenizer.from_pretrained(checkpoint)\n        tokens = self.tokenizer(batch[\"text\"], truncation=True, padding=True, return_tensors=\"pt\", max_length=MAX_SEQ_LEN)\n            with torch.no_grad():"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "markdown",
+            "snippet": "## Processing and Extracting Context for Test Set**\n\n**Explanation:**\n- This cell processes and extracts context for the test set if `IS_TEST_SET` is `True`.\n- It starts by loading an embedding model (`SentenceTransformer`) and initializing a timer (`start`) to measure the elapsed time.\n- The prompts and answer choices are combined into a single string using a lambda function and applied to the DataFrame, resulting in `inputs` for embedding.\n- A Faiss index is loaded to perform efficient nearest neighbor search for text matching.\n- Text search is performed using Faiss by searching for the closest sentences to the prompt embeddings.\n- Context is extracted from a pre-loaded dataset, and each entry in the `df` DataFrame is updated with the extracted context.\n- Memory is freed, including resetting the Faiss index, deleting variables, and running the `clean_memory()` function.\n- The elapsed time for the entire process is printed.\n\n**Note:**\n- The Faiss library is used for efficient similarity search, which can significantly speed up the search for relevant passages in a large dataset."
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "markdown",
+            "snippet": "##  Creating Symlinks from Kaggle Datasets to Cached Model\n\n\n**Explanation:**\n- This cell creates symbolic links (symlinks) from dataset files in Kaggle to a cached model checkpoint directory.\n- It starts by defining the `checkpoint_path`, which is the directory where the symlinks will be created.\n- The script then loops through two parts (part 1 and part 2).\n- For each part, it defines the `source_dir`, which is the directory containing dataset files.\n- It then iterates through files in the `source_dir`.\n- For each file, it attempts to create a symlink in the `checkpoint_path` directory with the same name, pointing to the original file in the `source_dir`.\n- Any exceptions that occur during symlink creation are caught and ignored.\n\n**Note:**\n- This code is useful for setting up symlinks between Kaggle dataset files and a cached model directory, potentially reducing the need to download data repeatedly."
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "markdown",
+            "snippet": " ## 🦙ShardedLlama Class for Language Model"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "markdown",
+            "snippet": "2. `def __init__(self, checkpoint_path, device=\"cuda:0\", dtype=torch.float16):`: Defines the constructor for the `ShardedLlama` class, which initializes an instance of the class.\n   - `dtype` (optional): The data type for tensors (default is torch.float16).\n   - `self.tokenizer`: Initializes a tokenizer using `AutoTokenizer` from the checkpoint.\n   - Sets the tokenizer's `pad_token` to the tokenizer's `eos_token` and sets `padding_side` to \"right.\""
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "    def __init__(self, checkpoint_path, device=\"cuda:0\", dtype=torch.float16):\n        dtype : torch.dtype, optional\n            dtype, by default torch.float16\n        self.tokenizer = AutoTokenizer.from_pretrained(checkpoint_path)\n        self.tokenizer.pad_token = self.tokenizer.eos_token\n        self.tokenizer.padding_side = \"right\"\n            assert param.dtype != torch.int8, \"int8 not supported (need to add fp16_statistics)\"\n        suffix_eos = [(suffix != self.tokenizer.pad_token_id).sum(1) - 1 for _, suffix in inputs]\n        attention_mask = torch.finfo(self.dtype).min * torch.ones(MAX_LENGTH, MAX_LENGTH)\n        position_ids = torch.arange(MAX_LENGTH, dtype=torch.long, device=self.device)[None, :]\n        with ThreadPoolExecutor() as executor, torch.inference_mode():\n                        batch[j] = (None, layer(suffix[torch.arange(n_suffixes), suffix_eos[j]][:, None]))\n        # Get scores"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "markdown",
+            "snippet": "## Running the Model on Multiple GPUs"
+          },
+          {
+            "cell_index": 21,
+            "cell_type": "markdown",
+            "snippet": "def get_tokens(row, tokenizer):\n    prefix = tokenizer(prompt_prefix, return_tensors=\"pt\", return_attention_mask=False, truncation=True, max_length=MAX_LENGTH)[\"input_ids\"]\n    suffix = tokenizer(prompt_suffix, return_tensors=\"pt\", return_attention_mask=False, truncation=True, max_length=MAX_LENGTH, padding=True)[\"input_ids\"][:, 1:]\n- This code defines a function named `get_tokens` that takes two arguments: `row` and `tokenizer`.\n- `prefix` is generated by tokenizing `prompt_prefix` using the `tokenizer`, converting it to PyTorch tensors, and extracting the input IDs.\n    f = partial(get_tokens, tokenizer=model.tokenizer)\n- A partial function `f` is created using `get_tokens` and the model's tokenizer. This partial function will be used to process inputs.\n    for i, scores in enumerate(outputs):\n        top3 = np.argsort(scores)[::-1]\ndf[[\"prediction\"]].to_csv(\"submission.csv\")\n- If the DataFrame contains an \"answer\" column, performance metrics such as accuracy and mean average precision (map3) are calculated and printed.\nThis code effectively runs the language model on the given data and produces predictions or evaluation metrics depending on the context."
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "def get_tokens(row, tokenizer):\n        prefix = tokenizer(prompt_prefix, return_tensors=\"pt\", return_attention_mask=False, truncation=True, max_length=MAX_LENGTH)[\"input_ids\"]\n        suffix = tokenizer(prompt_suffix, return_tensors=\"pt\", return_attention_mask=False, truncation=True, max_length=MAX_LENGTH, padding=True)[\"input_ids\"][:, 1:]\n    f = partial(get_tokens, tokenizer=model.tokenizer)\n    for i, scores in enumerate(outputs):\n        top3 = np.argsort(scores)[::-1]\ndf[[\"prediction\"]].to_csv(\"submission.csv\")"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 365,
+      "quality": "usable",
+      "score": 43,
+      "reasons": "",
+      "source": {
+        "path": "GenAI/kaggle-llm-science-exam/rank365_20pct/retriever-reader-model-with-flexible-sharding.ipynb",
+        "file_name": "retriever-reader-model-with-flexible-sharding.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 17,
+        "code_cell_count": 11,
+        "markdown_cell_count": 6,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "Retriever-Reader models, particularly the Contextualized Retrieval-Augmented Generation (RAG) approach, represent a breakthrough in Large Language Models (LLMs) such as GPT-3. These models integrate a dual-process system:\n### Ranking Criterion\n- **BM25 Scoring**: Our system utilizes Lucene's BM25 scoring function for text retrieval. BM25 optimizes document ranking by considering term frequency and document length, providing a balanced approach to information retrieval. This method is crucial for selecting the most relevant passages to inform the LLM's responses."
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "    merge_method: str = \"none\",\n                _res[\"score\"] = hits[_k].score\n        scores = retrieved_results_df[\"score\"].values\n        # Add rank score, which is much bigger than BM25 score.\n        scores = scores.reshape(5, top_k) + (np.arange(top_k)[::-1] * 10000.0)\n        scores = scores.reshape(5 * top_k)\n        retrieved_results_df[\"rank_bm25_score\"] = scores\n        retrieved_results_df.sort_values(\"rank_bm25_score\", ascending=False, inplace=True)\n    if merge_method == \"none\":\n    elif merge_method == \"mergev2\":\n        merged_results = []\n                merged_results.append({\"contents\": contents})\n                # print(f\"[DEBUG] merged until {_k=}\")\n            merged_results.append({\"contents\": contents})\n            # print(f\"[DEBUG] merged until {len(retrieved_results)}\")\n        retrieved_results = merged_results\n        raise ValueError(f\"[ERROR] Unexpected value merge_method={merge_method}\")"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "    merge_method: str = \"none\",\n        delayed(retrieval_row)(searcher, row, top_k, jsonl, context_template, max_length, merge_method, search_method)"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "df = pd.read_csv(\"/kaggle/input/kaggle-llm-science-exam/train.csv\", index_col=\"id\")"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "markdown",
+            "snippet": "### Create symlinks from kaggle datasets to fake cached model. This step could be skipped on local machines."
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "                        --prompt_pickle input_prompts.pkl --output_file platypus2_output_score.pkl"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "with open('platypus2_output_score.pkl', 'rb') as file:\n    output_scores = pickle.load(file)\nn = len(output_scores)\nfor i, scores in enumerate(output_scores):\n    first_token_scores = scores[:, 0, [5852, 7700]]\n    positive_scores = first_token_scores[:, 0] / first_token_scores.sum(axis=-1)\n    top3 = np.argsort(positive_scores)[::-1][:3]"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 346,
+      "quality": "strong",
+      "score": 61,
+      "reasons": "",
+      "source": {
+        "path": "GenAI/kaggle-llm-science-exam/rank346_10pct/llm-science.ipynb",
+        "file_name": "llm-science.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 25,
+        "code_cell_count": 22,
+        "markdown_cell_count": 3,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "### @CSC494, this is the publicly-shared notebook that you need to add comments and some form of EDA and send as part of your hands-on midterm. it is copied-and-edited from the outstanding work of @mbanaei at https://www.kaggle.com/code/mbanaei/86-2-with-only-270k-articles. Do not modify any other parts of this notebook for your midterm. You are welcome to copy-and-edit another version that you may modify and try to improve upon the score if you like. Do not submit that for your midterm though."
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "markdown",
+            "snippet": "- Although the majority of high-performing public models use DeBERTa-V3 to do the inference in their pipeline, I used a LongFormer Large model, which enables us to have a much longer prefix context given limited GPU memory. More specifically, as opposed to many public notebooks, there's no splitting to sentence level, and the whole paragraph is retrieved and passed to the classifier as a context (the main reason that we don't get OOM and also have relatively fast inference is that in LongFormer full attention is not computed as opposed to standard models like BERT)."
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "!cp -rf /kaggle/input/sentence-transformers-222/sentence-transformers /kaggle/working/sentence-transformers\n!pip install -U /kaggle/working/sentence-transformers\n!pip install --no-index --no-deps /kaggle/input/llm-whls/transformers-4.31.0-py3-none-any.whl"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "backup_model_predictions = pd.read_csv(\"submission_backup.csv\")"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "from sklearn.feature_extraction.text import TfidfVectorizer\nimport torch\nfrom transformers import AutoTokenizer\nfrom transformers import AutoModelForMultipleChoice, TrainingArguments, Trainer\n#from transformers import LongformerTokenizer, LongformerForMultipleChoice\nimport transformers"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "def get_relevant_documents_parsed(df_valid):\n    for idx in tqdm(range(0, df_valid.shape[0], df_chunk_size)):\n        df_valid_ = df_valid.iloc[idx: idx+df_chunk_size]\n        articles_indices, merged_top_scores = retrieval(df_valid_, modified_texts)\n        all_articles_values.append(merged_top_scores)\ndef get_relevant_documents(df_valid):\n    for idx in tqdm(range(0, df_valid.shape[0], df_chunk_size)):\n        df_valid_ = df_valid.iloc[idx: idx+df_chunk_size]\n        articles_indices, merged_top_scores = retrieval(df_valid_, modified_texts)\n        all_articles_values.append(merged_top_scores)\ndef retrieval(df_valid, modified_texts):\n    corpus_df_valid = df_valid.apply(lambda row:\n    vectorizer1 = TfidfVectorizer(ngram_range=(1,2),\n    vectorizer1.fit(corpus_df_valid)\n    vocab_df_valid = vectorizer1.get_feature_names_out()\n    vectorizer = TfidfVectorizer(ngram_range=(1,2),\n                                 vocabulary=vocab_df_valid)\n    corpus_tf_idf = vectorizer.transform(corpus_df_valid)\n        temp_scores = (corpus_tf_idf * wiki_vectors.T).toarray()\n        chunk_top_indices = temp_scores.argpartition(-top_per_chunk, axis=1)[:, -top_per_chunk:]\n        chunk_top_values = temp_scores[np.arange(temp_scores.shape[0])[:, np.newaxis], chunk_top_indices]\n    merged_top_scores = np.sort(top_values_array, axis=1)[:,-top_per_query:]\n    merged_top_indices = top_values_array.argsort(axis=1)[:,-top_per_query:]\n    articles_indices = top_indices_array[np.arange(top_indices_array.shape[0])[:, np.newaxis], merged_top_indices]\n    return articles_indices, merged_top_scores\n        tokenizer,\n    c_plus_q   = context + ' ' + tokenizer.bos_token + ' ' + question\n    tokenized_examples = tokenizer("
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "df_valid = pd.read_csv(\"/kaggle/input/kaggle-llm-science-exam/test.csv\")"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "df_valid.info()"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "df_valid.head()"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "retrieved_articles_parsed = get_relevant_documents_parsed(df_valid)"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "retrieved_articles = get_relevant_documents(df_valid)"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "tokenizer = AutoTokenizer.from_pretrained(model_name)"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "print(tokenizer)"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "for index in tqdm(range(df_valid.shape[0])):\n    columns = df_valid.iloc[index].values\n        tokenizer=tokenizer, question=question,\n        tokenizer=tokenizer, question=question,\n    with torch.no_grad():\n        probability1 = torch.softmax(torch.tensor(-losses1), dim=-1)\n    with torch.no_grad():\n        probability2 = torch.softmax(torch.tensor(-losses2), dim=-1)\n        predict = np.array(list(\"ABCDE\"))[np.argsort(probability_)][-3:].tolist()[::-1]"
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "code",
+            "snippet": "pd.DataFrame({'id':submit_ids,'prediction':predictions}).to_csv('submission.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 7,
+      "quality": "usable",
+      "score": 42,
+      "reasons": "",
+      "source": {
+        "path": "GenAI/kaggle-llm-science-exam/rank7_1st/d01-wiki-urls.ipynb",
+        "file_name": "d01-wiki-urls.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 61,
+        "code_cell_count": 49,
+        "markdown_cell_count": 12,
+        "snippets": [
+          {
+            "cell_index": 30,
+            "cell_type": "code",
+            "snippet": "    \"Category:Mathematical_proofs\": 2,"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,859 @@
+[
+  {
+    "domain": "Audio",
+    "quality_counts": {
+      "strong": 17,
+      "usable": 6,
+      "weak": 1,
+      "reject": 1
+    },
+    "top_patterns": [
+      [
+        "features:audio_features",
+        21
+      ],
+      [
+        "postprocess:submission_format",
+        15
+      ],
+      [
+        "validation:metric_eval",
+        15
+      ],
+      [
+        "features:image_features",
+        13
+      ],
+      [
+        "features:aggregations",
+        13
+      ],
+      [
+        "models:cnn",
+        12
+      ],
+      [
+        "training:scheduler",
+        10
+      ],
+      [
+        "training:augmentation",
+        10
+      ],
+      [
+        "validation:kfold",
+        8
+      ],
+      [
+        "postprocess:ranking",
+        7
+      ],
+      [
+        "postprocess:ensemble",
+        7
+      ],
+      [
+        "validation:oof",
+        5
+      ],
+      [
+        "features:categorical",
+        5
+      ],
+      [
+        "postprocess:thresholding",
+        4
+      ],
+      [
+        "training:class_imbalance",
+        4
+      ],
+      [
+        "models:sequence",
+        4
+      ],
+      [
+        "training:early_stopping",
+        4
+      ],
+      [
+        "validation:train_valid_split",
+        4
+      ],
+      [
+        "features:missing",
+        3
+      ],
+      [
+        "models:transformer",
+        3
+      ]
+    ],
+    "distilled_lessons": [
+      "Start by matching validation to the competition split risk.",
+      "Use pretrained CNN/vision backbones before custom architectures.",
+      "Add controlled ensembles after individual models are validated.",
+      "Prioritize group/entity/time aggregations as high-ROI features.",
+      "Standardize waveform-to-spectrogram preprocessing and clip aggregation."
+    ]
+  },
+  {
+    "domain": "CV",
+    "quality_counts": {
+      "strong": 15,
+      "usable": 3,
+      "weak": 2,
+      "reject": 5
+    },
+    "top_patterns": [
+      [
+        "models:cnn",
+        15
+      ],
+      [
+        "postprocess:submission_format",
+        14
+      ],
+      [
+        "features:image_features",
+        13
+      ],
+      [
+        "postprocess:thresholding",
+        13
+      ],
+      [
+        "training:augmentation",
+        12
+      ],
+      [
+        "postprocess:ensemble",
+        10
+      ],
+      [
+        "validation:train_valid_split",
+        10
+      ],
+      [
+        "validation:metric_eval",
+        9
+      ],
+      [
+        "training:scheduler",
+        9
+      ],
+      [
+        "features:time_features",
+        8
+      ],
+      [
+        "training:early_stopping",
+        7
+      ],
+      [
+        "features:categorical",
+        6
+      ],
+      [
+        "features:recsys_features",
+        3
+      ],
+      [
+        "features:aggregations",
+        2
+      ],
+      [
+        "features:audio_features",
+        2
+      ],
+      [
+        "postprocess:ranking",
+        2
+      ],
+      [
+        "features:missing",
+        2
+      ],
+      [
+        "validation:oof",
+        1
+      ],
+      [
+        "validation:kfold",
+        1
+      ],
+      [
+        "validation:time_split",
+        1
+      ]
+    ],
+    "distilled_lessons": [
+      "Start by matching validation to the competition split risk.",
+      "Use pretrained CNN/vision backbones before custom architectures.",
+      "Add controlled ensembles after individual models are validated."
+    ]
+  },
+  {
+    "domain": "GenAI",
+    "quality_counts": {
+      "strong": 16,
+      "usable": 7,
+      "reject": 1,
+      "weak": 1
+    },
+    "top_patterns": [
+      [
+        "models:transformer",
+        21
+      ],
+      [
+        "validation:metric_eval",
+        16
+      ],
+      [
+        "features:text_features",
+        15
+      ],
+      [
+        "postprocess:submission_format",
+        13
+      ],
+      [
+        "features:time_features",
+        10
+      ],
+      [
+        "postprocess:ensemble",
+        10
+      ],
+      [
+        "training:augmentation",
+        9
+      ],
+      [
+        "postprocess:thresholding",
+        8
+      ],
+      [
+        "features:missing",
+        7
+      ],
+      [
+        "training:scheduler",
+        6
+      ],
+      [
+        "features:aggregations",
+        5
+      ],
+      [
+        "postprocess:ranking",
+        5
+      ],
+      [
+        "features:image_features",
+        4
+      ],
+      [
+        "features:recsys_features",
+        4
+      ],
+      [
+        "validation:time_split",
+        3
+      ],
+      [
+        "validation:kfold",
+        3
+      ],
+      [
+        "training:early_stopping",
+        3
+      ],
+      [
+        "validation:train_valid_split",
+        3
+      ],
+      [
+        "features:categorical",
+        3
+      ],
+      [
+        "models:gbm",
+        2
+      ]
+    ],
+    "distilled_lessons": [
+      "Start by matching validation to the competition split risk.",
+      "Use pretrained transformer representations and keep a simple baseline for sanity.",
+      "Add controlled ensembles after individual models are validated.",
+      "Prioritize group/entity/time aggregations as high-ROI features."
+    ]
+  },
+  {
+    "domain": "Medical",
+    "quality_counts": {
+      "strong": 17,
+      "usable": 8
+    },
+    "top_patterns": [
+      [
+        "features:image_features",
+        18
+      ],
+      [
+        "postprocess:submission_format",
+        16
+      ],
+      [
+        "models:cnn",
+        15
+      ],
+      [
+        "postprocess:thresholding",
+        15
+      ],
+      [
+        "validation:metric_eval",
+        13
+      ],
+      [
+        "postprocess:ensemble",
+        12
+      ],
+      [
+        "training:augmentation",
+        11
+      ],
+      [
+        "validation:kfold",
+        10
+      ],
+      [
+        "features:aggregations",
+        10
+      ],
+      [
+        "training:scheduler",
+        8
+      ],
+      [
+        "validation:train_valid_split",
+        7
+      ],
+      [
+        "features:missing",
+        6
+      ],
+      [
+        "features:categorical",
+        6
+      ],
+      [
+        "features:time_features",
+        6
+      ],
+      [
+        "training:class_imbalance",
+        5
+      ],
+      [
+        "features:audio_features",
+        4
+      ],
+      [
+        "postprocess:ranking",
+        3
+      ],
+      [
+        "models:linear",
+        3
+      ],
+      [
+        "validation:time_split",
+        3
+      ],
+      [
+        "models:gbm",
+        2
+      ]
+    ],
+    "distilled_lessons": [
+      "Start by matching validation to the competition split risk.",
+      "Use pretrained CNN/vision backbones before custom architectures.",
+      "Add controlled ensembles after individual models are validated.",
+      "Prioritize group/entity/time aggregations as high-ROI features."
+    ]
+  },
+  {
+    "domain": "NLP",
+    "quality_counts": {
+      "strong": 15,
+      "usable": 4,
+      "reject": 4,
+      "weak": 2
+    },
+    "top_patterns": [
+      [
+        "features:text_features",
+        16
+      ],
+      [
+        "validation:metric_eval",
+        15
+      ],
+      [
+        "postprocess:submission_format",
+        15
+      ],
+      [
+        "postprocess:ensemble",
+        13
+      ],
+      [
+        "models:transformer",
+        11
+      ],
+      [
+        "postprocess:thresholding",
+        11
+      ],
+      [
+        "validation:train_valid_split",
+        8
+      ],
+      [
+        "validation:kfold",
+        6
+      ],
+      [
+        "features:time_features",
+        6
+      ],
+      [
+        "features:aggregations",
+        6
+      ],
+      [
+        "features:missing",
+        6
+      ],
+      [
+        "training:augmentation",
+        5
+      ],
+      [
+        "models:linear",
+        4
+      ],
+      [
+        "training:scheduler",
+        4
+      ],
+      [
+        "training:early_stopping",
+        4
+      ],
+      [
+        "features:categorical",
+        4
+      ],
+      [
+        "models:gbm",
+        4
+      ],
+      [
+        "models:sequence",
+        3
+      ],
+      [
+        "validation:oof",
+        3
+      ],
+      [
+        "features:recsys_features",
+        2
+      ]
+    ],
+    "distilled_lessons": [
+      "Start by matching validation to the competition split risk.",
+      "Use pretrained transformer representations and keep a simple baseline for sanity.",
+      "Add controlled ensembles after individual models are validated.",
+      "Prioritize group/entity/time aggregations as high-ROI features."
+    ]
+  },
+  {
+    "domain": "RL",
+    "quality_counts": {
+      "strong": 10,
+      "usable": 13,
+      "weak": 2
+    },
+    "top_patterns": [
+      [
+        "features:time_features",
+        19
+      ],
+      [
+        "models:rl_search",
+        16
+      ],
+      [
+        "validation:metric_eval",
+        12
+      ],
+      [
+        "training:augmentation",
+        10
+      ],
+      [
+        "postprocess:thresholding",
+        8
+      ],
+      [
+        "postprocess:ensemble",
+        8
+      ],
+      [
+        "models:cnn",
+        4
+      ],
+      [
+        "postprocess:submission_format",
+        4
+      ],
+      [
+        "features:categorical",
+        3
+      ],
+      [
+        "features:recsys_features",
+        3
+      ],
+      [
+        "features:aggregations",
+        3
+      ],
+      [
+        "features:image_features",
+        3
+      ],
+      [
+        "features:missing",
+        2
+      ],
+      [
+        "validation:train_valid_split",
+        2
+      ],
+      [
+        "postprocess:ranking",
+        1
+      ],
+      [
+        "features:text_features",
+        1
+      ],
+      [
+        "models:sequence",
+        1
+      ]
+    ],
+    "distilled_lessons": [
+      "Start by matching validation to the competition split risk.",
+      "Use pretrained CNN/vision backbones before custom architectures.",
+      "Add controlled ensembles after individual models are validated.",
+      "Prioritize group/entity/time aggregations as high-ROI features.",
+      "Separate candidate generation from ranking and measure candidate recall.",
+      "Build a local simulator/evaluation harness before optimizing policy logic."
+    ]
+  },
+  {
+    "domain": "RecSys",
+    "quality_counts": {
+      "strong": 10,
+      "usable": 11,
+      "reject": 1,
+      "weak": 3
+    },
+    "top_patterns": [
+      [
+        "features:time_features",
+        15
+      ],
+      [
+        "features:aggregations",
+        11
+      ],
+      [
+        "validation:metric_eval",
+        10
+      ],
+      [
+        "postprocess:submission_format",
+        9
+      ],
+      [
+        "postprocess:ensemble",
+        9
+      ],
+      [
+        "features:missing",
+        8
+      ],
+      [
+        "features:categorical",
+        7
+      ],
+      [
+        "postprocess:ranking",
+        7
+      ],
+      [
+        "postprocess:thresholding",
+        6
+      ],
+      [
+        "features:recsys_features",
+        6
+      ],
+      [
+        "models:gbm",
+        6
+      ],
+      [
+        "training:augmentation",
+        4
+      ],
+      [
+        "models:transformer",
+        2
+      ],
+      [
+        "training:early_stopping",
+        2
+      ],
+      [
+        "validation:time_split",
+        2
+      ],
+      [
+        "features:text_features",
+        2
+      ],
+      [
+        "training:scheduler",
+        1
+      ],
+      [
+        "training:class_imbalance",
+        1
+      ],
+      [
+        "validation:train_valid_split",
+        1
+      ],
+      [
+        "validation:kfold",
+        1
+      ]
+    ],
+    "distilled_lessons": [
+      "Start by matching validation to the competition split risk.",
+      "Use GBM models as the first serious model family when structured features exist.",
+      "Add controlled ensembles after individual models are validated.",
+      "Prioritize group/entity/time aggregations as high-ROI features.",
+      "Separate candidate generation from ranking and measure candidate recall."
+    ]
+  },
+  {
+    "domain": "Tabular",
+    "quality_counts": {
+      "usable": 4,
+      "strong": 17,
+      "weak": 4
+    },
+    "top_patterns": [
+      [
+        "features:categorical",
+        20
+      ],
+      [
+        "features:missing",
+        19
+      ],
+      [
+        "validation:metric_eval",
+        18
+      ],
+      [
+        "models:gbm",
+        17
+      ],
+      [
+        "postprocess:submission_format",
+        14
+      ],
+      [
+        "postprocess:ensemble",
+        13
+      ],
+      [
+        "features:aggregations",
+        13
+      ],
+      [
+        "postprocess:thresholding",
+        10
+      ],
+      [
+        "models:linear",
+        10
+      ],
+      [
+        "validation:train_valid_split",
+        9
+      ],
+      [
+        "models:tree",
+        9
+      ],
+      [
+        "training:augmentation",
+        8
+      ],
+      [
+        "features:time_features",
+        7
+      ],
+      [
+        "validation:kfold",
+        7
+      ],
+      [
+        "validation:time_split",
+        4
+      ],
+      [
+        "training:early_stopping",
+        3
+      ],
+      [
+        "training:class_imbalance",
+        3
+      ],
+      [
+        "models:sequence",
+        2
+      ],
+      [
+        "validation:oof",
+        2
+      ],
+      [
+        "features:target_encoding",
+        2
+      ]
+    ],
+    "distilled_lessons": [
+      "Start by matching validation to the competition split risk.",
+      "Use GBM models as the first serious model family when structured features exist.",
+      "Add controlled ensembles after individual models are validated.",
+      "Prioritize group/entity/time aggregations as high-ROI features."
+    ]
+  },
+  {
+    "domain": "Time-Series",
+    "quality_counts": {
+      "strong": 16,
+      "usable": 7,
+      "weak": 1,
+      "reject": 1
+    },
+    "top_patterns": [
+      [
+        "features:missing",
+        16
+      ],
+      [
+        "features:time_features",
+        15
+      ],
+      [
+        "features:aggregations",
+        15
+      ],
+      [
+        "postprocess:submission_format",
+        14
+      ],
+      [
+        "postprocess:ensemble",
+        13
+      ],
+      [
+        "validation:metric_eval",
+        11
+      ],
+      [
+        "models:gbm",
+        8
+      ],
+      [
+        "postprocess:thresholding",
+        6
+      ],
+      [
+        "models:linear",
+        4
+      ],
+      [
+        "features:audio_features",
+        4
+      ],
+      [
+        "validation:train_valid_split",
+        4
+      ],
+      [
+        "features:categorical",
+        4
+      ],
+      [
+        "training:early_stopping",
+        3
+      ],
+      [
+        "validation:kfold",
+        3
+      ],
+      [
+        "models:tree",
+        2
+      ],
+      [
+        "validation:oof",
+        1
+      ],
+      [
+        "features:recsys_features",
+        1
+      ],
+      [
+        "validation:time_split",
+        1
+      ],
+      [
+        "features:text_features",
+        1
+      ]
+    ],
+    "distilled_lessons": [
+      "Start by matching validation to the competition split risk.",
+      "Use GBM models as the first serious model family when structured features exist.",
+      "Add controlled ensembles after individual models are validated.",
+      "Prioritize group/entity/time aggregations as high-ROI features.",
+      "Standardize waveform-to-spectrogram preprocessing and clip aggregation."
+    ]
+  }
+]

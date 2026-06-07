@@ -1,0 +1,21 @@
+{
+  "id": "flowlight/kaggle-book-gokui-chapter5-lightgbm",
+  "id_no": 34587947,
+  "title": "kaggle-book-gokui-chapter5-lightgbm",
+  "code_file": "kaggle-book-gokui-chapter5-lightgbm.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": true,
+  "keywords": [],
+  "dataset_sources": [],
+  "kernel_sources": [],
+  "competition_sources": [
+    "quora-question-pairs"
+  ],
+  "model_sources": [],
+  "docker_image": "gcr.io/kaggle-images/python@sha256:a462f3ea61568cefa8a97c9a0c6a1b463eb422d90b07581f5ac708cb75ec29ea",
+  "machine_shape": "None"
+}

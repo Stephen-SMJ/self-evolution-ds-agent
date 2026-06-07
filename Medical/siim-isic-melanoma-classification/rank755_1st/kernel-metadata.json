@@ -1,0 +1,23 @@
+{
+  "id": "salazarslytherin/melanoma-minmax",
+  "id_no": 11167886,
+  "title": "melanoma: minmax",
+  "code_file": "melanoma-minmax.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": true,
+  "keywords": [],
+  "dataset_sources": [
+    "paklau9/cs0099"
+  ],
+  "kernel_sources": [],
+  "competition_sources": [
+    "siim-isic-melanoma-classification"
+  ],
+  "model_sources": [],
+  "docker_image": "gcr.io/kaggle-images/python@sha256:0d5b99d21353f1e9209a6e84733afacc2e503e58d484f71082610ecf8cf29926",
+  "machine_shape": "None"
+}

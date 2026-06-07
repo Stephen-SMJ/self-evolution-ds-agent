@@ -1,0 +1,308 @@
+{
+  "domain": "RecSys",
+  "competition": "h-and-m-personalized-fashion-recommendations",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 10,
+      "quality": "strong",
+      "score": 49,
+      "reasons": "",
+      "source": {
+        "path": "RecSys/h-and-m-personalized-fashion-recommendations/rank10_70pct/samp-hm-1st-stage-demo-with-polars-gpu.ipynb",
+        "file_name": "samp-hm-1st-stage-demo-with-polars-gpu.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 13,
+        "code_cell_count": 10,
+        "markdown_cell_count": 3,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "4. Rank candidates with a weighted linear `candidate_score`."
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "# Teaching/demo parameters. Set MAX_VALID_CUSTOMERS=None for a fuller run.\nVALIDATION_CUTOFF = date(2020, 9, 8)\nMAX_VALID_CUSTOMERS = 5_000\nRANK_WEIGHT = 2.0\nLABEL_END = VALIDATION_CUTOFF + timedelta(days=LABEL_DAYS)\nEARLIEST_NEEDED_DATE = VALIDATION_CUTOFF - timedelta(days=max(HISTORY_DAYS, max(GLOBAL_POPULARITY_DAYS), AGE_POPULARITY_DAYS, CATEGORY_HISTORY_DAYS, CATEGORY_POPULARITY_DAYS))\nDATA_DIR, EARLIEST_NEEDED_DATE, VALIDATION_CUTOFF, LABEL_END"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "        .agg(pl.len().alias(\"cnt\"))\n        .agg(pl.col(\"article_idx\").unique().alias(\"actual\"))\n        .agg(pl.len().alias(\"cnt\"))\n        .agg(pl.len().alias(\"cnt\"), pl.max(\"t_dat\").alias(\"last_date\"))"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "            .agg(pl.len().alias(\"cnt\"), pl.max(\"t_dat\").alias(\"last_date\"))"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "actuals_all = actuals_for_window(transactions, VALIDATION_CUTOFF, LABEL_DAYS)\nvalid_customers = sorted(actuals_all)\nif MAX_VALID_CUSTOMERS is not None:\n    valid_customers = valid_customers[:MAX_VALID_CUSTOMERS]\nactuals = {customer_idx: actuals_all[customer_idx] for customer_idx in valid_customers}\n    \"history\": build_customer_history(transactions, VALIDATION_CUTOFF, HISTORY_DAYS, HISTORY_TOP_N),\n    \"global_top\": {days: build_top_list(transactions, VALIDATION_CUTOFF, days, GLOBAL_TOP_N) for days in GLOBAL_POPULARITY_DAYS},\n    \"age_top\": build_age_top(transactions, customers, VALIDATION_CUTOFF, AGE_POPULARITY_DAYS, AGE_TOP_N),\n    \"category_top\": build_category_top(transactions, articles, VALIDATION_CUTOFF, CATEGORY_POPULARITY_DAYS, CATEGORY_COLS, CATEGORY_TOP_N),\n    \"category_preferences\": build_category_preferences(transactions, articles, VALIDATION_CUTOFF, CATEGORY_HISTORY_DAYS, CATEGORY_COLS, CATEGORY_PREF_TOP_N),\nlen(valid_customers), len(actuals_all)"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "RANK_COLUMNS = [\"history_rank\", \"age_rank\", \"global7_rank\", \"global14_rank\", \"global30_rank\", \"global60_rank\", \"category_rank\"]\nMISSING_RANK = 999\n        \"candidate_score\": 0.0,\n        **{col: MISSING_RANK for col in RANK_COLUMNS},\ndef score_piece(source, rank, count, recency_days=None):\n    score = SOURCE_WEIGHTS[source] + RANK_WEIGHT / max(rank, 1) + COUNT_WEIGHT * math.log1p(max(count, 0))\n        score += RECENCY_WEIGHT / (1.0 + max(recency_days, 0))\n    return score\ndef add_candidate(candidates, article_idx, source, rank, count, recency_days=None):\n    rank_col = \"age_rank\" if source == \"age14\" else f\"{source}_rank\"\n    row[rank_col] = min(row[rank_col], rank)\n    row[\"candidate_score\"] += score_piece(source, rank, count, recency_days)\n    for rank, (article_idx, count, recency_days) in enumerate(components[\"history\"].get(customer_idx, []), start=1):\n        add_candidate(candidates, article_idx, \"history\", rank, count, recency_days)\n    for rank, (article_idx, count) in enumerate(components[\"age_top\"].get(bucket, []), start=1):\n        add_candidate(candidates, article_idx, \"age14\", rank, count)\n    for rank, (article_idx, count) in enumerate(components[\"global_top\"].get(7, []), start=1):\n        add_candidate(candidates, article_idx, \"global7\", rank, count)\n            for rank, (article_idx, count) in enumerate(components[\"category_top\"][col].get(category, []), start=1):\n                add_candidate(candidates, article_idx, \"category\", rank, count)\n        for rank, (article_idx, count) in enumerate(components[\"global_top\"].get(days, []), start=1):\n            add_candidate(candidates, article_idx, source, rank, count)\n    return sorted(candidates.items(), key=lambda item: (-item[1][\"candidate_score\"], min(item[1][col] for col in RANK_COLUMNS), item[0]))"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "    score = 0.0\n    for rank, article_idx in enumerate(predicted[:k], start=1):\n            score += hits / rank\n    return score / min(len(actual_set), k)\nmetric_acc = {k: {\"customer_recall\": [], \"map\": []} for k in EVAL_CUTOFFS}\nfor customer_idx in valid_customers:\n        metric_acc[k][\"customer_recall\"].append(hits / len(actual_set) if actual_set else 0.0)\n        metric_acc[k][\"map\"].append(apk(actual_set, prediction, k))\n            \"candidate_score\": features[\"candidate_score\"],\nmetrics = pl.DataFrame([\n        \"recall_customer_mean\": sum(metric_acc[k][\"customer_recall\"]) / len(metric_acc[k][\"customer_recall\"]),\n        \"map\": sum(metric_acc[k][\"map\"]) / len(metric_acc[k][\"map\"]),\nmetrics"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "ks = metrics[\"k\"].to_list()\nrecall_values = metrics[\"recall_customer_mean\"].to_list()\nmap_values = metrics[\"map\"].to_list()"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "markdown",
+            "snippet": "- MAP is sensitive to ordering, so `candidate_score` matters even before the 2nd-stage reranker.\n- The 1st stage does not need to be a heavy model. A transparent weighted linear score is enough to teach the candidate-generation idea.\n- The 2nd stage should receive this fixed candidate set and only rerank it."
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 2264,
+      "quality": "usable",
+      "score": 27,
+      "reasons": "",
+      "source": {
+        "path": "RecSys/h-and-m-personalized-fashion-recommendations/rank2264_40pct/recommender-system.ipynb",
+        "file_name": "recommender-system.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 4,
+        "code_cell_count": 3,
+        "markdown_cell_count": 1,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "data = pd.read_csv(fname_tran, usecols=['customer_id', 'article_id', 'price'])\narticles = pd.read_csv(fname_article)\ndata = data.groupby(['customer_id', 'article_id'], as_index=False).sum()"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 585,
+      "quality": "usable",
+      "score": 37,
+      "reasons": "bad_keyword",
+      "source": {
+        "path": "RecSys/h-and-m-personalized-fashion-recommendations/rank585_20pct/notebookfirstrl.ipynb",
+        "file_name": "notebookfirstrl.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 39,
+        "code_cell_count": 38,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "# import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\n# # For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "# create_folds.py"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "import torch\nfrom torch import nn\nfrom torch.nn import functional as F"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "df_transactions = pd.read_csv(transactions_train,"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "df_customers = pd.read_csv(customers,"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "df_products = pd.read_csv(products,"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "embed_prod = torch.randn(len(df_products.index), len_embed)\nembed_prod = embed_prod.to(device, dtype=torch.float)"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "# embed_prod(torch.LongTensor([3]))"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "# temp = embed_prod(torch.LongTensor([3,4])).squeeze()"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "code",
+            "snippet": "# input1 = torch.randn(100, 128)"
+          },
+          {
+            "cell_index": 21,
+            "cell_type": "code",
+            "snippet": "# input2 = torch.randn(100, 128)"
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "code",
+            "snippet": "embed_custom = embed_custom.to(device, dtype=torch.float)"
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "code",
+            "snippet": "# embed_custom(torch.LongTensor([3])).squeeze()"
+          },
+          {
+            "cell_index": 25,
+            "cell_type": "code",
+            "snippet": "# first = embed_custom(torch.LongTensor([3]))\n# with torch.no_grad():"
+          },
+          {
+            "cell_index": 28,
+            "cell_type": "code",
+            "snippet": "        self.user_embed = self.emb_customers(torch.LongTensor([self.user_index]).to(device, dtype=torch.long))\n                self.user_embed = self.emb_customers(torch.LongTensor([self.user_index]).to(device, dtype=torch.long))\n        embed_proposed = self.emb_prod[torch.LongTensor(proposed_products).to(device, dtype=torch.long)]\n        embed_actual = self.emb_prod[torch.LongTensor([actual_product]).to(device, dtype=torch.long)]\n        coeffs = torch.Tensor(coeffs).to(device, dtype=torch.float)\n        output = torch.mul(output, coeffs)\n        reward = torch.sum(output)\n        reward = torch.mul(reward, scale)"
+          },
+          {
+            "cell_index": 29,
+            "cell_type": "code",
+            "snippet": "class Actor(torch.nn.Module):\n        product_trans = torch.transpose(self.feats, 0, 1)\n        all_scalar_prods = torch.matmul(the_weights, product_trans)\n        argmax = torch.argmax(all_scalar_prods, dim=2)\nclass Critic(torch.nn.Module):\n        x = torch.cat((x, act), -1)\nclass Model(torch.nn.Module):"
+          },
+          {
+            "cell_index": 30,
+            "cell_type": "code",
+            "snippet": "prod_feats = torch.rand(105542, 30)"
+          },
+          {
+            "cell_index": 32,
+            "cell_type": "code",
+            "snippet": "loss_fn = torch.nn.MSELoss()\noptimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)"
+          },
+          {
+            "cell_index": 34,
+            "cell_type": "code",
+            "snippet": "            state1_batch = torch.cat([s1 for (s1, r, s2, d) in minibatch])\n            reward_batch = torch.Tensor([r for (s1, r, s2, d) in minibatch])\n            reward_batch = reward_batch.to(device, dtype=torch.float)\n            state2_batch = torch.cat([s2 for (s1, r, s2, d) in minibatch])\n            done_batch = torch.Tensor([d for (s1, r, s2, d) in minibatch])\n            done_batch = done_batch.to(device, dtype=torch.float)\n            with torch.no_grad():"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 299,
+      "quality": "usable",
+      "score": 29,
+      "reasons": "thin_ensemble",
+      "source": {
+        "path": "RecSys/h-and-m-personalized-fashion-recommendations/rank299_10pct/lb-0-0236-ensemble-gives-you-bronze-medal.ipynb",
+        "file_name": "lb-0-0236-ensemble-gives-you-bronze-medal.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 10,
+        "code_cell_count": 8,
+        "markdown_cell_count": 2,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "markdown",
+            "snippet": "# Models from the following notebooks are used to create an ensemble"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "sub2 = pd.read_csv('../input/handmbestperforming/hnm-exponential-decay-with-alternate-items.csv').sort_values('customer_id').reset_index(drop=True)\nsub5 = pd.read_csv('../input/handmbestperforming/time-is-our-best-friend-v2.csv').sort_values('customer_id').reset_index(drop=True)\nsub3 = pd.read_csv('../input/handmbestperforming/lstm-sequential-modelwith-item-features-tutorial.csv').sort_values('customer_id').reset_index(drop=True)\nsub4 = pd.read_csv('../input/hm-00224-solution/submission.csv').sort_values('customer_id').reset_index(drop=True)\nsub0 = pd.read_csv('../input/hm-00231-solution/submission.csv').sort_values('customer_id').reset_index(drop=True)\nsub1 = pd.read_csv('../input/handmbestperforming/h-m-trending-products-weekly-add-test.csv').sort_values('customer_id').reset_index(drop=True)\nsub6 = pd.read_csv('../input/handmbestperforming/rule-based-by-customer-age.csv').sort_values('customer_id').reset_index(drop=True)"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "def cust_blend2(dt, weights):"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "result = cust_blend2(sub0, w)"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "sub0.to_csv('submission.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 10,
+      "quality": "strong",
+      "score": 54,
+      "reasons": "",
+      "source": {
+        "path": "RecSys/h-and-m-personalized-fashion-recommendations/rank10_1st/samp-hm-1st-stage-demo-with-polars-gpu.ipynb",
+        "file_name": "samp-hm-1st-stage-demo-with-polars-gpu.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 13,
+        "code_cell_count": 10,
+        "markdown_cell_count": 3,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "4. Rank candidates with a weighted linear `candidate_score`."
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "# Teaching/demo parameters. Set MAX_VALID_CUSTOMERS=None for a fuller run.\nVALIDATION_CUTOFF = date(2020, 9, 8)\nMAX_VALID_CUSTOMERS = 5_000\nRANK_WEIGHT = 2.0\nLABEL_END = VALIDATION_CUTOFF + timedelta(days=LABEL_DAYS)\nEARLIEST_NEEDED_DATE = VALIDATION_CUTOFF - timedelta(days=max(HISTORY_DAYS, max(GLOBAL_POPULARITY_DAYS), AGE_POPULARITY_DAYS, CATEGORY_HISTORY_DAYS, CATEGORY_POPULARITY_DAYS))\nDATA_DIR, EARLIEST_NEEDED_DATE, VALIDATION_CUTOFF, LABEL_END"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "        .agg(pl.len().alias(\"cnt\"))\n        .agg(pl.col(\"article_idx\").unique().alias(\"actual\"))\n        .agg(pl.len().alias(\"cnt\"))\n        .agg(pl.len().alias(\"cnt\"), pl.max(\"t_dat\").alias(\"last_date\"))"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "            .agg(pl.len().alias(\"cnt\"), pl.max(\"t_dat\").alias(\"last_date\"))"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "actuals_all = actuals_for_window(transactions, VALIDATION_CUTOFF, LABEL_DAYS)\nvalid_customers = sorted(actuals_all)\nif MAX_VALID_CUSTOMERS is not None:\n    valid_customers = valid_customers[:MAX_VALID_CUSTOMERS]\nactuals = {customer_idx: actuals_all[customer_idx] for customer_idx in valid_customers}\n    \"history\": build_customer_history(transactions, VALIDATION_CUTOFF, HISTORY_DAYS, HISTORY_TOP_N),\n    \"global_top\": {days: build_top_list(transactions, VALIDATION_CUTOFF, days, GLOBAL_TOP_N) for days in GLOBAL_POPULARITY_DAYS},\n    \"age_top\": build_age_top(transactions, customers, VALIDATION_CUTOFF, AGE_POPULARITY_DAYS, AGE_TOP_N),\n    \"category_top\": build_category_top(transactions, articles, VALIDATION_CUTOFF, CATEGORY_POPULARITY_DAYS, CATEGORY_COLS, CATEGORY_TOP_N),\n    \"category_preferences\": build_category_preferences(transactions, articles, VALIDATION_CUTOFF, CATEGORY_HISTORY_DAYS, CATEGORY_COLS, CATEGORY_PREF_TOP_N),\nlen(valid_customers), len(actuals_all)"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "RANK_COLUMNS = [\"history_rank\", \"age_rank\", \"global7_rank\", \"global14_rank\", \"global30_rank\", \"global60_rank\", \"category_rank\"]\nMISSING_RANK = 999\n        \"candidate_score\": 0.0,\n        **{col: MISSING_RANK for col in RANK_COLUMNS},\ndef score_piece(source, rank, count, recency_days=None):\n    score = SOURCE_WEIGHTS[source] + RANK_WEIGHT / max(rank, 1) + COUNT_WEIGHT * math.log1p(max(count, 0))\n        score += RECENCY_WEIGHT / (1.0 + max(recency_days, 0))\n    return score\ndef add_candidate(candidates, article_idx, source, rank, count, recency_days=None):\n    rank_col = \"age_rank\" if source == \"age14\" else f\"{source}_rank\"\n    row[rank_col] = min(row[rank_col], rank)\n    row[\"candidate_score\"] += score_piece(source, rank, count, recency_days)\n    for rank, (article_idx, count, recency_days) in enumerate(components[\"history\"].get(customer_idx, []), start=1):\n        add_candidate(candidates, article_idx, \"history\", rank, count, recency_days)\n    for rank, (article_idx, count) in enumerate(components[\"age_top\"].get(bucket, []), start=1):\n        add_candidate(candidates, article_idx, \"age14\", rank, count)\n    for rank, (article_idx, count) in enumerate(components[\"global_top\"].get(7, []), start=1):\n        add_candidate(candidates, article_idx, \"global7\", rank, count)\n            for rank, (article_idx, count) in enumerate(components[\"category_top\"][col].get(category, []), start=1):\n                add_candidate(candidates, article_idx, \"category\", rank, count)\n        for rank, (article_idx, count) in enumerate(components[\"global_top\"].get(days, []), start=1):\n            add_candidate(candidates, article_idx, source, rank, count)\n    return sorted(candidates.items(), key=lambda item: (-item[1][\"candidate_score\"], min(item[1][col] for col in RANK_COLUMNS), item[0]))"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "    score = 0.0\n    for rank, article_idx in enumerate(predicted[:k], start=1):\n            score += hits / rank\n    return score / min(len(actual_set), k)\nmetric_acc = {k: {\"customer_recall\": [], \"map\": []} for k in EVAL_CUTOFFS}\nfor customer_idx in valid_customers:\n        metric_acc[k][\"customer_recall\"].append(hits / len(actual_set) if actual_set else 0.0)\n        metric_acc[k][\"map\"].append(apk(actual_set, prediction, k))\n            \"candidate_score\": features[\"candidate_score\"],\nmetrics = pl.DataFrame([\n        \"recall_customer_mean\": sum(metric_acc[k][\"customer_recall\"]) / len(metric_acc[k][\"customer_recall\"]),\n        \"map\": sum(metric_acc[k][\"map\"]) / len(metric_acc[k][\"map\"]),\nmetrics"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "ks = metrics[\"k\"].to_list()\nrecall_values = metrics[\"recall_customer_mean\"].to_list()\nmap_values = metrics[\"map\"].to_list()"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "markdown",
+            "snippet": "- MAP is sensitive to ordering, so `candidate_score` matters even before the 2nd-stage reranker.\n- The 1st stage does not need to be a heavy model. A transparent weighted linear score is enough to teach the candidate-generation idea.\n- The 2nd stage should receive this fixed candidate set and only rerank it."
+          }
+        ]
+      }
+    }
+  }
+}

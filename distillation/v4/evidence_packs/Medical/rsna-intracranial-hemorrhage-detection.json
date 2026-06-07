@@ -1,0 +1,348 @@
+{
+  "domain": "Medical",
+  "competition": "rsna-intracranial-hemorrhage-detection",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 299,
+      "quality": "usable",
+      "score": 43,
+      "reasons": "",
+      "source": {
+        "path": "Medical/rsna-intracranial-hemorrhage-detection/rank299_70pct/basic-eda-albumentations-augs.ipynb",
+        "file_name": "basic-eda-albumentations-augs.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 60,
+        "code_cell_count": 42,
+        "markdown_cell_count": 18,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "# Basic EDA + albumentations augs"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "from albumentations import (\n    HorizontalFlip, IAAPerspective, ShiftScaleRotate, CLAHE, RandomRotate90,\n    Transpose, ShiftScaleRotate, Blur, OpticalDistortion, GridDistortion, HueSaturationValue,"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "train_df = pd.read_csv('../input/rsna-intracranial-hemorrhage-detection/stage_1_train.csv')"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "stage_1_sample_submission = pd.read_csv('../input/rsna-intracranial-hemorrhage-detection/stage_1_sample_submission.csv')"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "train_df.groupby('diagnosis').sum().plot(kind='bar',figsize = (10, 5));"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "image_lable = train_df.groupby('image').sum()"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "image_lable = train_df.query('diagnosis!=\"any\"').groupby('image').sum()"
+          },
+          {
+            "cell_index": 30,
+            "cell_type": "code",
+            "snippet": "stage_1_sample_submission['image'] = stage_1_sample_submission['ID'].str.slice(stop=12)\nstage_1_sample_submission['diagnosis'] = stage_1_sample_submission['ID'].str.slice(start=13)"
+          },
+          {
+            "cell_index": 31,
+            "cell_type": "code",
+            "snippet": "stage_1_sample_submission.shape"
+          },
+          {
+            "cell_index": 36,
+            "cell_type": "code",
+            "snippet": "stage_1_sample_submission_d = stage_1_sample_submission.drop_duplicates(subset='image')"
+          },
+          {
+            "cell_index": 37,
+            "cell_type": "code",
+            "snippet": "stage_1_sample_submission_d.shape"
+          },
+          {
+            "cell_index": 39,
+            "cell_type": "code",
+            "snippet": "test_widths, test_heights, max_test, min_test = get_image_sizes(stage_1_sample_submission_d.sample(10000), train = False)"
+          },
+          {
+            "cell_index": 48,
+            "cell_type": "markdown",
+            "snippet": "## Augmentations by albumentations"
+          },
+          {
+            "cell_index": 56,
+            "cell_type": "code",
+            "snippet": "aug = OpticalDistortion(shift_limit =[-0.5, 0.5], distort_limit=[-2,2], interpolation=1, border_mode= 4, p = 1)"
+          },
+          {
+            "cell_index": 59,
+            "cell_type": "markdown",
+            "snippet": "baseline model is ongoing ..."
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 171,
+      "quality": "strong",
+      "score": 49,
+      "reasons": "",
+      "source": {
+        "path": "Medical/rsna-intracranial-hemorrhage-detection/rank171_40pct/5th-preprocessing-adjacent-images-and-cropping.ipynb",
+        "file_name": "5th-preprocessing-adjacent-images-and-cropping.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 29,
+        "code_cell_count": 18,
+        "markdown_cell_count": 11,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "# Preprocessing: Spatially adjacent RGB images and cropping\nThis is a follow on from my previous notebook https://www.kaggle.com/anjum48/reconstructing-3d-volumes-from-metadata\n\nThis is also a part of our 5th place solution https://www.kaggle.com/c/rsna-intracranial-hemorrhage-detection/discussion/117232#latest-672657"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "    studies = metadata.groupby(\"StudyInstanceUID\")"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "train_triplets.to_csv(\"train_triplets.csv\")\ntest_triplets.to_csv(\"stage_1_test_triplets.csv\")"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "img = np.stack(rgb, -1)\nimg = np.clip(img, 0, 255).astype(np.uint8)"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "markdown",
+            "snippet": "On the final line above, we actually clip the image between 0 & 255 Hounfield units. This is ok, since most of the important features in the image are between this range.\n\nSince the image is still technically in Hounsfield units, you can apply a window to it later (e.g. brain, subdural etc.), however since we have already clipped this image, this may impact the bone window.\n\nLet's check out our image:"
+          },
+          {
+            "cell_index": 24,
+            "cell_type": "code",
+            "snippet": "        Originally made as a image transform for use with PyTorch, but too slow to run on the fly :("
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 62,
+      "quality": "strong",
+      "score": 67,
+      "reasons": "",
+      "source": {
+        "path": "Medical/rsna-intracranial-hemorrhage-detection/rank62_20pct/final-cnn-kernel.ipynb",
+        "file_name": "final-cnn-kernel.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 19,
+        "code_cell_count": 19,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import tensorflow as tf\nimport keras\n# from keras_applications.resnet import ResNet50\nfrom keras_applications.inception_v3 import InceptionV3\nfrom sklearn.model_selection import KFold\nimport tensorflow as tf\nimport keras\nfrom keras_applications.resnet import ResNet50\nfrom keras.applications import ResNet50, VGG16\nfrom keras.applications.resnet50 import preprocess_input as preprocess_resnet_50\nfrom keras.applications.vgg16 import preprocess_input as preprocess_vgg_16\nfrom keras.layers import GlobalAveragePooling2D, Dense, Activation\nfrom keras.models import Model\nfrom keras.utils import Sequence\nfrom keras import metrics\nfrom keras.layers import Dense\nfrom keras.layers import Conv2D\nfrom keras.layers import BatchNormalization\n#from tensorflow.keras.applications.resnet50 import preprocess_input\n#from tensorflow.keras.applications import ResNet50\n#from tensorflow.keras.preprocessing.image import load_img, img_to_array\nfrom keras.models import Sequential\nfrom keras.layers import Convolution2D\nfrom keras.layers.normalization import BatchNormalization\nfrom keras.layers import MaxPooling2D\nfrom keras.layers import Flatten\nfrom keras.layers import Dense\nfrom keras.layers import *\nfrom keras.models import Sequential\nfrom keras.applications.resnet50 import ResNet50\nfrom keras_applications.inception_v3 import InceptionV3\nfrom keras.utils import to_categorical\nfrom keras.metrics import categorical_accuracy\nfrom keras.utils import np_utils\nfrom keras import optimizers\nfrom skimage.filters.rank import median"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "def read_and_prep_images(img_paths, img_size=(224,224), pixels_out=True, folder=train_images_dir, display_mode=0):\n        img_array.append(resize(apply_mask(get_pixels_hu(img_paths[i], folder=folder),-150,2000,display_mode=display_mode),(img_size[0],img_size[1])))\ndef get_ds(img_name, folder=train_images_dir):\n    pydicom_filedataset = pydicom.read_file(os.path.join(folder, img_name))\ndef get_pixel_array(img_name, folder=train_images_dir):\n    pydicom_filedataset = pydicom.read_file(os.path.join(folder, img_name))\ndef get_pixels_hu(img_name, folder=train_images_dir):\n        image = get_pixel_array(img_name, folder=folder)\n        dataset = get_ds(img_name, folder=folder)\n    #thresh_img = np.where((img - 1000) / 150 < 1,1.0,0.0)  # threshold the image\n    thresh_img = np.where(filter_hu_bounds,1.0,0.0)  # threshold the image\n        ax[0, 1].set_title(\"Threshold\")"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "class DataGenerator(keras.utils.Sequence):\n                X[i,] = read_and_prep_images([ID+\".dcm\"], self.img_size,pixels_out=True,folder=self.img_dir)"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "from keras import backend as K\ndef weighted_log_loss(y_true, y_pred):\n    y_pred = K.clip(y_pred, eps, 1.0-eps)\ndef _normalized_weighted_average(arr, weights=None):\n    A simple Keras implementation that mimics that of\ndef weighted_loss(y_true, y_pred):\n    Will be used as the metric in model.compile()\n    Similar to the custom loss function 'weighted_log_loss()' above\n    to the official competition metric:\n        sklearn.metrics.log_loss with sample weights\n    y_pred = K.clip(y_pred, eps, 1.0-eps)\n    loss_samples = _normalized_weighted_average(loss, class_weights)\ndef weighted_log_loss_metric(trues, preds):\n    of the validation set in PredictionCheckpoint()\n    preds = np.clip(preds, epsilon, 1-epsilon)"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "class PredictionCheckpoint(keras.callbacks.Callback):\n    def __init__(self, test_df, valid_df,\n                 valid_images_dir=train_images_dir,\n        self.valid_df = valid_df\n        self.valid_images_dir = valid_images_dir\n        self.valid_predictions = []\n#         self.valid_predictions.append(\n#                 DataGenerator(self.valid_df.index, None, self.batch_size, self.input_size, self.valid_images_dir), verbose=2)[:len(self.valid_df)])\n#         print(\"validation loss: %.4f\" %\n#               weighted_log_loss_metric(self.valid_df.values,\n#                                    np.average(self.valid_predictions, axis=0,\n#                                               weights=[2**i for i in range(len(self.valid_predictions))])))"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "                             backend = keras.backend, layers = keras.layers,\n                             models = keras.models, utils = keras.utils)\n        x = keras.layers.GlobalAveragePooling2D(name='avg_pool')(engine.output)\n        x = keras.layers.Dropout(0.2)(x)\n        x = keras.layers.Dense(keras.backend.int_shape(x)[1], activation=\"relu\", name=\"dense_hidden_1\")(x)\n        x = keras.layers.Dropout(0.1)(x)\n        out = keras.layers.Dense(6, activation=\"sigmoid\", name='dense_output')(x)\n        self.model = keras.models.Model(inputs=engine.input, outputs=out)\n        self.model.compile(loss=weighted_log_loss, optimizer=keras.optimizers.Adam(), metrics=[weighted_loss])\n        train_idx, valid_idx = next(ss)\n        model.fit_and_predict(sample_df.iloc[train_idx], sample_df.iloc[valid_idx], test_df_sub)\n    def fit_and_predict(self, train_df, valid_df, test_df):\n        pred_history = PredictionCheckpoint(test_df, valid_df, input_size=self.input_dims)\n        checkpointer = keras.callbacks.ModelCheckpoint(filepath='%s-{epoch:02d}.hdf5' % self.engine.__name__, verbose=1, save_weights_only=True, save_best_only=False)\n        scheduler = keras.callbacks.LearningRateScheduler(lambda epoch: self.learning_rate * pow(self.decay_rate, floor(epoch / self.decay_steps)))\n        print('scheduler done')\n            #callbacks=[scheduler]\n            callbacks=[pred_history, scheduler]"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "def read_testset(filename=\"../input/rsna-intracranial-hemorrhage-detection/stage_2_sample_submission.csv\"):\n    df = pd.read_csv(filename)\n    df = df.set_index(['Image', 'Diagnosis']).unstack(level=-1)\n    df = pd.read_csv(filename)\n    df = df.set_index(['Image', 'Diagnosis']).unstack(level=-1)"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "# obtain test + validation predictions (history.test_predictions, history.valid_predictions)\n    #history = model.fit_and_predict(train_df.iloc[train_idx], train_df.iloc[valid_idx], test_df)"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "test_df.iloc[:, :] = np.average(history.test_predictions, axis=0, weights=[0, 2, 4, 6]) # let's do a weighted average for epochs (>1)\ntest_df = test_df.stack().reset_index()"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "test_df.to_csv('submission_with_history.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 62,
+      "quality": "strong",
+      "score": 67,
+      "reasons": "",
+      "source": {
+        "path": "Medical/rsna-intracranial-hemorrhage-detection/rank62_10pct/final-cnn-kernel.ipynb",
+        "file_name": "final-cnn-kernel.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 19,
+        "code_cell_count": 19,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import tensorflow as tf\nimport keras\n# from keras_applications.resnet import ResNet50\nfrom keras_applications.inception_v3 import InceptionV3\nfrom sklearn.model_selection import KFold\nimport tensorflow as tf\nimport keras\nfrom keras_applications.resnet import ResNet50\nfrom keras.applications import ResNet50, VGG16\nfrom keras.applications.resnet50 import preprocess_input as preprocess_resnet_50\nfrom keras.applications.vgg16 import preprocess_input as preprocess_vgg_16\nfrom keras.layers import GlobalAveragePooling2D, Dense, Activation\nfrom keras.models import Model\nfrom keras.utils import Sequence\nfrom keras import metrics\nfrom keras.layers import Dense\nfrom keras.layers import Conv2D\nfrom keras.layers import BatchNormalization\n#from tensorflow.keras.applications.resnet50 import preprocess_input\n#from tensorflow.keras.applications import ResNet50\n#from tensorflow.keras.preprocessing.image import load_img, img_to_array\nfrom keras.models import Sequential\nfrom keras.layers import Convolution2D\nfrom keras.layers.normalization import BatchNormalization\nfrom keras.layers import MaxPooling2D\nfrom keras.layers import Flatten\nfrom keras.layers import Dense\nfrom keras.layers import *\nfrom keras.models import Sequential\nfrom keras.applications.resnet50 import ResNet50\nfrom keras_applications.inception_v3 import InceptionV3\nfrom keras.utils import to_categorical\nfrom keras.metrics import categorical_accuracy\nfrom keras.utils import np_utils\nfrom keras import optimizers\nfrom skimage.filters.rank import median"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "def read_and_prep_images(img_paths, img_size=(224,224), pixels_out=True, folder=train_images_dir, display_mode=0):\n        img_array.append(resize(apply_mask(get_pixels_hu(img_paths[i], folder=folder),-150,2000,display_mode=display_mode),(img_size[0],img_size[1])))\ndef get_ds(img_name, folder=train_images_dir):\n    pydicom_filedataset = pydicom.read_file(os.path.join(folder, img_name))\ndef get_pixel_array(img_name, folder=train_images_dir):\n    pydicom_filedataset = pydicom.read_file(os.path.join(folder, img_name))\ndef get_pixels_hu(img_name, folder=train_images_dir):\n        image = get_pixel_array(img_name, folder=folder)\n        dataset = get_ds(img_name, folder=folder)\n    #thresh_img = np.where((img - 1000) / 150 < 1,1.0,0.0)  # threshold the image\n    thresh_img = np.where(filter_hu_bounds,1.0,0.0)  # threshold the image\n        ax[0, 1].set_title(\"Threshold\")"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "class DataGenerator(keras.utils.Sequence):\n                X[i,] = read_and_prep_images([ID+\".dcm\"], self.img_size,pixels_out=True,folder=self.img_dir)"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "from keras import backend as K\ndef weighted_log_loss(y_true, y_pred):\n    y_pred = K.clip(y_pred, eps, 1.0-eps)\ndef _normalized_weighted_average(arr, weights=None):\n    A simple Keras implementation that mimics that of\ndef weighted_loss(y_true, y_pred):\n    Will be used as the metric in model.compile()\n    Similar to the custom loss function 'weighted_log_loss()' above\n    to the official competition metric:\n        sklearn.metrics.log_loss with sample weights\n    y_pred = K.clip(y_pred, eps, 1.0-eps)\n    loss_samples = _normalized_weighted_average(loss, class_weights)\ndef weighted_log_loss_metric(trues, preds):\n    of the validation set in PredictionCheckpoint()\n    preds = np.clip(preds, epsilon, 1-epsilon)"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "class PredictionCheckpoint(keras.callbacks.Callback):\n    def __init__(self, test_df, valid_df,\n                 valid_images_dir=train_images_dir,\n        self.valid_df = valid_df\n        self.valid_images_dir = valid_images_dir\n        self.valid_predictions = []\n#         self.valid_predictions.append(\n#                 DataGenerator(self.valid_df.index, None, self.batch_size, self.input_size, self.valid_images_dir), verbose=2)[:len(self.valid_df)])\n#         print(\"validation loss: %.4f\" %\n#               weighted_log_loss_metric(self.valid_df.values,\n#                                    np.average(self.valid_predictions, axis=0,\n#                                               weights=[2**i for i in range(len(self.valid_predictions))])))"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "                             backend = keras.backend, layers = keras.layers,\n                             models = keras.models, utils = keras.utils)\n        x = keras.layers.GlobalAveragePooling2D(name='avg_pool')(engine.output)\n        x = keras.layers.Dropout(0.2)(x)\n        x = keras.layers.Dense(keras.backend.int_shape(x)[1], activation=\"relu\", name=\"dense_hidden_1\")(x)\n        x = keras.layers.Dropout(0.1)(x)\n        out = keras.layers.Dense(6, activation=\"sigmoid\", name='dense_output')(x)\n        self.model = keras.models.Model(inputs=engine.input, outputs=out)\n        self.model.compile(loss=weighted_log_loss, optimizer=keras.optimizers.Adam(), metrics=[weighted_loss])\n        train_idx, valid_idx = next(ss)\n        model.fit_and_predict(sample_df.iloc[train_idx], sample_df.iloc[valid_idx], test_df_sub)\n    def fit_and_predict(self, train_df, valid_df, test_df):\n        pred_history = PredictionCheckpoint(test_df, valid_df, input_size=self.input_dims)\n        checkpointer = keras.callbacks.ModelCheckpoint(filepath='%s-{epoch:02d}.hdf5' % self.engine.__name__, verbose=1, save_weights_only=True, save_best_only=False)\n        scheduler = keras.callbacks.LearningRateScheduler(lambda epoch: self.learning_rate * pow(self.decay_rate, floor(epoch / self.decay_steps)))\n        print('scheduler done')\n            #callbacks=[scheduler]\n            callbacks=[pred_history, scheduler]"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "def read_testset(filename=\"../input/rsna-intracranial-hemorrhage-detection/stage_2_sample_submission.csv\"):\n    df = pd.read_csv(filename)\n    df = df.set_index(['Image', 'Diagnosis']).unstack(level=-1)\n    df = pd.read_csv(filename)\n    df = df.set_index(['Image', 'Diagnosis']).unstack(level=-1)"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "# obtain test + validation predictions (history.test_predictions, history.valid_predictions)\n    #history = model.fit_and_predict(train_df.iloc[train_idx], train_df.iloc[valid_idx], test_df)"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "test_df.iloc[:, :] = np.average(history.test_predictions, axis=0, weights=[0, 2, 4, 6]) # let's do a weighted average for epochs (>1)\ntest_df = test_df.stack().reset_index()"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "test_df.to_csv('submission_with_history.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 62,
+      "quality": "strong",
+      "score": 72,
+      "reasons": "",
+      "source": {
+        "path": "Medical/rsna-intracranial-hemorrhage-detection/rank62_1st/final-cnn-kernel.ipynb",
+        "file_name": "final-cnn-kernel.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 19,
+        "code_cell_count": 19,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import tensorflow as tf\nimport keras\n# from keras_applications.resnet import ResNet50\nfrom keras_applications.inception_v3 import InceptionV3\nfrom sklearn.model_selection import KFold\nimport tensorflow as tf\nimport keras\nfrom keras_applications.resnet import ResNet50\nfrom keras.applications import ResNet50, VGG16\nfrom keras.applications.resnet50 import preprocess_input as preprocess_resnet_50\nfrom keras.applications.vgg16 import preprocess_input as preprocess_vgg_16\nfrom keras.layers import GlobalAveragePooling2D, Dense, Activation\nfrom keras.models import Model\nfrom keras.utils import Sequence\nfrom keras import metrics\nfrom keras.layers import Dense\nfrom keras.layers import Conv2D\nfrom keras.layers import BatchNormalization\n#from tensorflow.keras.applications.resnet50 import preprocess_input\n#from tensorflow.keras.applications import ResNet50\n#from tensorflow.keras.preprocessing.image import load_img, img_to_array\nfrom keras.models import Sequential\nfrom keras.layers import Convolution2D\nfrom keras.layers.normalization import BatchNormalization\nfrom keras.layers import MaxPooling2D\nfrom keras.layers import Flatten\nfrom keras.layers import Dense\nfrom keras.layers import *\nfrom keras.models import Sequential\nfrom keras.applications.resnet50 import ResNet50\nfrom keras_applications.inception_v3 import InceptionV3\nfrom keras.utils import to_categorical\nfrom keras.metrics import categorical_accuracy\nfrom keras.utils import np_utils\nfrom keras import optimizers\nfrom skimage.filters.rank import median"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "def read_and_prep_images(img_paths, img_size=(224,224), pixels_out=True, folder=train_images_dir, display_mode=0):\n        img_array.append(resize(apply_mask(get_pixels_hu(img_paths[i], folder=folder),-150,2000,display_mode=display_mode),(img_size[0],img_size[1])))\ndef get_ds(img_name, folder=train_images_dir):\n    pydicom_filedataset = pydicom.read_file(os.path.join(folder, img_name))\ndef get_pixel_array(img_name, folder=train_images_dir):\n    pydicom_filedataset = pydicom.read_file(os.path.join(folder, img_name))\ndef get_pixels_hu(img_name, folder=train_images_dir):\n        image = get_pixel_array(img_name, folder=folder)\n        dataset = get_ds(img_name, folder=folder)\n    #thresh_img = np.where((img - 1000) / 150 < 1,1.0,0.0)  # threshold the image\n    thresh_img = np.where(filter_hu_bounds,1.0,0.0)  # threshold the image\n        ax[0, 1].set_title(\"Threshold\")"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "class DataGenerator(keras.utils.Sequence):\n                X[i,] = read_and_prep_images([ID+\".dcm\"], self.img_size,pixels_out=True,folder=self.img_dir)"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "from keras import backend as K\ndef weighted_log_loss(y_true, y_pred):\n    y_pred = K.clip(y_pred, eps, 1.0-eps)\ndef _normalized_weighted_average(arr, weights=None):\n    A simple Keras implementation that mimics that of\ndef weighted_loss(y_true, y_pred):\n    Will be used as the metric in model.compile()\n    Similar to the custom loss function 'weighted_log_loss()' above\n    to the official competition metric:\n        sklearn.metrics.log_loss with sample weights\n    y_pred = K.clip(y_pred, eps, 1.0-eps)\n    loss_samples = _normalized_weighted_average(loss, class_weights)\ndef weighted_log_loss_metric(trues, preds):\n    of the validation set in PredictionCheckpoint()\n    preds = np.clip(preds, epsilon, 1-epsilon)"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "class PredictionCheckpoint(keras.callbacks.Callback):\n    def __init__(self, test_df, valid_df,\n                 valid_images_dir=train_images_dir,\n        self.valid_df = valid_df\n        self.valid_images_dir = valid_images_dir\n        self.valid_predictions = []\n#         self.valid_predictions.append(\n#                 DataGenerator(self.valid_df.index, None, self.batch_size, self.input_size, self.valid_images_dir), verbose=2)[:len(self.valid_df)])\n#         print(\"validation loss: %.4f\" %\n#               weighted_log_loss_metric(self.valid_df.values,\n#                                    np.average(self.valid_predictions, axis=0,\n#                                               weights=[2**i for i in range(len(self.valid_predictions))])))"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "                             backend = keras.backend, layers = keras.layers,\n                             models = keras.models, utils = keras.utils)\n        x = keras.layers.GlobalAveragePooling2D(name='avg_pool')(engine.output)\n        x = keras.layers.Dropout(0.2)(x)\n        x = keras.layers.Dense(keras.backend.int_shape(x)[1], activation=\"relu\", name=\"dense_hidden_1\")(x)\n        x = keras.layers.Dropout(0.1)(x)\n        out = keras.layers.Dense(6, activation=\"sigmoid\", name='dense_output')(x)\n        self.model = keras.models.Model(inputs=engine.input, outputs=out)\n        self.model.compile(loss=weighted_log_loss, optimizer=keras.optimizers.Adam(), metrics=[weighted_loss])\n        train_idx, valid_idx = next(ss)\n        model.fit_and_predict(sample_df.iloc[train_idx], sample_df.iloc[valid_idx], test_df_sub)\n    def fit_and_predict(self, train_df, valid_df, test_df):\n        pred_history = PredictionCheckpoint(test_df, valid_df, input_size=self.input_dims)\n        checkpointer = keras.callbacks.ModelCheckpoint(filepath='%s-{epoch:02d}.hdf5' % self.engine.__name__, verbose=1, save_weights_only=True, save_best_only=False)\n        scheduler = keras.callbacks.LearningRateScheduler(lambda epoch: self.learning_rate * pow(self.decay_rate, floor(epoch / self.decay_steps)))\n        print('scheduler done')\n            #callbacks=[scheduler]\n            callbacks=[pred_history, scheduler]"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "def read_testset(filename=\"../input/rsna-intracranial-hemorrhage-detection/stage_2_sample_submission.csv\"):\n    df = pd.read_csv(filename)\n    df = df.set_index(['Image', 'Diagnosis']).unstack(level=-1)\n    df = pd.read_csv(filename)\n    df = df.set_index(['Image', 'Diagnosis']).unstack(level=-1)"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "# obtain test + validation predictions (history.test_predictions, history.valid_predictions)\n    #history = model.fit_and_predict(train_df.iloc[train_idx], train_df.iloc[valid_idx], test_df)"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "test_df.iloc[:, :] = np.average(history.test_predictions, axis=0, weights=[0, 2, 4, 6]) # let's do a weighted average for epochs (>1)\ntest_df = test_df.stack().reset_index()"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "test_df.to_csv('submission_with_history.csv', index=False)"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "id": "casalicchio/use-the-mlr3-package",
+  "id_no": 62352145,
+  "title": "Use the mlr3 Package",
+  "code_file": "use-the-mlr3-package.irnb",
+  "language": "r",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": true,
+  "keywords": [],
+  "dataset_sources": [],
+  "kernel_sources": [],
+  "competition_sources": [
+    "prudential-life-insurance-assessment"
+  ],
+  "model_sources": [],
+  "docker_image": "gcr.io/kaggle-images/rstats@sha256:c70d66fad02f40d7ae057c52242d1b715efa967ecc7f9a28f878a979bf76453f",
+  "machine_shape": "None"
+}

@@ -1,0 +1,133 @@
+{
+  "domain": "CV",
+  "competition": "imaterialist-challenge-fashion-2018",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 171,
+      "quality": "reject",
+      "score": -25,
+      "reasons": "bad_keyword",
+      "source": {
+        "path": "CV/imaterialist-challenge-fashion-2018/rank171_70pct/download-datasets-to-your-google-drive.ipynb",
+        "file_name": "download-datasets-to-your-google-drive.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 15,
+        "code_cell_count": 9,
+        "markdown_cell_count": 6,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "markdown",
+            "snippet": "\n###Features:\n1.   Smaller version of images can be found by replacing \"-large\" with \"-small\" at the end of url. In this code, the small picture (around 5 kb on average) are downloaded.\n2.   This script has been built for Colab users. As the instance gets destroyed every 12 hours, one can't download datasets everytime.\n3.   Also, if you have a locally available GPU and want to download images to your drive (and then to your computer on one click), you can use this script.\n4.   This notebook can be used to download data to drive for any competition that gives urls in JSON files (ofcourse with little modifications).\n"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "!mkdir drive/kaggle/train drive/kaggle/validation drive/kaggle/test"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "#To download validation data on to your drive...\nval_data = json.load(open('drive/kaggle/validation.json'))\n!echo ImageURL, ImgName, ImgId, LabelId >> drive/kaggle/validation/validation.txt\n  !curl $img_url_small > drive/kaggle/validation/$img_name_small\n  !echo $img_name_actual,$img_id,$label_id >> drive/kaggle/validation/validation.txt"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "markdown",
+            "snippet": "###Note\n\n1.   This is it for now. Later, I shall include EDA and hopefully the actual CV architecture part! But boy, those data sets are too hot to handle :P\n\n2.   And yes, too large too! Anyway, it seems really fun to play with this dataset! Good luck to everyone!!\n\n**Upvote this kernel if you find it useful so that others can find it easily.**"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 84,
+      "quality": "reject",
+      "score": -20,
+      "reasons": "bad_keyword",
+      "source": {
+        "path": "CV/imaterialist-challenge-fashion-2018/rank84_40pct/simplest-multithreading-downloader.py",
+        "file_name": "simplest-multithreading-downloader.py",
+        "suffix": ".py",
+        "cell_count": 1,
+        "code_cell_count": 1,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "exitFlag = 0\n        if exitFlag:"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 45,
+      "quality": "reject",
+      "score": -8,
+      "reasons": "bad_keyword",
+      "source": {
+        "path": "CV/imaterialist-challenge-fashion-2018/rank45_20pct/download-image-progress-resume-multiprocessing.py",
+        "file_name": "download-image-progress-resume-multiprocessing.py",
+        "suffix": ".py",
+        "cell_count": 1,
+        "code_cell_count": 1,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "  if 'train' in data_file or 'validation' in data_file:\n    print('Syntax: %s <train|validation|test.json> <output_dir/>' % sys.argv[0])"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 3,
+      "quality": "reject",
+      "score": 4,
+      "reasons": "bad_keyword",
+      "source": {
+        "path": "CV/imaterialist-challenge-fashion-2018/rank3_10pct/download-images-using-r.R",
+        "file_name": "download-images-using-r.R",
+        "suffix": ".R",
+        "cell_count": 1,
+        "code_cell_count": 1,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "  df <- merge(df_1, df_2, by = 'imageId', all = TRUE)"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 3,
+      "quality": "reject",
+      "score": 9,
+      "reasons": "bad_keyword",
+      "source": {
+        "path": "CV/imaterialist-challenge-fashion-2018/rank3_1st/download-images-using-r.R",
+        "file_name": "download-images-using-r.R",
+        "suffix": ".R",
+        "cell_count": 1,
+        "code_cell_count": 1,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "  df <- merge(df_1, df_2, by = 'imageId', all = TRUE)"
+          }
+        ]
+      }
+    }
+  }
+}

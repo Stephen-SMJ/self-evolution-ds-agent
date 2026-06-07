@@ -1,0 +1,458 @@
+{
+  "domain": "RecSys",
+  "competition": "elo-merchant-category-recommendation",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 2836,
+      "quality": "usable",
+      "score": 33,
+      "reasons": "",
+      "source": {
+        "path": "RecSys/elo-merchant-category-recommendation/rank2836_70pct/elo-merchant-category-recommendation.ipynb",
+        "file_name": "elo-merchant-category-recommendation.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 27,
+        "code_cell_count": 13,
+        "markdown_cell_count": 14,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "markdown",
+            "snippet": "## Contents\n- [Introduction](#introduction)\n    * [Problem Statement](#problem-statement)\n- [Exploratory Data Analysis](#eda)\n- [Feature Engineering](#feature-engineering)\n- [Model Building](#model-building)\n    * [Linear Regression](#linear-regression)\n    * [Gradient Bososted Tree](#gradient-boosted-trees)\n- [Model Analysis](#model-analysis)\n- [Conclusion](#conclusion)\n\n"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "markdown",
+            "snippet": "\nElo, one of Brazil's largest payment brands, is partnered with many merchants to offer promotions and discounts to their cardholders. Elo aimed to reduce marketting that is irrelevant to members and offer them custom-tailored promotions, thereby providing an enjoyable experience and beneficial service. To that end, Elo launched a Kaggle competition, enlisting the Kaggle community's help, to produce a machine learning model that can find signal between trasaction data and loyalty. Such a model will help Elo gauge customer loyalty and how promotional strategies affect it.\n\n**The data provided is simulated and fictitious. It does not contain real customer data.*"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "markdown",
+            "snippet": "Build a machine learning model that can effectively predict customer loyalty scores using trasaction data."
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "markdown",
+            "snippet": "**train data** table contained card_ids, loyalty scores and 3 arbitrary features provided by ELO. The aribtrary features were not very useful as they did not provide much signal in predicting loyalty scores.\n**test data** table contained the same arbitrary features as **train data** and card_id but did not contain loyalty scores."
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "traindf = pd.read_csv('../input/elo-merchant-category-recommendation/train.csv')\n# given test data with no loyaltly score\ngiventestdf = pd.read_csv('../input/elo-merchant-category-recommendation/test.csv')\nhisttransdf = pd.read_csv('../input/elo-merchant-category-recommendation/historical_transactions.csv')\nnewtransdf = pd.read_csv('../input/elo-merchant-category-recommendation/new_merchant_transactions.csv')\nmerchdf = pd.read_csv('../input/elo-merchant-category-recommendation/merchants.csv')"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "markdown",
+            "snippet": "There are 123,623 card ids in the test data. This data cannot be used to train the model as it does not have loyalty scores (the response variable)"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "# plotting loyalty score distribution\nplt.xlabel('Loyalty Score')\nplt.title('Loyalty Score Distribution');"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "markdown",
+            "snippet": "Loyalty scores are normally distriubted ranging from -10 to 10. There are some outliers at -33."
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "markdown",
+            "snippet": "## Feature Engineering<a class='anchor' id='feature-engineering'></a>"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "trx.authorized_flag = trx.authorized_flag.apply(lambda x: True if x == 'Y' else False)"
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "markdown",
+            "snippet": "## Model Building<a class='anchor' id='model-building'></a>"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 1647,
+      "quality": "strong",
+      "score": 73,
+      "reasons": "",
+      "source": {
+        "path": "RecSys/elo-merchant-category-recommendation/rank1647_40pct/3-first-pca-components-explain-99-99-of-variance.ipynb",
+        "file_name": "3-first-pca-components-explain-99-99-of-variance.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 21,
+        "code_cell_count": 15,
+        "markdown_cell_count": 6,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "## Goal of the Notebook\nAfter looking at the various kernels by fellow Kagglers I came to realize that incresign complexity was only marginally improving RMSE (at least from available kernels). So I thought of running a PCA to perform a dimensionality check. I soon came to realize that most of the available data is just noise: the three first components of PCA account for 99.99% of the variance as we will see below. I also used these three components as added features and re-run my model but to no avail. I hope you find this analysis useful and you come to new ideas of why this might be happening."
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "from sklearn.ensemble import RandomForestClassifier\nfrom sklearn.model_selection import KFold, train_test_split\nfrom sklearn.metrics import mean_squared_error\nimport lightgbm as lgb"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "df_train = pd.read_csv('../input/train.csv')\ndf_history = pd.read_csv(\"../input/historical_transactions.csv\")"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "df_history['authorized_flag'] = df_history['authorized_flag'].map({'Y':1, 'N':0})"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "        'authorized_flag': ['mean'],\n        'month_lag': ['min', 'max'],\nagg_history = df_history.groupby(['card_id']).agg(agg_func)"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "#Merge with train and test\ndf_train_all = pd.merge(df_train, agg_history, on='card_id', how='left')"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "markdown",
+            "snippet": "First lets train a model to check its performance using the original data."
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "#Train LightGBM model on original data\n         \"metric\": 'rmse',\nfolds = KFold(n_splits=5, shuffle=True, random_state=15)\noof_normal = np.zeros(len(df_train_all))\nfor fold_, (trn_idx, val_idx) in enumerate(folds.split(train_x.values, train_y)):\n    print(\"fold n°{}\".format(fold_))\n                    valid_sets=[trn_data, val_data],\n                    early_stopping_rounds=200)\n    oof_normal[val_idx] = clf.predict(train_x.iloc[val_idx][features], num_iteration=clf.best_iteration)\n    fold_importance_df = pd.DataFrame()\n    fold_importance_df[\"feature\"] = features\n    fold_importance_df[\"importance\"] = clf.feature_importance()\n    fold_importance_df[\"fold\"] = fold_ + 1\n    feature_importance_df = pd.concat([feature_importance_df, fold_importance_df], axis=0)\n    predictions_normal += clf.predict(test_x[features], num_iteration=clf.best_iteration) / folds.n_splits"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "markdown",
+            "snippet": "Now let's train a LightGBM model using only these 3 components."
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "#Train LightGBM model on these 3 PCA components only\n         \"metric\": 'rmse',\nfolds = KFold(n_splits=5, shuffle=True, random_state=15)\noof_pca = np.zeros(len(pca_train_x))\nfor fold_, (trn_idx, val_idx) in enumerate(folds.split(pca_train_x.values, train_y)):\n    print(\"fold n°{}\".format(fold_))\n                    valid_sets=[trn_data, val_data],\n                    early_stopping_rounds=200)\n    oof_pca[val_idx] = clf.predict(pca_train_x.iloc[val_idx][features], num_iteration=clf.best_iteration)\n    fold_importance_df = pd.DataFrame()\n    fold_importance_df[\"feature\"] = features\n    fold_importance_df[\"importance\"] = clf.feature_importance()\n    fold_importance_df[\"fold\"] = fold_ + 1\n    feature_importance_df = pd.concat([feature_importance_df, fold_importance_df], axis=0)\n    predictions_pca += clf.predict(pca_test_x[features], num_iteration=clf.best_iteration) / folds.n_splits"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "markdown",
+            "snippet": "We see that the loss is minimal. Maybe not minimal for a Kaggle competition but a) in real life situations we would indeed opt for the three new features vs original 29 and b) the 3-feature model is not fine-tuned thus the difference may well be even smaller than that."
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "markdown",
+            "snippet": "Let's now re-run our initial model after adding the three PCA components as features and see what we get."
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "#Train LightGBM model\n         \"metric\": 'rmse',\nfolds = KFold(n_splits=5, shuffle=True, random_state=15)\noof_pca = np.zeros(len(train_x_2))\nfor fold_, (trn_idx, val_idx) in enumerate(folds.split(train_x_2.values, train_y)):\n    print(\"fold n°{}\".format(fold_))\n                    valid_sets=[trn_data, val_data],\n                    early_stopping_rounds=200)\n    oof_pca[val_idx] = clf.predict(train_x_2.iloc[val_idx][features], num_iteration=clf.best_iteration)\n    fold_importance_df = pd.DataFrame()\n    fold_importance_df[\"feature\"] = features\n    fold_importance_df[\"importance\"] = clf.feature_importance()\n    fold_importance_df[\"fold\"] = fold_ + 1\n    feature_importance_df = pd.concat([feature_importance_df, fold_importance_df], axis=0)\n    predictions_all += clf.predict(test_x_2[features], num_iteration=clf.best_iteration) / folds.n_splits"
+          },
+          {
+            "cell_index": 20,
+            "cell_type": "markdown",
+            "snippet": "We see that using the three components as new features produces around the same score with our initial model. Maybe more or less components can actually improve our model. I leave that for your experimentation...Hope you enjoyed it!"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 910,
+      "quality": "strong",
+      "score": 61,
+      "reasons": "",
+      "source": {
+        "path": "RecSys/elo-merchant-category-recommendation/rank910_20pct/ts-7-survival-analysis.ipynb",
+        "file_name": "ts-7-survival-analysis.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 55,
+        "code_cell_count": 32,
+        "markdown_cell_count": 23,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "* [Part 10: Validation methods for time series](https://www.kaggle.com/code/konradb/ts-10-validation-methods-for-time-series/)"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "markdown",
+            "snippet": "We start with a theoretical intro and proceed with the well-trodden path for modeling: time-invariant $\\rightarrow$ linear model $\\rightarrow$ trees (and DL is possible ofc, but *outside the scope* of this notebook ;-)\n\n<a id=\"section-one\"></a>\n# Crash intro to survival analysis\n\nSo far we have mostly seen time series where we observed the past, we knew what happened / when - predictions are based on that info. That's not always the case:\n\n**Q1**: Do we need to act before we observe all of the data?\n\n**Q2**: Does time to event matter?"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "markdown",
+            "snippet": "- summary 1: quantify / visualise distribution of durations $\\rightarrow$ expectations / baselines / thresholds\n![0_5WSuIWs_UswmAn2J.png](attachment:68778e99-9ed4-48ff-9075-dfba22958d6f.png)"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "markdown",
+            "snippet": "![surv3.png](attachment:7bd4a636-382a-4fa3-adcd-c5defb83cb0b.png)\n![surv4.png](attachment:95bce2d6-fa13-4dd6-b971-5cba99a74cc9.png)\n![surv2.png](attachment:17b4fa0c-744a-4807-b4df-caf4d037aa9d.png)\n![surv1.png](attachment:9b20842c-4b7b-42e3-8af9-08257320e12a.png)"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "df = pd.read_csv('../input/telco-customer-churn/WA_Fn-UseC_-Telco-Customer-Churn.csv')"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "# we only need time-to-event and the churn flag for the basic model"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "markdown",
+            "snippet": "Kaplan-Meier estimate can be used like this to get a general idea over the population:\n\n- estimated $\\hat{S}$ is a stepwise function of overall population\n\n- x axis: tenure in months, y axis: probability the customer has **not** churned up that point in time\n\n- confidence bands: [Greenwood’s exponential formula](https://www.stat.berkeley.edu/~freedman/greenwd.pdf)\n\nWhat if we'd like to get more insight into behaviour per subset of the population (= level of a categorical feature)?"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "    flag = df['PaymentMethod'] == payment_method\n    kmf.fit(T[flag], event_observed = E[flag], label = payment_method)"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "from lifelines.statistics import logrank_test, pairwise_logrank_test\ncredit_card_flag = df['PaymentMethod'] == 'Credit card (automatic)'\nbank_transfer_flag = df['PaymentMethod'] == 'Bank transfer (automatic)'\nresults = logrank_test(T[credit_card_flag],\n                       T[bank_transfer_flag],\n                       E[credit_card_flag],\n                       E[bank_transfer_flag])"
+          },
+          {
+            "cell_index": 19,
+            "cell_type": "code",
+            "snippet": "results = pairwise_logrank_test(df['tenure'], df['PaymentMethod'], df['churn'])"
+          },
+          {
+            "cell_index": 23,
+            "cell_type": "code",
+            "snippet": "    flag = df['PaymentMethod'] == payment_method\n    naf.fit(T[flag], event_observed=E[flag], label=payment_method)"
+          },
+          {
+            "cell_index": 26,
+            "cell_type": "markdown",
+            "snippet": "Performance of a Cox model $\\rightarrow$ Concordance index = for a survival model C-index $\\approx$ weighted average of the area under time-specific ROC.\n- only evaluates the rank: does model predict same order of churn as really happened?"
+          },
+          {
+            "cell_index": 29,
+            "cell_type": "markdown",
+            "snippet": "Cox model produces predictions of individual survival curves:"
+          },
+          {
+            "cell_index": 34,
+            "cell_type": "markdown",
+            "snippet": "We started with a simple nonparametric estimator of the survival function, moved to hazard rate and then a (log)linear model for the latter. What's the logical next step? Trees - more precisely, random forest + survival analysis = **conditional survival forest**."
+          },
+          {
+            "cell_index": 35,
+            "cell_type": "code",
+            "snippet": "from pysurvival.utils.display import correlation_matrix, compare_to_actual,    integrated_brier_score, create_risk_groups\nfrom pysurvival.utils.metrics import concordance_index"
+          },
+          {
+            "cell_index": 37,
+            "cell_type": "markdown",
+            "snippet": "Fit the model:"
+          },
+          {
+            "cell_index": 39,
+            "cell_type": "code",
+            "snippet": "# testing: model quality - prediction error measures by concordance index and Brier score\nibs = integrated_brier_score(model, X_test, T_test, E_test, t_max=12, figure_size=(15,5))\nprint(\"integrated Brier score: {:.2f}\".format(ibs))"
+          },
+          {
+            "cell_index": 40,
+            "cell_type": "markdown",
+            "snippet": "We talked about concordance score before, so a few words on Brier: the **Brier score** measures the average discrepancy between the actual churn status and the estimated probability: the average squared distance between the observed survival status (0 or 1) and the survival probability at a given time t. It can assume values between 0 and 1, with 0 being the optimal value: the survival function would perfectly predict the survival status (Brier Score)."
+          },
+          {
+            "cell_index": 42,
+            "cell_type": "code",
+            "snippet": "            metrics = [\"rmse\", \"mean\", \"median\"])\nprint(\"accuracy metrics:\")"
+          },
+          {
+            "cell_index": 43,
+            "cell_type": "markdown",
+            "snippet": "![churn6.png](attachment:fcaf377c-9da6-4dba-a40f-36ae111a5ed5.png)\n![churn5.png](attachment:27ba8975-aae8-4982-acf0-f0770c208728.png)\nCombining the information on both the temporal patterns for customers and the value of their purchases can be handled in different manners - we will use the BG-NBD: **B**eta-**G**eometric **N**egative **B**inomial **D**istribution. For a proper description please read this excellent post on Medium: https://towardsdatascience.com/customer-lifetime-value-estimation-via-probabilistic-modeling-d5111cb52dd; the original paper is worth a read as well http://brucehardie.com/papers/018/fader_et_al_mksc_05.pdf.\n- churn: geometric distribution"
+          },
+          {
+            "cell_index": 44,
+            "cell_type": "code",
+            "snippet": "df1 = pd.read_csv('../input/elo-merchant-category-recommendation/historical_transactions.csv',"
+          },
+          {
+            "cell_index": 48,
+            "cell_type": "code",
+            "snippet": "from lifetimes.utils import calibration_and_holdout_data\nrfm_cal_holdout = calibration_and_holdout_data(transactions=df1,\n                                                calibration_period_end='2017-12-31',"
+          },
+          {
+            "cell_index": 53,
+            "cell_type": "code",
+            "snippet": "# Let's inspect his frequency, recency and T both for the calibration and observation periods:"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 146,
+      "quality": "usable",
+      "score": 27,
+      "reasons": "bad_keyword",
+      "source": {
+        "path": "RecSys/elo-merchant-category-recommendation/rank146_10pct/elo-deep-automl.ipynb",
+        "file_name": "elo-deep-automl.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 14,
+        "code_cell_count": 14,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\n# For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory"
+          },
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv(\"../input/mitsuru-features-only-train-and-test/train_df_noindex.csv\")\ntest = pd.read_csv(\"../input/mitsuru-features-only-train-and-test/test_df_noindex.csv\")"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "keras_model_type =  \"auto\" ## always try \"fast\" first, then \"fast2\", \"auto\", etc.\n### always set early_stopping to True first and then change it to False\nmodel_options = {'nlp_char_limit':50, 'cat_feat_cross_flag':False,\nkeras_options = {\"patience\":10, 'class_weight': True, 'early_stopping': True,\n                 'lr_scheduler': '', \"optimizer\": 'RMS'}"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "model, cat_vocab_dict = deepauto.fit(train, target, keras_model_type=keras_model_type,\n                                     project_name=project_name, keras_options=keras_options,\n                                     model_options=model_options, save_model_flag=False, use_my_model='',"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "                                 keras_model_type=keras_model_type,"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "sample_submission = pd.read_csv('/kaggle/input/elo-merchant-category-recommendation/sample_submission.csv')"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "sample_submission['target'] = y_preds\nsample_submission.to_csv('submission_1.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 7,
+      "quality": "strong",
+      "score": 48,
+      "reasons": "",
+      "source": {
+        "path": "RecSys/elo-merchant-category-recommendation/rank7_1st/elo-federated-learning-data-etl.ipynb",
+        "file_name": "elo-federated-learning-data-etl.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 58,
+        "code_cell_count": 53,
+        "markdown_cell_count": 5,
+        "snippets": [
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "df_train = pd.read_csv('../input/elo-merchant-category-recommendation/train.csv')\n#df_test = pd.read_csv('../input/test.csv')\ndf_hist_trans = pd.read_csv('../input/elo-merchant-category-recommendation/historical_transactions.csv')\ndf_new_merchant_trans = pd.read_csv('../input/elo-merchant-category-recommendation/new_merchant_transactions.csv')"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "test_df = pd.read_csv('../input/elofederatedlearningdataetltraintest/horizontalsplit-0-0-lower_table.table.csv')"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "    df['authorized_flag'] = df['authorized_flag'].map({'Y':1, 'N':0})\n    df['month_diff'] += df['month_lag']"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "aggs['month_lag'] = ['max','min','mean','var']\naggs['authorized_flag'] = ['sum', 'mean']\n    df_hist_trans[col+'_mean'] = df_hist_trans.groupby([col])['purchase_amount'].transform('mean')\ndf_hist_trans_group = df_hist_trans.groupby('card_id').agg(aggs)\ndf_train = df_train.merge(df_hist_trans_group,on='card_id',how='left')\n#df_test = df_test.merge(df_hist_trans_group,on='card_id',how='left')"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "aggs['month_lag'] = ['max','min','mean','var']\n    df_new_merchant_trans[col+'_mean'] = df_new_merchant_trans.groupby([col])['purchase_amount'].transform('mean')\ndf_hist_trans_group = df_new_merchant_trans.groupby('card_id').agg(aggs)\ndf_train = df_train.merge(df_hist_trans_group,on='card_id',how='left')\n#df_test = df_test.merge(df_hist_trans_group,on='card_id',how='left')"
+          },
+          {
+            "cell_index": 22,
+            "cell_type": "code",
+            "snippet": "df_train = df_train.merge(test_df,on='card_id',how='left')"
+          },
+          {
+            "cell_index": 26,
+            "cell_type": "code",
+            "snippet": "df_train.to_csv('elo-ETL-data.csv')"
+          },
+          {
+            "cell_index": 27,
+            "cell_type": "code",
+            "snippet": "df_train[df_train['test']==1].drop(['test'],axis=1).to_csv('elo-ETL-data-test.csv')\ndf_train[df_train['test']!=1].drop(['test'],axis=1).to_csv('elo-ETL-data-train.csv')"
+          },
+          {
+            "cell_index": 37,
+            "cell_type": "code",
+            "snippet": "fed_60_v.to_csv('elo-ETL-data-60-vertical.csv')"
+          },
+          {
+            "cell_index": 38,
+            "cell_type": "code",
+            "snippet": "fed_60_v_test.to_csv('elo-ETL-data-60-vertical-test.csv')\n#fed_60_v_test.to_csv('elo-ETL-data-60-vertical-test-x.csv')"
+          },
+          {
+            "cell_index": 40,
+            "cell_type": "code",
+            "snippet": "fed_60_v_train.to_csv('elo-ETL-data-60-vertical-train.csv')\n#fed_60_v_train.to_csv('elo-ETL-data-60-vertical-train-x.csv')"
+          },
+          {
+            "cell_index": 42,
+            "cell_type": "code",
+            "snippet": "fed_40_v.to_csv('elo-ETL-data-40-vertical.csv')"
+          },
+          {
+            "cell_index": 43,
+            "cell_type": "code",
+            "snippet": "fed_40_v_test.to_csv('elo-ETL-data-40-vertical-test.csv')\n#fed_40_v_test.to_csv('elo-ETL-data-40-vertical-test-x.csv')"
+          },
+          {
+            "cell_index": 45,
+            "cell_type": "code",
+            "snippet": "fed_40_v_train.to_csv('elo-ETL-data-40-vertical-train.csv')\n#fed_40_v_train.to_csv('elo-ETL-data-40-vertical-train-x.csv')"
+          },
+          {
+            "cell_index": 49,
+            "cell_type": "code",
+            "snippet": "df_t.drop(['test'],axis=1).to_csv('elo-ETL-data-horizontal-test.csv')"
+          },
+          {
+            "cell_index": 52,
+            "cell_type": "code",
+            "snippet": "fed_60_h.to_csv('elo-ETL-data-60-horizontal-train.csv')"
+          },
+          {
+            "cell_index": 54,
+            "cell_type": "code",
+            "snippet": "fed_40_h.to_csv('elo-ETL-data-40-horizontal-train.csv')"
+          },
+          {
+            "cell_index": 57,
+            "cell_type": "code",
+            "snippet": "#fed_60_h.to_csv('elo-ETL-data-60-horizontal-train-x.csv')\n#fed_40_h.to_csv('elo-ETL-data-40-horizontal-train-x.csv')"
+          }
+        ]
+      }
+    }
+  }
+}

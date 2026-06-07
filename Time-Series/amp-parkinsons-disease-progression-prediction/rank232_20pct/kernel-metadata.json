@@ -1,0 +1,21 @@
+{
+  "id": "thomasdubail/pdpp-2-stage-model",
+  "id_no": 38007766,
+  "title": "PDPP 2 stage model",
+  "code_file": "pdpp-2-stage-model.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "keywords": [],
+  "dataset_sources": [],
+  "kernel_sources": [],
+  "competition_sources": [
+    "amp-parkinsons-disease-progression-prediction"
+  ],
+  "model_sources": [],
+  "docker_image": "gcr.io/kaggle-images/python@sha256:3ddeed23c2c0b927c3c80d676e0fe5babcff0c0e429aa1c445ff268897f1a087",
+  "machine_shape": "None"
+}

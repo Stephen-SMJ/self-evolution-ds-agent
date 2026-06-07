@@ -1,0 +1,268 @@
+{
+  "domain": "NLP",
+  "competition": "feedback-prize-english-language-learning",
+  "rank_buckets_low_to_high": [
+    "70pct",
+    "40pct",
+    "20pct",
+    "10pct",
+    "1st"
+  ],
+  "buckets": {
+    "70pct": {
+      "rank": 1872,
+      "quality": "strong",
+      "score": 73,
+      "reasons": "",
+      "source": {
+        "path": "NLP/feedback-prize-english-language-learning/rank1872_70pct/compe-nlp-feedback-english.ipynb",
+        "file_name": "compe-nlp-feedback-english.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 23,
+        "code_cell_count": 17,
+        "markdown_cell_count": 6,
+        "snippets": [
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "import tensorflow as tf\nfrom tensorflow import keras\nfrom sklearn.model_selection import train_test_split, KFold\nfrom sklearn.feature_extraction.text import TfidfVectorizer\nfrom sklearn.metrics import mean_squared_error"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "    use_k_fold = True"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv(f\"{config.dataset_path}/train.csv\")\ntest = pd.read_csv(f\"{config.dataset_path}/test.csv\")"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "vectorizor = keras.layers.TextVectorization("
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "markdown",
+            "snippet": "## building model"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "    model = keras.Sequential([\n        keras.Input(shape=(), dtype=\"string\"),\n        keras.layers.Dense(64, kernel_initializer='he_uniform', activation='swish'),\n        keras.layers.Dense(32, kernel_initializer='he_uniform', activation='swish'),\n        keras.layers.Dropout(0.2),\n        keras.layers.Dense(len(config.target_columns))\n    rmse = tf.keras.metrics.RootMeanSquaredError(name=\"rmse\")\n    model.compile(loss=\"mse\", optimizer=\"adam\", metrics=[rmse])"
+          },
+          {
+            "cell_index": 16,
+            "cell_type": "code",
+            "snippet": "keras.utils.plot_model(model, show_shapes=True)"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "keras.backend.clear_session()\nkfold = KFold(n_splits=5, shuffle=True, random_state=42)\nfor i, (train_indices, valid_indices) in enumerate(kfold.split(train_1)):\n    x_val = train_1.iloc[valid_indices][\"text\"]\n    y_val = train_1.iloc[valid_indices][config.target_columns]\n    rmse = tf.keras.metrics.RootMeanSquaredError(name=\"rmse\")\n    checkpoint = keras.callbacks.ModelCheckpoint(model_path, monitor=\"val_rmse\", mode=\"min\", save_best_only=True, save_weights_only=True)\n    early_stop = keras.callbacks.EarlyStopping(monitor=\"val_rmse\", mode=\"min\", patience=5)\n    model.compile(loss=\"mse\", optimizer=\"adam\", metrics=[rmse])\n        validation_data=(x_val, y_val),\n    if not config.use_k_fold:"
+          },
+          {
+            "cell_index": 18,
+            "cell_type": "code",
+            "snippet": "submission.to_csv(\"submission.csv\", index=False)"
+          }
+        ]
+      }
+    },
+    "40pct": {
+      "rank": 1131,
+      "quality": "strong",
+      "score": 59,
+      "reasons": "",
+      "source": {
+        "path": "NLP/feedback-prize-english-language-learning/rank1131_40pct/feedback-prize-ell-baseline.ipynb",
+        "file_name": "feedback-prize-ell-baseline.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 15,
+        "code_cell_count": 15,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import tensorflow as tf"
+          },
+          {
+            "cell_index": 2,
+            "cell_type": "code",
+            "snippet": "train_data = pd.read_csv(os.path.join(DATA_DIR, 'train.csv'))\ntest_data = pd.read_csv(os.path.join(DATA_DIR, 'test.csv'))\nsample_submission = pd.read_csv(os.path.join(DATA_DIR, 'sample_submission.csv'))"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "def train_test_split(data, validation_split=0.1):\n    n_val = int(len(text) * validation_split)"
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "validation_split = 0.1\ntrain_text, train_targets, val_text, val_targets = train_test_split(train_data, validation_split)"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "# Create training and validation tf datasets.\nvalidation_dataset = tf.data.Dataset.from_tensor_slices((val_text, val_targets)).shuffle(BUFFER_SIZE_VAL)\nvalidation_dataset = validation_dataset.batch(BATCH_SIZE)"
+          },
+          {
+            "cell_index": 7,
+            "cell_type": "code",
+            "snippet": "text_vectorizer = tf.keras.layers.TextVectorization(max_tokens=max_tokens,"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "val_ds = validation_dataset.map(lambda text, targets: (text_vectorizer(text), targets / 5))"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "    model = tf.keras.Sequential([tf.keras.layers.Input((output_sequence_length,)),\n                                tf.keras.layers.Embedding(text_vectorizer.vocabulary_size(),\n                                tf.keras.layers.GlobalAveragePooling1D(),\n                                tf.keras.layers.Dense(len(target_columns))])\n                  loss=tf.keras.losses.MeanSquaredError(),\n                  metrics=[tf.keras.metrics.RootMeanSquaredError()])"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "es_callback = tf.keras.callbacks.EarlyStopping(patience=5)\nvalidation_split = 0.1\nmodel.fit(train_ds, epochs=epochs, validation_data=val_ds, verbose=2, callbacks=[es_callback])"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "submission = sample_submission.copy()\nsubmission.to_csv('submission.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "20pct": {
+      "rank": 415,
+      "quality": "strong",
+      "score": 57,
+      "reasons": "",
+      "source": {
+        "path": "NLP/feedback-prize-english-language-learning/rank415_20pct/english.ipynb",
+        "file_name": "english.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 6,
+        "code_cell_count": 4,
+        "markdown_cell_count": 2,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\nfrom sklearn.model_selection import cross_val_score, cross_validate, train_test_split\nfrom sklearn.linear_model import Ridge, Perceptron, BayesianRidge, ElasticNet, Lasso\nimport sklearn.ensemble as ensemble"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "code",
+            "snippet": "train_df = pd.read_csv('/kaggle/input/feedback-prize-english-language-learning/train.csv')\ntest_df = pd.read_csv('/kaggle/input/feedback-prize-english-language-learning/test.csv')\n# for bayesian ridge\n# model = Ridge(alpha=10000)\n# model = MultiOutputRegressor(ensemble.GradientBoostingRegressor(learning_rate=0.1))\n# model = BayesianRidge()\n    ### see https://stackoverflow.com/questions/45346550/valueerror-unknown-label-type-unknown\n    cross_validate(pipe, X_train, np.multiply(y_train, 2).astype('int'), return_train_score=True)"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "markdown",
+            "snippet": "Now we need to export this dataframe to csv.\n\nUse the model and get results."
+          },
+          {
+            "cell_index": 5,
+            "cell_type": "code",
+            "snippet": "results.to_csv('/kaggle/working/submission.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "10pct": {
+      "rank": 238,
+      "quality": "strong",
+      "score": 73,
+      "reasons": "",
+      "source": {
+        "path": "NLP/feedback-prize-english-language-learning/rank238_10pct/fb3-deberta-family-inference-weight-tune.ipynb",
+        "file_name": "fb3-deberta-family-inference-weight-tune.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 18,
+        "code_cell_count": 9,
+        "markdown_cell_count": 9,
+        "snippets": [
+          {
+            "cell_index": 1,
+            "cell_type": "code",
+            "snippet": "from sklearn.metrics import mean_squared_error\nfrom sklearn.model_selection import StratifiedKFold, GroupKFold, KFold\nimport torch\nimport torch.nn as nn\nfrom torch.nn import Parameter\nimport torch.nn.functional as F\nfrom torch.optim import Adam, SGD, AdamW\nfrom torch.utils.data import DataLoader, Dataset\nimport tokenizers\nimport transformers\nprint(f\"tokenizers.__version__: {tokenizers.__version__}\")\nprint(f\"transformers.__version__: {transformers.__version__}\")\nfrom transformers import AutoTokenizer, AutoModel, AutoConfig\nfrom transformers import get_linear_schedule_with_warmup, get_cosine_schedule_with_warmup\nfrom transformers import DataCollatorWithPadding\n%env TOKENIZERS_PARALLELISM=false\ndevice = torch.device('cuda' if torch.cuda.is_available() else 'cpu')"
+          },
+          {
+            "cell_index": 3,
+            "cell_type": "markdown",
+            "snippet": "Deberta Family ver. 13\n* CFG1 : 10 fold deberta-v3-base CV/LB: 0.4595/0.44\n* CFG2 : 10 fold deberta-v3-large CV/LB: 0.4553/0.44\n* CFG3 : 10 fold deberta-v2-xlarge CV/LB: 0.4604/0.44\n* CFG4 : 10 fold deberta-v3-base FGM CV/LB: 0.4590/0.44\n* CFG5 : 10 fold deberta-v3-large FGM CV/LB: 0.4564/0.44\n* CFG6 : 10 fold deberta-v2-xlarge CV/LB: 0.4666/0.44\n* CFG7 : 10 fold deberta-v2-xlarge-mnli CV/LB: 0.4675/0.44\n* CFG8 : 10 fold deberta-v3-large unscale CV/LB: 0.4616/0.43\n* CFG9 : 10 fold deberta-v3-large unscale CV/LB: 0.4548/0.43\n* CFG10 : 10 fold deberta-v3-large unscale CV/LB: 0.4569/0.43"
+          },
+          {
+            "cell_index": 4,
+            "cell_type": "code",
+            "snippet": "    model = \"microsoft/deberta-v3-base\"\n    path = \"../input/0911-deberta-v3-base/\"\n    base = \"../input/fb3models/microsoft-deberta-v3-base/\"\n    tokenizer = AutoTokenizer.from_pretrained(base + 'tokenizer/')\n    n_fold=10\n    trn_fold=list(range(n_fold))\n    model = \"microsoft/deberta-v3-large\"\n    path = \"../input/0911-deberta-v3-large/\"\n    base = \"../input/fb3models/microsoft-deberta-v3-large/\"\n    tokenizer = AutoTokenizer.from_pretrained(base + 'tokenizer/')\n    n_fold=10\n    trn_fold=list(range(n_fold))\n    model = \"microsoft/deberta-v2-xlarge\"\n    path = \"../input/0911-deberta-v2-xlarge/\"\n    base = \"../input/fb3models/microsoft-deberta-v2-xlarge/\"\n    tokenizer = AutoTokenizer.from_pretrained(base + 'tokenizer/')\n    n_fold=10\n    trn_fold=list(range(n_fold))\n    model = \"microsoft/deberta-v3-base\"\n    path = \"../input/0913-deberta-v3-base-fgm/\"\n    base = \"../input/fb3models/microsoft-deberta-v3-base/\"\n    tokenizer = AutoTokenizer.from_pretrained(base + 'tokenizer/')\n    n_fold=10\n    trn_fold=list(range(n_fold))\n    model = \"microsoft/deberta-v3-large\"\n    path = \"../input/0914-deberta-v3-large-fgm/\"\n    base = \"../input/fb3models/microsoft-deberta-v3-large/\"\n    tokenizer = AutoTokenizer.from_pretrained(base + 'tokenizer/')\n    n_fold=10\n    trn_fold=list(range(n_fold))\n    model = \"microsoft/deberta-v2-xlarge\"\n    path = \"../input/0919-deberta-v2-xlarge/\"\n    base = \"../input/fb3models/microsoft-deberta-v2-xlarge/\"\n    tokenizer = AutoTokenizer.from_pretrained(base + 'tokenizer/')\n    n_fold=10\n    trn_fold=list(range(n_fold))\n    model = \"microsoft/deberta-v2-xlarge-mnli\"\n    path = \"../input/0919-deberta-v2-xlarge-mnli/\"\n    base = \"../input/fb3models/microsoft-deberta-v2-xlarge/\"\n    tokenizer = AutoTokenizer.from_pretrained(base + 'tokenizer/')\n    n_\n...[truncated]"
+          },
+          {
+            "cell_index": 6,
+            "cell_type": "code",
+            "snippet": "    scores = []\n        score = mean_squared_error(y_true, y_pred, squared=False) # RMSE\n        scores.append(score)\n    mcrmse_score = np.mean(scores)\n    return mcrmse_score, scores\ndef get_score(y_trues, y_preds):\n    mcrmse_score, scores = MCRMSE(y_trues, y_preds)\n    return mcrmse_score, scores\n    torch.manual_seed(seed)\n    torch.cuda.manual_seed(seed)\n    torch.backends.cudnn.deterministic = True"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "# oof\n    oof_df = pd.read_pickle(CFG.path+'oof_df.pkl')\n    labels = oof_df[CFG.target_cols].values\n    preds = oof_df[[f\"pred_{c}\" for c in CFG.target_cols]].values\n    score, scores = get_score(labels, preds)\n    LOGGER.info(f'Model: {CFG.model} Score: {score:<.4f}  Scores: {scores}')"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "    inputs = cfg.tokenizer.encode_plus(\n        inputs[k] = torch.tensor(v, dtype=torch.long)"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "markdown",
+            "snippet": "# Model"
+          },
+          {
+            "cell_index": 12,
+            "cell_type": "code",
+            "snippet": "        sum_embeddings = torch.sum(last_hidden_state * input_mask_expanded, 1)\n        sum_mask = torch.clamp(sum_mask, min=1e-9)\n        max_embeddings, _ = torch.max(embeddings, dim = 1)\n        min_embeddings, _ = torch.min(embeddings, dim = 1)"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "        with torch.no_grad():"
+          },
+          {
+            "cell_index": 15,
+            "cell_type": "code",
+            "snippet": "    test = pd.read_csv('../input/feedback-prize-english-language-learning/test.csv')\n    submission = pd.read_csv('../input/feedback-prize-english-language-learning/sample_submission.csv')\n    test['tokenize_length'] = [len(CFG.tokenizer(text)['input_ids']) for text in test['full_text'].values]\n                             collate_fn=DataCollatorWithPadding(tokenizer=CFG.tokenizer, padding='longest'),\n    for fold in CFG.trn_fold:\n        state = torch.load(CFG.path+f\"{CFG.model.replace('/', '-')}_fold{fold}_best.pth\",\n                           map_location=torch.device('cpu'))\n        torch.cuda.empty_cache()\n    submission = submission.drop(columns=CFG.target_cols).merge(test[['text_id'] + CFG.target_cols], on='text_id', how='left')\n    submission[['text_id'] + CFG.target_cols].to_csv(f'submission_{_idx + 1}.csv', index=False)\n    torch.cuda.empty_cache()"
+          },
+          {
+            "cell_index": 17,
+            "cell_type": "code",
+            "snippet": "test = pd.read_csv('../input/feedback-prize-english-language-learning/test.csv')\nsubmission = pd.read_csv('../input/feedback-prize-english-language-learning/sample_submission.csv')\nsub1 = pd.read_csv(f'submission_1.csv')[CFG1.target_cols] * CFG1.weight\nsub2 = pd.read_csv(f'submission_2.csv')[CFG2.target_cols] * CFG2.weight\nsub3 = pd.read_csv(f'submission_3.csv')[CFG3.target_cols] * CFG3.weight\nsub4 = pd.read_csv(f'submission_4.csv')[CFG4.target_cols] * CFG4.weight\nsub5 = pd.read_csv(f'submission_5.csv')[CFG5.target_cols] * CFG5.weight\nsub6 = pd.read_csv(f'submission_6.csv')[CFG6.target_cols] * CFG6.weight\nsub7 = pd.read_csv(f'submission_7.csv')[CFG7.target_cols] * CFG7.weight\nsub8 = pd.read_csv(f'submission_8.csv')[CFG8.target_cols] * CFG8.weight\nsub9 = pd.read_csv(f'submission_9.csv')[CFG9.target_cols] * CFG9.weight\nsub10 = pd.read_csv(f'submission_10.csv')[CFG10.target_cols] * CFG10.weight\nsubmission.to_csv('submission.csv', index=False)"
+          }
+        ]
+      }
+    },
+    "1st": {
+      "rank": 8,
+      "quality": "reject",
+      "score": -11,
+      "reasons": "too_short",
+      "source": {
+        "path": "NLP/feedback-prize-english-language-learning/rank8_1st/llm-detect-pip.ipynb",
+        "file_name": "llm-detect-pip.ipynb",
+        "suffix": ".ipynb",
+        "cell_count": 2,
+        "code_cell_count": 2,
+        "markdown_cell_count": 0,
+        "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "code",
+            "snippet": "!pip download transformers"
+          }
+        ]
+      }
+    }
+  }
+}

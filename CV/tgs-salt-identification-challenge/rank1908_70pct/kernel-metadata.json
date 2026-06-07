@@ -1,0 +1,23 @@
+{
+  "id": "wenjieluo/tgs-wj",
+  "id_no": 1871180,
+  "title": "TGS-WJ",
+  "code_file": "tgs-wj.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "keywords": [
+    "gpu"
+  ],
+  "dataset_sources": [],
+  "kernel_sources": [],
+  "competition_sources": [
+    "tgs-salt-identification-challenge"
+  ],
+  "model_sources": [],
+  "docker_image": "gcr.io/kaggle-private-byod/python@sha256:44a107d4927c131d86f7f0d9dae3f3b94ae3c753fe7ab070e716436b2fc54607",
+  "machine_shape": "Gpu"
+}

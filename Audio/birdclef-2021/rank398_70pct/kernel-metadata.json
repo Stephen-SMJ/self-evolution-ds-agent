@@ -1,0 +1,26 @@
+{
+  "id": "kengofujii/clean-fast-simple-bird-identifier-20210502",
+  "id_no": 16670920,
+  "title": "Clean Fast & Simple Bird Identifier 20210502",
+  "code_file": "clean-fast-simple-bird-identifier-20210502.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "keywords": [
+    "gpu"
+  ],
+  "dataset_sources": [
+    "kneroma/kkiller-birdclef-models-public",
+    "ttahara/resnest50-fast-package"
+  ],
+  "kernel_sources": [],
+  "competition_sources": [
+    "birdclef-2021"
+  ],
+  "model_sources": [],
+  "docker_image": "gcr.io/kaggle-private-byod/python@sha256:36cf6c012f2c2a866c63ef04c13567cd34b2097c27ae22eb096a8f2f0da7d82b",
+  "machine_shape": "Gpu"
+}

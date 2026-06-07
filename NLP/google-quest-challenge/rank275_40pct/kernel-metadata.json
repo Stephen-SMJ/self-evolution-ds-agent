@@ -1,0 +1,21 @@
+{
+  "id": "adarshpatankar/eda-and-feature-engineering",
+  "id_no": 10117829,
+  "title": "EDA and Feature Engineering",
+  "code_file": "eda-and-feature-engineering.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "keywords": [],
+  "dataset_sources": [],
+  "kernel_sources": [],
+  "competition_sources": [
+    "google-quest-challenge"
+  ],
+  "model_sources": [],
+  "docker_image": "gcr.io/kaggle-images/python@sha256:3f301a087ffee48dc31f86c5b708c065e20895dad34d5a8cec78e855f4a80108",
+  "machine_shape": "None"
+}

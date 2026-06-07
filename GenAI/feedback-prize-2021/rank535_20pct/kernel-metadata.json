@@ -1,0 +1,27 @@
+{
+  "id": "ollibolli/q-a-inference",
+  "id_no": 24980395,
+  "title": "Q&A Inference",
+  "code_file": "q-a-inference.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "keywords": [],
+  "dataset_sources": [
+    "ollibolli/qatrain",
+    "cdeotte/tf-longformer-v12",
+    "cdeotte/tflongformerv14"
+  ],
+  "kernel_sources": [
+    "ollibolli/q-a-pytorch"
+  ],
+  "competition_sources": [
+    "feedback-prize-2021"
+  ],
+  "model_sources": [],
+  "docker_image": "gcr.io/kaggle-images/python@sha256:e8e4711f3eefd97688df1b282d8f08c95a346b1747722d677c2e82fd2bd94688",
+  "machine_shape": "None"
+}
