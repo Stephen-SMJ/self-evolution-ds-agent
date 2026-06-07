@@ -1,1 +1,0 @@
-/home/ubuntu/proj/autods/self-evolution-ds-agent/CV/imaterialist-challenge-fashion-2018/rank45_20pct/download-image-progress-resume-multiprocessing.py

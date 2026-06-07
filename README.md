@@ -1,327 +1,246 @@
-# Self-Evolution DS Agent Corpus
-
-This repository is the offline distillation workspace for building **AutoDS**, a self-evolving data science agent focused on Kaggle-style competitions.
-
-The goal is not to copy public notebooks. The goal is to study many competitions across domains and rank levels, then distill the upgrade mechanisms that move a weak baseline toward medal-level behavior: better metric alignment, leakage-safe validation, representation construction, domain-specific features, OOF diagnostics, postprocessing, and controlled ensembling.
-
-## Project Goal
-
-AutoDS is intended to become an interactive agent that can take a Kaggle competition link, inspect the task, download data, understand the metric and submission format, build baselines, run experiments, submit results, read scores, reflect on failures, and evolve its strategy.
-
-This repository supports the first phase:
-
-**Offline self-evolution distillation**
-
-- Collect public Kaggle notebooks across many domains.
-- Organize them by competition and approximate rank bucket.
-- Prefer competitions with five rank buckets: `70pct`, `40pct`, `20pct`, `10pct`, `1st`.
-- Analyze how stronger notebooks differ from weaker notebooks.
-- Convert those differences into reusable domain playbooks for AutoDS.
-
-The second phase, online competition self-evolution, is intentionally not the main focus of this repo yet.
-
-## Current Corpus
-
-Current local corpus summary:
-
-- 9 domains
-- 71 collected competitions in the raw directory tree
-- 375 rank-bucket directories in the raw tree
-- 45 competitions selected for full V4 evidence distillation
-- 225 selected rank-bucket notebook/code files for full five-bucket analysis
-
-The V4-selected competitions are balanced across domains:
-
-| Domain | Selected Competitions |
-| --- | ---: |
-| Audio | 5 |
-| CV | 5 |
-| GenAI | 5 |
-| Medical | 5 |
-| NLP | 5 |
-| RL | 5 |
-| RecSys | 5 |
-| Tabular | 5 |
-| Time-Series | 5 |
-
-## Repository Layout
-
-```text
-.
-├── Audio/
-├── CV/
-├── GenAI/
-├── Medical/
-├── NLP/
-├── RL/
-├── RecSys/
-├── Tabular/
-├── Time-Series/
-├── distillation/
-│   ├── reports/
-│   │   ├── first_distillation_v1.md
-│   │   └── offline_distillation_v2.md
-│   ├── v2/
-│   │   ├── competition_evolution_traces.json
-│   │   ├── competition_trace_index.md
-│   │   ├── domain_recipes.json
-│   │   ├── domain_recipes.md
-│   │   └── summary.json
-│   ├── v3/
-│   │   ├── README.md
-│   │   └── codex_semantic_distillation_v3.md
-│   ├── v4/
-│   │   ├── deep_distillation_v4.md
-│   │   ├── deep_traces_batch1_tabular_timeseries_nlp.md
-│   │   ├── deep_traces_batch2_cv_medical_audio.md
-│   │   ├── deep_traces_batch3_recsys_genai_rl.md
-│   │   ├── evidence_packs/
-│   │   ├── evidence_packs_md/
-│   │   └── summary.json
-│   ├── all_scored.csv
-│   ├── core_manifest.csv
-│   ├── coverage_manifest.csv
-│   ├── distillation_ready_manifest.csv
-│   ├── rejected_or_unused.csv
-│   └── summary.json
-├── tools/
-│   ├── prepare_distillation_corpus.py
-│   ├── distill_v2_evolution_traces.py
-│   ├── distill_v3_llm_semantic.py
-│   └── build_v4_evidence_packs.py
-└── download_notebooks.py
-```
+<div align="center">
 
-Each raw competition directory follows this pattern:
+# AutoDS
 
-```text
-<Domain>/<competition-slug>/rank<rank>_<bucket>/
-```
+**Self-evolving agent harness for data science**
 
-Example:
+**Agentic** &nbsp;·&nbsp; **Data Science Focused** &nbsp;·&nbsp; **Built to Extend**
+<br>
 
-```text
-Tabular/titanic/rankXXXX_70pct/
-Tabular/titanic/rankXXXX_40pct/
-Tabular/titanic/rankXXXX_20pct/
-Tabular/titanic/rankXXXX_10pct/
-Tabular/titanic/rankXXXX_1st/
-```
+This repository contains the AutoDS agent system at the top level and the
+offline self-evolution corpus under `offline/`.
 
-## Distillation Versions
+</div>
 
-### V1: First Manual Distillation
+---
 
-Primary output:
+### **NEW: Buddy — AI Companion with Custom Sprites**
 
-- `distillation/reports/first_distillation_v1.md`
+> Your coding companion lives in the terminal. Type `/buddy` to hatch it. Supports custom ASCII species — bring your own Pikachu!
 
-V1 was the first human-readable distillation pass. It summarized the initial corpus and extracted broad Kaggle competition lessons. It was useful for orienting the project, but it was not yet systematic enough to drive AutoDS behavior directly.
+![Custom Pikachu buddy companion](assets/buddy-pikachu.jpg)
 
-V1 characteristics:
+[Full Buddy docs &rarr;](docs/buddy.md)
 
-- High-level summaries.
-- Early domain observations.
-- Initial hypothesis about what AutoDS should learn.
-- Limited evidence traceability.
+---
 
-Use V1 for historical context only.
+## Features
 
-### V2: Rule-Based Corpus and Evolution Traces
+### Core
 
-Primary outputs:
+- **Interactive REPL** with streaming output, command history, slash command autocomplete
+- **Agentic tool loop** — AutoDS calls tools autonomously until the task is complete
+- **9 built-in tools**: `Read`, `Edit`, `Write`, `Glob`, `Grep`, `Bash`, `AskUser`, `EnterPlanMode`, `ExitPlanMode`
+- **Plan mode** — parallel subagents explore codebase before you implement, with permission isolation
+- **Permission system** — mode-aware (default/plan), reads auto-approved, writes/bash ask for confirmation
+- **Session persistence** — auto-save conversations, `/resume` to continue later
+- **Context compression** — auto-compact when approaching token limits
+- **OpenAI-compatible runtime** — configure with `AUTODS_API_KEY`, `AUTODS_BASE_URL`, and `AUTODS_MODEL`
+- **Kaggle competition workflow** — `/kaggle` guides competition intake, data download, baselines, submissions, notebook workflows, and self-evolution logs
+- **Offline self-evolution prior** — V1-V4 notebook distillation reports and evidence packs live in `offline/`
 
-- `distillation/reports/offline_distillation_v2.md`
-- `distillation/v2/domain_recipes.md`
-- `distillation/v2/domain_recipes.json`
-- `distillation/v2/competition_evolution_traces.json`
-- `distillation/v2/competition_trace_index.md`
-- `distillation/v2/summary.json`
+### Advanced AutoDS capabilities
 
-Primary scripts:
+| Feature | Description | Docs |
+|---------|-------------|------|
+| **Coordinator Mode** | Background workers for parallel research and implementation | [docs &rarr;](docs/coordinator.md) |
+| **Buddy** | Tamagotchi AI pet with personality, stats, mood, and speech bubbles | [docs &rarr;](docs/buddy.md) |
+| **KAIROS Memory** | Cross-session memory with auto-consolidation | [docs &rarr;](docs/memory.md) |
+| **Skills** | One-command workflows: `/review`, `/commit`, `/test`, `/simplify` | [docs &rarr;](docs/skills.md) |
+| **Sandbox** | Bubblewrap isolation for bash commands | [docs &rarr;](docs/sandbox.md) |
 
-- `tools/prepare_distillation_corpus.py`
-- `tools/distill_v2_evolution_traces.py`
+See [docs/examples/citorigin](docs/examples/citorigin/README.md) for a
+project-specific custom skill example.
 
-V2 made the corpus operational. It scored notebook/code files, selected usable files, rejected low-value artifacts, and generated structured traces using pattern detection.
+---
 
-V2 extracted signals such as:
+## Quick Start
 
-- validation patterns: KFold, StratifiedKFold, GroupKFold, TimeSeriesSplit, OOF
-- feature patterns: aggregation, lagging, categorical encoding, text/image/audio transforms
-- model patterns: GBM, CNN, transformer, linear/tree baselines
-- training patterns: early stopping, scheduling, augmentation, imbalance handling
-- postprocessing patterns: thresholds, clipping, ranking, ensembling
-- risk patterns: random submissions, downloader-only notebooks, thin artifacts
+### Requirements
 
-V2 limitations:
+- Python 3.11+
+- An OpenAI-compatible API endpoint
 
-- It was mostly rule-based.
-- It could detect that a notebook contained `KFold` or `LightGBM`, but not always why that mattered.
-- It could overvalue high-rank artifacts that were only downloaders, sample submissions, or leaderboard analysis.
-
-Use V2 as a structured index and fallback evidence layer.
-
-### V3: Semantic Distillation
-
-Primary outputs:
-
-- `distillation/v3/README.md`
-- `distillation/v3/codex_semantic_distillation_v3.md`
-
-Primary script:
-
-- `tools/distill_v3_llm_semantic.py`
-
-V3 introduced semantic analysis. The intent was to compare five rank buckets for each competition and infer the core upgrades from weaker solutions to stronger/gold-level solutions.
-
-The current usable V3 output is:
-
-- `distillation/v3/codex_semantic_distillation_v3.md`
-
-V3 characteristics:
-
-- More intelligent than V2 pattern counting.
-- Focuses on the transition from lower-rank to higher-rank solutions.
-- Extracts domain recipes and competition-level improvement logic.
-
-V3 limitation:
-
-- The external-LLM automation path was implemented, but one API smoke test failed with `401 invalid_key` in the local environment. The committed V3 Codex semantic report remains useful, but V4 supersedes it for planning.
-
-Use V3 as semantic support when V4 needs more context or when comparing against older recipes.
-
-### V4: Deep-Read Distillation
-
-Primary outputs:
-
-- `distillation/v4/deep_distillation_v4.md`
-- `distillation/v4/deep_traces_batch1_tabular_timeseries_nlp.md`
-- `distillation/v4/deep_traces_batch2_cv_medical_audio.md`
-- `distillation/v4/deep_traces_batch3_recsys_genai_rl.md`
-- `distillation/v4/evidence_packs/`
-- `distillation/v4/evidence_packs_md/`
-- `distillation/v4/summary.json`
-
-Primary script:
-
-- `tools/build_v4_evidence_packs.py`
-
-V4 is the current planning-quality distillation layer.
-
-V4 reads per-competition evidence from all five rank buckets and then manually distills the actual improvement mechanisms. It explicitly filters bad evidence instead of blindly trusting rank labels.
-
-V4 covers 45 selected competitions:
-
-- 5 Audio
-- 5 CV
-- 5 GenAI
-- 5 Medical
-- 5 NLP
-- 5 RL
-- 5 RecSys
-- 5 Tabular
-- 5 Time-Series
-
-V4 key conclusion:
-
-The repeated gold-level pattern is not simply "use a stronger model." The real upgrade path is:
-
-1. decode the competition metric and submission mechanics
-2. build leakage-safe validation that resembles hidden scoring
-3. transform raw competition data into the right supervised representation
-4. add domain-specific features or pretrained representations
-5. generate OOF predictions and error diagnostics
-6. specialize model, threshold, postprocessing, or confidence to the metric
-7. ensemble only after individual components are validated
-
-V4 also marks low-quality notebook types:
-
-- downloader-only notebooks
-- random/sample submissions
-- leaderboard-only analysis
-- incomplete artifacts
-- write-ups with no transferable implementation
-- high-rank buckets that are not actually good modeling evidence
-
-Use V4 as the primary reference for AutoDS competition planning.
-
-## Domain Lessons from V4
-
-Tabular:
-
-- Human semantic features, missingness semantics, metric alignment, categorical handling, grouped aggregation, OOF, and conservative GBM/CatBoost/linear comparisons matter more than blindly increasing model size.
-
-Time-Series:
-
-- Decode horizon and submission IDs first. Use time-safe validation, lag/rolling/calendar features, target transforms, and entity/regime-aware modeling.
-
-NLP:
-
-- Validate label construction and text context. Use transformer folds after simple sanity baselines. For QA, retrieval recall is often more important than reader strength.
-
-CV:
-
-- Identify the actual task: classification, segmentation, retrieval, or WSI. Use pretrained backbones with folds, augmentation, OOF, task metrics, TTA, and threshold/ranking logic.
-
-Medical:
-
-- Patient/group-aware validation is mandatory. Use modality-specific preprocessing such as DICOM windowing or WSI tiling. Metadata-only, image-only, and combined models should all be tested.
-
-Audio:
-
-- Define clip/window/label alignment. Use log-mel or pretrained embeddings, multilabel/group folds, validation-inference parity, and metric threshold tuning.
-
-RecSys:
-
-- Candidate generation and recall come before reranking. Use time-window validation, recency/popularity/co-visitation/source/rank features, and query-grouped rankers.
-
-GenAI:
-
-- Build a generate-validate-score-select loop. Enforce hard output constraints and use proxy metrics/evaluators. For LLM knowledge tasks, retrieval comes before answer generation.
-
-RL / Games / Optimization:
-
-- Build the official environment, valid submission, and repeated tournament harness first. Use rules, imitation, search, or RL according to the problem type. Some "RL" tasks are better solved as optimization/search.
-
-## How to Regenerate Artifacts
-
-From the repository root:
+### Install
 
 ```bash
-python3 tools/prepare_distillation_corpus.py
-python3 tools/distill_v2_evolution_traces.py
-python3 tools/build_v4_evidence_packs.py --root . --manifest distillation/coverage_manifest.csv --out-dir distillation/v4
+cd self-evolution-ds-agent
+pip install -e ".[dev]"
 ```
 
-The V3 external-LLM path is available but not required for the current V4 output:
+### API Settings
 
 ```bash
-python3 tools/distill_v3_llm_semantic.py --root .
+export AUTODS_PROVIDER=openai
+export AUTODS_API_KEY=<your-openai-compatible-api-key>
+export AUTODS_BASE_URL=<your-openai-compatible-base-url>
+export AUTODS_MODEL=mimo-v2.5-pro
 ```
 
-## How AutoDS Should Use This Repo
-
-For a new competition, AutoDS should:
-
-1. classify domain and task type
-2. inspect rules, data, metric, sample submission, and scoring mechanics
-3. implement exact local metric and submission validator
-4. choose validation by leakage risk: stratified, grouped, temporal, patient/session-aware, or tournament-based
-5. create the simplest valid baseline
-6. apply the relevant V4 domain playbook
-7. save OOF predictions, diagnostics, and experiment logs
-8. compare CV and public leaderboard gaps
-9. distill each successful delta into a reusable skill
-
-The agent should not copy notebooks directly. It should convert notebook evidence into hypotheses, experiments, and reusable skills.
-
-## Git Identity Used for This Repo
-
-Commits should use:
+### Run
 
 ```bash
-git config user.name "Stephen-SMJ"
-git config user.email "s23471160103@163.com"
+autods                              # Interactive REPL
+autods "what tests exist?"          # One-shot prompt
+autods -p "summarize this codebase" # Print and exit
+autods --auto-approve               # Skip permission prompts
+autods --resume 1                   # Resume previous session
+autods --coordinator                # Coordinator mode
 ```
 
+### First Session Demo
+
+```
+autods
+
+> list all python files in this project
+↳ Glob(**/*.py) ✓
+Found 12 Python files...
+
+> read engine.py and explain the tool loop
+↳ Read(src/core/engine.py) ✓
+The submit() method implements an agentic loop...
+
+> /buddy
+Hatching your companion...
+✨ SHINY LEGENDARY DUCK
+Glitch Quack hatched! ★★★★★
+
+> /buddy mood
+Glitch Quack's mood:
+  Happy      ████████████████░░░░  65 (high)
+  Bored      ██████████░░░░░░░░░░  50 (neutral)
+
+> /review
+Running skill: /review…
+↳ Bash(git diff) … ✓ done
+## Code Review: no issues found ✓
+```
+
+[Full configuration docs &rarr;](CONFIGURATION.md)
+
+---
+
+## Tools
+
+| Tool | Description | Permission |
+|------|-------------|------------|
+| `Read` | Read file contents | auto-approved |
+| `Glob` | Find files by pattern | auto-approved |
+| `Grep` | Search file contents | auto-approved |
+| `Edit` | Edit file (string replacement) | requires confirmation |
+| `Write` | Write/create file | requires confirmation |
+| `Bash` | Run shell command | requires confirmation |
+| `AskUser` | Ask user a question | auto-approved |
+| `EnterPlanMode` | Enter plan mode | auto-approved |
+| `ExitPlanMode` | Exit plan mode | auto-approved |
+
+Coordinator mode adds: `Agent` (spawn worker), `SendMessage` (continue worker), `TaskStop` (stop worker). Plan mode also uses `Agent` to launch parallel read-only explore/plan subagents. See [coordinator docs](docs/coordinator.md).
+
+---
+
+## Data Paths
+
+| Data | Path |
+|------|------|
+| Installation (source code) | `~/.autods/` |
+| Sessions | `~/.config/autods/sessions/` |
+| Memory (KAIROS) | `~/.config/autods/memory/` |
+| Plans | `~/.config/autods/plans/` |
+| REPL history | `~/.config/autods/history` |
+| Companion data | `~/.config/autods/companion.json` |
+| User skills | `~/.autods/skills/` |
+| Project skills | `{cwd}/.autods/skills/` |
+| Project config | `.autods.toml` |
+
+---
+
+## Slash Commands
+
+| Command | Description |
+|---------|-------------|
+| `/help` | Show all available commands |
+| `/compact` | Compress conversation context |
+| `/resume` | Resume a past session |
+| `/history` | List saved sessions |
+| `/clear` | Clear conversation, start new session |
+| `/skills` | List all available skills |
+| `/kaggle` | Run the general Kaggle competition workflow |
+| `/buddy` | Companion pet — hatch, pet, stats, mood |
+| `/buddy help` | Show all buddy commands and gameplay guide |
+| `/review` | Code review (skill) |
+| `/commit` | Git commit (skill) |
+| `/test` | Run tests (skill) |
+| `/simplify` | Review and fix code (skill) |
+
+Type `/` to see autocomplete suggestions.
+
+---
+
+## Project Structure
+
+```
+src/
+├── core/                  # Pure harness — engine, LLM, config
+│   ├── engine.py          # Streaming API loop + tool execution
+│   ├── llm.py             # LLM client (Anthropic + OpenAI)
+│   ├── config.py          # Configuration (CLI, env, TOML)
+│   ├── context.py         # System prompt builder
+│   ├── tool.py            # Base Tool protocol + ToolResult
+│   ├── permissions.py     # Permission checker
+│   └── session.py         # Session persistence
+│
+├── tools/                 # Tool implementations (one per file)
+│   ├── bash.py            # Shell command execution
+│   ├── file_read.py       # Read files
+│   ├── file_edit.py       # Edit files (string replacement)
+│   ├── file_write.py      # Write/create files
+│   ├── glob_tool.py       # Find files by pattern
+│   ├── grep_tool.py       # Search file contents
+│   ├── ask_user.py        # Ask user questions
+│   ├── plan_tools.py      # EnterPlanMode / ExitPlanMode
+│   └── agent.py           # Coordinator agent tools
+│
+├── features/              # Pluggable capabilities
+│   ├── compact.py         # Context compression
+│   ├── coordinator.py     # Coordinator mode
+│   ├── worker_manager.py  # Background worker lifecycle
+│   ├── cost_tracker.py    # Token usage tracking
+│   ├── memory.py          # KAIROS memory system
+│   ├── plan.py            # Plan mode logic
+│   ├── skills.py          # Skill loader and registry
+│   ├── skills_bundled.py  # Built-in skills (review, commit, test, simplify)
+│   └── sandbox/           # Bubblewrap sandbox subsystem
+│
+├── tui/                   # Terminal UI
+│   ├── app.py             # CLI entry point + REPL
+│   ├── query.py           # Query submission + streaming display
+│   ├── rendering.py       # Rich console rendering
+│   ├── prompt.py          # Input prompt
+│   ├── input_parser.py    # Input parsing
+│   ├── shell.py           # Shell integration
+│   └── keylistener.py     # Esc/Ctrl+C detection
+│
+├── commands/              # Slash command handlers
+└── buddy/                 # AI companion pet system
+```
+
+## Running Tests
+
+```bash
+pytest tests/ -v
+pytest tests/ -v -k "not integration"  # skip bwrap tests
+```
+
+---
+
+## Documentation
+
+| Topic | Link |
+|-------|------|
+| Configuration (API keys, TOML, CLI flags) | [docs/configuration.md](docs/configuration.md) |
+| Buddy (AI companion pet) | [docs/buddy.md](docs/buddy.md) |
+| Coordinator Mode (background workers) | [docs/coordinator.md](docs/coordinator.md) |
+| KAIROS Memory System | [docs/memory.md](docs/memory.md) |
+| Skills (custom workflows) | [docs/skills.md](docs/skills.md) |
+| Sandbox (bash isolation) | [docs/sandbox.md](docs/sandbox.md) |

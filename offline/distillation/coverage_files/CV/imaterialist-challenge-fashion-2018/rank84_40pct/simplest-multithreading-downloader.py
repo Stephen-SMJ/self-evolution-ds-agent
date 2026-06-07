@@ -1,0 +1,1 @@
+../../../../../CV/imaterialist-challenge-fashion-2018/rank84_40pct/simplest-multithreading-downloader.py

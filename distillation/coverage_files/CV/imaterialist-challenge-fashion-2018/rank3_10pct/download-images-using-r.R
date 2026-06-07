@@ -1,1 +1,0 @@
-/home/ubuntu/proj/autods/self-evolution-ds-agent/CV/imaterialist-challenge-fashion-2018/rank3_10pct/download-images-using-r.R
