@@ -368,6 +368,14 @@ Useful slash commands:
 /resume
 ```
 
+Terminal note: AutoDS disables prompt-toolkit cursor-position requests by
+default (`PROMPT_TOOLKIT_NO_CPR=1`) because some terminals, tmux panes, and web
+consoles do not support CPR and may print warnings such as `your terminal
+doesn't support cursor position requests`. To exit AutoDS, use `/exit`, `/quit`,
+or press `Ctrl+D` on an empty prompt. If a terminal is already stuck, press
+`Ctrl+C` twice; if the display remains broken after exit, run `reset` or
+`stty sane`.
+
 ## Regenerating Offline Artifacts
 
 Run offline tools from the `offline/` directory:

@@ -5,6 +5,10 @@ directly below the input content (not at the screen bottom).
 """
 from __future__ import annotations
 
+import os
+
+os.environ.setdefault("PROMPT_TOOLKIT_NO_CPR", "1")
+
 from prompt_toolkit.application import Application as PTApp
 from prompt_toolkit.application.current import get_app
 from prompt_toolkit.buffer import Buffer

@@ -63,6 +63,7 @@ from tui.shell import run_shell, handle_sandbox_command
 
 console = Console()
 _HISTORY_FILE = Path.home() / ".config" / "autods" / "history"
+os.environ.setdefault("PROMPT_TOOLKIT_NO_CPR", "1")
 
 # Match AutoDS: useDoublePress DOUBLE_PRESS_TIMEOUT_MS = 800
 _DOUBLE_PRESS_TIMEOUT_MS = 0.8
