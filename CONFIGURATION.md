@@ -89,10 +89,12 @@ When AutoDS starts, `[kaggle]` values are exported into the process environment
 as `KAGGLE_USERNAME`, `KAGGLE_KEY`, `KGAT_API_TOKEN`, and `KAGGLE_API_TOKEN`.
 Child shell commands and the `/kaggle` workflow inherit those values.
 
-Existing shell environment variables take priority over `.autods.toml`. If a run
-appears to use an old gateway token, check the parent shell and
-`~/.kaggle/access_token`; AutoDS skills should not print, cat, or re-export raw
-token files during a competition workflow.
+For Kaggle credentials, `.autods.toml` is the source of truth. If `[kaggle]`
+contains `username` and official API `key`, AutoDS overwrites any old inherited
+Kaggle gateway variables before the model runs. AutoDS skills should only use the
+preconfigured environment; they should not run auth setup, write credential
+files, read `~/.kaggle/access_token`, or export raw token values during a
+competition workflow.
 
 `use_gpu = true` asks AutoDS to inspect available NVIDIA GPUs with `nvidia-smi`
 at startup and include the detected GPU names, memory, and driver version in the

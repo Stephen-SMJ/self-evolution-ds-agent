@@ -416,24 +416,30 @@ def _merge_file_values(target: dict[str, Any], incoming: dict[str, Any]) -> None
 
 
 def _apply_kaggle_env(kaggle_values: dict[str, Any]) -> None:
+    if not kaggle_values:
+        return
+
     username = kaggle_values.get("username")
-    if username is not None and not os.getenv("KAGGLE_USERNAME"):
+    if username is not None:
         os.environ["KAGGLE_USERNAME"] = str(username)
 
     key = kaggle_values.get("key")
     gateway_value = kaggle_values.get("kgat_api_token") or kaggle_values.get("gateway_token")
     if key is not None and str(key).startswith("KGAT_"):
         gateway_value = key
-    elif key is not None and not os.getenv("KAGGLE_KEY"):
+        os.environ.pop("KAGGLE_KEY", None)
+    elif key is not None:
         os.environ["KAGGLE_KEY"] = str(key)
+        os.environ.pop("KGAT_API_TOKEN", None)
+        os.environ.pop("KAGGLE_API_TOKEN", None)
 
     api_token = kaggle_values.get("api_token")
-    if api_token is not None and not os.getenv("KAGGLE_API_TOKEN"):
+    if api_token is not None:
         os.environ["KAGGLE_API_TOKEN"] = str(api_token)
 
     if gateway_value is not None:
-        os.environ.setdefault("KGAT_API_TOKEN", str(gateway_value))
-        os.environ.setdefault("KAGGLE_API_TOKEN", str(gateway_value))
+        os.environ["KGAT_API_TOKEN"] = str(gateway_value)
+        os.environ["KAGGLE_API_TOKEN"] = str(gateway_value)
 
 
 def _provider_env_values(env_values: dict[str, Any], provider: str) -> dict[str, Any]:

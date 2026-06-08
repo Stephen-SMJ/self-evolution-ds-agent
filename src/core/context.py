@@ -176,6 +176,16 @@ def _get_env_section(cwd: str, model: str = "") -> str:
     if model:
         items.append(f"Model: {model}")
 
+    has_user = bool(os.environ.get("KAGGLE_USERNAME"))
+    has_key = bool(os.environ.get("KAGGLE_KEY"))
+    has_gateway = bool(os.environ.get("KGAT_API_TOKEN") or os.environ.get("KAGGLE_API_TOKEN"))
+    if has_user and has_key:
+        items.append("Kaggle auth: official API key configured")
+    elif has_gateway:
+        items.append("Kaggle auth: gateway token configured")
+    else:
+        items.append("Kaggle auth: not configured")
+
     return "# Environment\n" + "\n".join(f" - {item}" for item in items)
 
 

@@ -16,6 +16,18 @@ def test_build_system_prompt_contains_env_info():
     assert "Primary working directory: /tmp" in prompt
     assert "Platform:" in prompt
     assert "Shell:" in prompt
+    assert "Kaggle auth:" in prompt
+
+
+def test_build_system_prompt_reports_official_kaggle_auth(monkeypatch):
+    monkeypatch.setenv("KAGGLE_USERNAME", "user")
+    monkeypatch.setenv("KAGGLE_KEY", "key")
+    monkeypatch.delenv("KGAT_API_TOKEN", raising=False)
+    monkeypatch.delenv("KAGGLE_API_TOKEN", raising=False)
+
+    prompt = build_system_prompt(cwd="/tmp")
+
+    assert "Kaggle auth: official API key configured" in prompt
 
 
 def test_build_system_prompt_includes_gpu_info_when_enabled():

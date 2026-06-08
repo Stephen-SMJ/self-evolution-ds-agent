@@ -283,20 +283,24 @@ PY
 ```
 
 Credential safety:
+- Kaggle credentials are preconfigured by AutoDS from `.autods.toml` before the
+  model receives this skill. Use `kaggle ...` directly; do not perform
+  credential setup inside the workflow.
 - Never print, cat, or paste raw token values from `.autods.toml`,
   `~/.kaggle/kaggle.json`, `~/.kaggle/access_token`, or environment variables.
   Only print whether a variable/file exists.
 - Do not create or overwrite `~/.kaggle/kaggle.json` or `~/.kaggle/access_token`
   during a competition run unless the user explicitly asks for credential setup.
-- If `KGAT_API_TOKEN` or `KAGGLE_API_TOKEN` is already set, treat gateway auth as
-  configured. Do not search for another token and do not manually export a
-  literal token into later commands.
-- Prefer using the inherited environment from AutoDS. If a command requires an
-  explicit env assignment, use shell variable expansion like
-  `KAGGLE_API_TOKEN="$KAGGLE_API_TOKEN"`, never a hardcoded token value.
-- Remember that shell exports inside one Bash call do not persist to later Bash
-  calls. Persistent credentials should come from AutoDS config/env, not ad-hoc
-  exports during the workflow.
+- Do not run `kaggle auth login`, write JSON credential files, read access-token
+  files, or export literal token values unless the user explicitly asks for
+  credential setup.
+- If `KAGGLE_USERNAME` and `KAGGLE_KEY` are present, this is official Kaggle API
+  auth. Do not also try gateway-token auth.
+- If `KGAT_API_TOKEN` or `KAGGLE_API_TOKEN` is present without `KAGGLE_KEY`, this
+  is gateway auth. Use it only through the supported gateway/wrapper.
+- Shell exports inside one Bash call do not persist to later Bash calls.
+  Persistent credentials should come from AutoDS config/env, not ad-hoc exports
+  during the workflow.
 
 If credentials are missing, tell the user that Kaggle CLI normally needs
 `KAGGLE_USERNAME` and `KAGGLE_KEY` or `~/.kaggle/kaggle.json`. If the environment

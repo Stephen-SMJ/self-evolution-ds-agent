@@ -59,12 +59,14 @@ For planning a new competition, prefer V4 deep-read distillation when present. V
 
 ## Credential Policy
 
-- Treat `.autods.toml` / inherited environment variables as the source of truth.
+- Treat AutoDS startup configuration as the source of truth. Kaggle credentials are already injected from `.autods.toml` before the model starts the workflow.
+- Use `kaggle ...` directly. Do not configure Kaggle credentials inside a competition workflow.
 - Never print, cat, or paste raw values from `.autods.toml`, `~/.kaggle/kaggle.json`, `~/.kaggle/access_token`, or environment variables.
 - Only report credential presence as booleans such as `KAGGLE_USERNAME: true`.
 - Do not create or overwrite `~/.kaggle/kaggle.json` or `~/.kaggle/access_token` unless the user explicitly asks for credential setup.
-- If `KGAT_API_TOKEN` or `KAGGLE_API_TOKEN` exists, gateway auth is already configured. Do not search for another token and do not hardcode literal tokens in Bash commands.
-- If a command needs explicit gateway auth, use variable expansion such as `KAGGLE_API_TOKEN="$KAGGLE_API_TOKEN" kaggle ...`, not a pasted token.
+- Do not run `kaggle auth login`, read access-token files, or export literal token values unless the user explicitly asks for credential setup.
+- If `KAGGLE_USERNAME` and `KAGGLE_KEY` exist, this is official Kaggle API auth. Do not try gateway-token auth.
+- If `KGAT_API_TOKEN` or `KAGGLE_API_TOKEN` exists without `KAGGLE_KEY`, this is gateway auth. Use it only through the supported gateway/wrapper.
 - Shell exports inside one Bash call do not persist to later Bash calls; persistent credentials should come from AutoDS config/env.
 
 ## First-Pass Strategy

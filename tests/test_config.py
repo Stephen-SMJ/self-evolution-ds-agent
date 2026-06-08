@@ -202,9 +202,11 @@ def test_load_app_config_exports_kaggle_section(tmp_path: Path, monkeypatch: pyt
     assert os.environ["KAGGLE_API_TOKEN"] == "gateway-token"
 
 
-def test_kaggle_section_does_not_override_environment(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+def test_kaggle_section_overrides_environment(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setenv("KAGGLE_USERNAME", "env-user")
     monkeypatch.setenv("KAGGLE_KEY", "env-key")
+    monkeypatch.setenv("KGAT_API_TOKEN", "old-gateway")
+    monkeypatch.setenv("KAGGLE_API_TOKEN", "old-gateway")
 
     config_path = tmp_path / "autods.toml"
     config_path.write_text(
@@ -216,8 +218,10 @@ def test_kaggle_section_does_not_override_environment(tmp_path: Path, monkeypatc
 
     load_app_config(_args(config=str(config_path)))
 
-    assert os.environ["KAGGLE_USERNAME"] == "env-user"
-    assert os.environ["KAGGLE_KEY"] == "env-key"
+    assert os.environ["KAGGLE_USERNAME"] == "file-user"
+    assert os.environ["KAGGLE_KEY"] == "file-key"
+    assert "KGAT_API_TOKEN" not in os.environ
+    assert "KAGGLE_API_TOKEN" not in os.environ
 
 
 def test_kaggle_key_with_kgat_prefix_is_gateway_token(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):

@@ -239,12 +239,13 @@ from Kaggle settings or `~/.kaggle/kaggle.json`; `KGAT_...` belongs in
 
 When AutoDS starts, it exports `[kaggle]` values into the process environment as
 `KAGGLE_USERNAME`, `KAGGLE_KEY`, `KGAT_API_TOKEN`, and `KAGGLE_API_TOKEN`, so the
-`/kaggle` workflow and child shell commands can use them. Existing shell
-environment variables take priority over `.autods.toml`.
+`/kaggle` workflow and child shell commands can use them.
 
-If AutoDS appears to use an old Kaggle gateway token, check the parent shell and
-`~/.kaggle/access_token`: inherited environment variables take precedence, and
-the agent should not manually read or re-export raw token files during a run.
+For Kaggle credentials, `.autods.toml` is the source of truth. If `[kaggle]`
+contains `username` and official API `key`, AutoDS overwrites any old inherited
+Kaggle gateway variables before the model runs. The model should only use
+`kaggle ...` commands; it should not run auth setup, write credential files, read
+`~/.kaggle/access_token`, or export token values during a competition workflow.
 
 Environment variables also work:
 
