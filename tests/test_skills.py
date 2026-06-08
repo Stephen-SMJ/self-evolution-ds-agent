@@ -215,6 +215,13 @@ class TestBundledSkills:
         assert "--break-system-packages" in p
         assert "playground-series" in p
 
+    def test_kaggle_prompt_parses_leaderboard_url(self):
+        register_bundled_skills()
+        p = get_skill("kaggle").get_prompt("https://www.kaggle.com/competitions/titanic/leaderboard")
+        assert "Parsed Competition Slug" in p
+        assert "titanic" in p
+        assert "Do not treat those suffixes as part of the slug" in p
+
     def test_all_bundled_are_user_invocable(self):
         register_bundled_skills()
         for s in list_skills():

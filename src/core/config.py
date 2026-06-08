@@ -78,6 +78,7 @@ _ENV_EFFORT = "AUTODS_EFFORT"
 _ENV_BUDDY_MODEL = "AUTODS_BUDDY_MODEL"
 _ENV_ADVISOR_MODEL = "AUTODS_ADVISOR_MODEL"
 _ENV_ADVISOR_MAX_USES = "AUTODS_ADVISOR_MAX_USES"
+_ENV_USE_GPU = "AUTODS_USE_GPU"
 _DEFAULT_CONFIG_PATHS = (
     Path.home() / ".config" / "autods" / "config.toml",
     Path.cwd() / ".autods.toml",
@@ -97,6 +98,7 @@ class AppConfig:
     dream_interval_hours: float = 24.0
     dream_min_sessions: int = 5
     auto_dream: bool = True
+    use_gpu: bool = False
     advisor_model: str = "claude-opus-4-6"
     advisor_max_uses: int = 3
     config_paths: tuple[Path, ...] = ()
@@ -206,6 +208,11 @@ def load_app_config(args: Namespace) -> AppConfig:
     if getattr(args, "no_auto_dream", False):
         auto_dream = False
 
+    raw_use_gpu = getattr(args, "use_gpu", None)
+    if raw_use_gpu is None:
+        raw_use_gpu = env_values.get("use_gpu", _file_value("use_gpu"))
+    use_gpu = _parse_bool(raw_use_gpu, default=False)
+
     raw_advisor_model = (
         getattr(args, "advisor_model", None)
         or env_values.get("advisor_model")
@@ -242,6 +249,7 @@ def load_app_config(args: Namespace) -> AppConfig:
         dream_interval_hours=dream_interval,
         dream_min_sessions=dream_min_sessions,
         auto_dream=auto_dream,
+        use_gpu=use_gpu,
         advisor_model=advisor_model,
         advisor_max_uses=advisor_max_uses,
         config_paths=config_paths,
@@ -309,6 +317,7 @@ def _read_config_file(path: Path) -> dict[str, Any]:
         "dream_interval_hours",
         "dream_min_sessions",
         "auto_dream",
+        "use_gpu",
         "advisor_model",
         "advisor_max_uses",
     ):
@@ -348,6 +357,8 @@ def _load_env_values() -> dict[str, Any]:
         values["advisor_model"] = os.environ[_ENV_ADVISOR_MODEL]
     if os.getenv(_ENV_ADVISOR_MAX_USES):
         values["advisor_max_uses"] = os.environ[_ENV_ADVISOR_MAX_USES]
+    if os.getenv(_ENV_USE_GPU):
+        values["use_gpu"] = os.environ[_ENV_USE_GPU]
     return values
 
 
@@ -372,6 +383,19 @@ def _parse_effort(raw_value: Any) -> str | None:
     if normalized not in ("low", "medium", "high"):
         raise ValueError("effort must be one of: low, medium, high")
     return normalized
+
+
+def _parse_bool(raw_value: Any, default: bool = False) -> bool:
+    if raw_value is None:
+        return default
+    if isinstance(raw_value, bool):
+        return raw_value
+    normalized = str(raw_value).strip().lower()
+    if normalized in ("1", "true", "yes", "on"):
+        return True
+    if normalized in ("0", "false", "no", "off"):
+        return False
+    raise ValueError(f"Invalid boolean value: {raw_value!r}")
 
 
 def _infer_provider(provider_values: dict[str, dict[str, Any]]) -> str:

@@ -18,6 +18,25 @@ def test_build_system_prompt_contains_env_info():
     assert "Shell:" in prompt
 
 
+def test_build_system_prompt_includes_gpu_info_when_enabled():
+    fake_result = MagicMock()
+    fake_result.returncode = 0
+    fake_result.stdout = "0, NVIDIA A100, 40960 MiB, 550.54\n"
+    fake_result.stderr = ""
+
+    with patch("core.context.subprocess.run", return_value=fake_result):
+        prompt = build_system_prompt(cwd="/tmp", use_gpu=True)
+
+    assert "GPU Environment" in prompt
+    assert "GPU use configured: true" in prompt
+    assert "NVIDIA A100" in prompt
+
+
+def test_build_system_prompt_omits_gpu_info_by_default():
+    prompt = build_system_prompt(cwd="/tmp")
+    assert "GPU Environment" not in prompt
+
+
 def test_build_system_prompt_contains_working_directory():
     prompt = build_system_prompt(cwd="/some/test/dir")
     assert "/some/test/dir" in prompt

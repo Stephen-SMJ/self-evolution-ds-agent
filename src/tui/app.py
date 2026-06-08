@@ -100,7 +100,11 @@ def _run_dream(engine: Engine, memory_dir: Path,
             permissions.exit_dream_mode()
 
     # Rebuild system prompt to pick up updated MEMORY.md
-    engine.system_prompt = build_system_prompt(model=app_config.model, memory_dir=memory_dir)
+    engine.system_prompt = build_system_prompt(
+        model=app_config.model,
+        memory_dir=memory_dir,
+        use_gpu=app_config.use_gpu,
+    )
     record_consolidation(memory_dir)
     if not quiet:
         console.print("[dim]Dream consolidation complete. Memory index updated.[/dim]")
@@ -133,6 +137,10 @@ def main() -> None:
     parser.add_argument("--memory-dir", help="Override memory directory path")
     parser.add_argument("--no-auto-dream", action="store_true",
                         help="Disable automatic dream consolidation")
+    parser.add_argument("--use-gpu", dest="use_gpu", action="store_true", default=None,
+                        help="Tell AutoDS to inspect and prefer available GPU resources")
+    parser.add_argument("--no-use-gpu", dest="use_gpu", action="store_false",
+                        help="Disable GPU-aware prompting")
     parser.add_argument("--dream-interval", type=float,
                         help="Hours between auto-dream runs (default: 24)")
     parser.add_argument("--dream-min-sessions", type=int,
@@ -174,7 +182,12 @@ def main() -> None:
     worker_tool_names = [tool.name for tool in _build_base_tools()]
 
     def _build_system_prompt_for_mode(coordinator_enabled: bool) -> str:
-        prompt = build_system_prompt(cwd=cwd, model=app_config.model, memory_dir=memory_dir)
+        prompt = build_system_prompt(
+            cwd=cwd,
+            model=app_config.model,
+            memory_dir=memory_dir,
+            use_gpu=app_config.use_gpu,
+        )
         if skills_section:
             prompt += "\n\n" + skills_section
         if coordinator_enabled:
@@ -195,7 +208,12 @@ def main() -> None:
             auto_approve=True,
             sandbox_manager=sandbox_mgr,
         )
-        worker_prompt = build_system_prompt(cwd=cwd, model=app_config.model, memory_dir=memory_dir)
+        worker_prompt = build_system_prompt(
+            cwd=cwd,
+            model=app_config.model,
+            memory_dir=memory_dir,
+            use_gpu=app_config.use_gpu,
+        )
         if skills_section:
             worker_prompt += "\n\n" + skills_section
         worker_prompt += "\n\n" + get_worker_system_prompt()

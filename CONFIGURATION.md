@@ -34,6 +34,9 @@ source .venv/bin/activate
 pip install -e ".[dev]"
 ```
 
+The `dev` extra installs test tooling, the Kaggle CLI, and baseline
+data-science packages: `numpy`, `pandas`, and `scikit-learn`.
+
 Run the CLI:
 
 ```bash
@@ -53,6 +56,7 @@ Recommended `.autods.toml`:
 
 ```toml
 provider = "openai"
+use_gpu = true
 
 [openai]
 api_key = "<your-openai-compatible-api-key>"
@@ -81,6 +85,13 @@ When AutoDS starts, `[kaggle]` values are exported into the process environment
 as `KAGGLE_USERNAME`, `KAGGLE_KEY`, `KGAT_API_TOKEN`, and `KAGGLE_API_TOKEN`.
 Child shell commands and the `/kaggle` workflow inherit those values.
 
+`use_gpu = true` asks AutoDS to inspect available NVIDIA GPUs with `nvidia-smi`
+at startup and include the detected GPU names, memory, and driver version in the
+system prompt. Omit it or set `use_gpu = false` for CPU-only work.
+
+Sandbox is off by default. Keeping `[sandbox] enabled = false` makes that
+explicit in local config.
+
 Shell environment variables also work and take priority over `.autods.toml`:
 
 ```bash
@@ -99,12 +110,13 @@ export AUTODS_MAX_TOKENS=8192
 export AUTODS_EFFORT=medium
 export AUTODS_BUDDY_MODEL=<optional-companion-model>
 export AUTODS_MEMORY_DIR=$HOME/.config/autods/memory
+export AUTODS_USE_GPU=true
 ```
 
 Install Kaggle dependencies before using `/kaggle`:
 
 ```bash
-pip install kaggle pandas numpy scikit-learn
+pip install -e ".[dev]"
 ```
 
 Kaggle's default credential file is still supported as a fallback:

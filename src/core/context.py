@@ -179,6 +179,50 @@ def _get_env_section(cwd: str, model: str = "") -> str:
     return "# Environment\n" + "\n".join(f" - {item}" for item in items)
 
 
+def _get_gpu_section(use_gpu: bool = False) -> str:
+    if not use_gpu:
+        return ""
+
+    try:
+        result = subprocess.run(
+            [
+                "nvidia-smi",
+                "--query-gpu=index,name,memory.total,driver_version",
+                "--format=csv,noheader",
+            ],
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+    except Exception as exc:
+        return (
+            "# GPU Environment\n"
+            " - GPU use configured: true\n"
+            f" - GPU detection: unavailable ({type(exc).__name__}: {exc})\n"
+            " - Do not assume CUDA/GPU availability unless a later shell check confirms it."
+        )
+
+    if result.returncode != 0 or not result.stdout.strip():
+        stderr = result.stderr.strip() or "no GPU reported"
+        return (
+            "# GPU Environment\n"
+            " - GPU use configured: true\n"
+            f" - GPU detection: unavailable ({stderr})\n"
+            " - Do not assume CUDA/GPU availability unless a later shell check confirms it."
+        )
+
+    lines = ["# GPU Environment", " - GPU use configured: true"]
+    for row in result.stdout.strip().splitlines():
+        parts = [part.strip() for part in row.split(",")]
+        if len(parts) >= 4:
+            idx, name, memory, driver = parts[:4]
+            lines.append(f" - GPU {idx}: {name}, memory {memory}, driver {driver}")
+        else:
+            lines.append(f" - GPU: {row.strip()}")
+    lines.append(" - Prefer GPU-aware libraries only when the competition workload benefits from them.")
+    return "\n".join(lines)
+
+
 def _get_git_section(cwd: str) -> str:
     try:
         branch = subprocess.run(
@@ -310,7 +354,12 @@ At the very end of your turn, once you are happy with your final plan file, call
 # Public API
 # ---------------------------------------------------------------------------
 
-def build_system_prompt(cwd: str | None = None, model: str = "", memory_dir: Path | None = None) -> str:
+def build_system_prompt(
+    cwd: str | None = None,
+    model: str = "",
+    memory_dir: Path | None = None,
+    use_gpu: bool = False,
+) -> str:
     """Assemble the full system prompt from section functions.
 
     Matches prompts.ts getSystemPrompt() architecture: static sections first,
@@ -330,6 +379,7 @@ def build_system_prompt(cwd: str | None = None, model: str = "", memory_dir: Pat
         _get_output_efficiency_section(),
         # Dynamic sections
         _get_env_section(cwd, model),
+        _get_gpu_section(use_gpu),
         _get_git_section(cwd),
         _get_autods_md_section(cwd),
     ]

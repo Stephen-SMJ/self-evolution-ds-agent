@@ -197,12 +197,16 @@ source .venv/bin/activate
 pip install -e ".[dev]"
 ```
 
+The `dev` extra includes the Kaggle CLI plus baseline data-science packages such
+as `numpy`, `pandas`, and `scikit-learn`.
+
 ## Local Configuration
 
 Keep the LLM API and Kaggle credentials together in a local `.autods.toml`:
 
 ```toml
 provider = "openai"
+use_gpu = true
 
 [openai]
 api_key = "<your-openai-compatible-api-key>"
@@ -214,6 +218,9 @@ effort = "medium"
 [kaggle]
 username = "<your-kaggle-username>"
 key = "<your-kaggle-api-key>"
+
+[sandbox]
+enabled = false
 ```
 
 For a gateway-token Kaggle environment:
@@ -235,6 +242,7 @@ export AUTODS_PROVIDER=openai
 export AUTODS_API_KEY=<your-openai-compatible-api-key>
 export AUTODS_BASE_URL=<your-openai-compatible-base-url>
 export AUTODS_MODEL=mimo-v2.5-pro
+export AUTODS_USE_GPU=true
 export KAGGLE_USERNAME=<your-kaggle-username>
 export KAGGLE_KEY=<your-kaggle-api-key>
 ```
@@ -242,11 +250,15 @@ export KAGGLE_KEY=<your-kaggle-api-key>
 Install the Kaggle CLI dependency before using `/kaggle`:
 
 ```bash
-pip install kaggle
+pip install -e ".[dev]"
 ```
 
 Do not commit `.autods.toml`, `.env`, Kaggle credential files, API keys, or
 tokens.
+
+`use_gpu = true` tells AutoDS to inspect available NVIDIA GPUs at startup and add
+the detected GPU names, memory, and driver version to the system prompt. Keep it
+`false` or omit it on CPU-only machines.
 
 Full configuration guide:
 

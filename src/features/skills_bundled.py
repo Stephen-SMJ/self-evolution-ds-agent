@@ -6,6 +6,8 @@ Each skill is registered via ``register_skill()`` during startup.
 
 from __future__ import annotations
 
+import re
+
 from .skills import Skill, register_skill
 
 
@@ -216,7 +218,12 @@ If present, use it as the default competition prior. In particular:
 
 1. Parse the competition slug from the user input when possible:
    - `https://www.kaggle.com/competitions/<slug>`
+   - `https://www.kaggle.com/competitions/<slug>/leaderboard`
+   - `https://www.kaggle.com/competitions/<slug>/data`
+   - `https://www.kaggle.com/competitions/<slug>/code`
    - `<slug>`
+   Strip page suffixes such as `/leaderboard`, `/data`, `/code`, `/rules`, `/discussion`,
+   `/submissions`, and query strings. Do not treat those suffixes as part of the slug.
 2. Inspect or fetch competition information:
    - task type and domain: tabular regression/classification, CV, NLP, audio, time series,
      recommender, LLM, RL/game, optimization, or other
@@ -392,11 +399,32 @@ $ARGUMENTS\
 """
 
 
+def _normalize_kaggle_input(args: str) -> tuple[str, str]:
+    raw = args.strip()
+    if not raw:
+        return "", ""
+
+    match = re.search(r"kaggle\.com/competitions/([^/?#\s]+)", raw)
+    if match:
+        return raw, match.group(1)
+
+    first = raw.split()[0].strip().strip("/")
+    first = first.split("?", 1)[0].split("#", 1)[0]
+    parts = [part for part in first.split("/") if part]
+    if len(parts) >= 2 and parts[0] == "competitions":
+        return raw, parts[1]
+    if parts:
+        return raw, parts[0]
+    return raw, ""
+
+
 def _kaggle_prompt(args: str) -> str:
     text = _KAGGLE_PROMPT
     if args:
+        raw, slug = _normalize_kaggle_input(args)
+        normalized = f"\n## Parsed Competition Slug\n\n{slug}\n" if slug else ""
         text = text.replace("$ARGUMENTS",
-                            f"\n## User Competition Input\n\n{args}")
+                            f"\n## User Competition Input\n\n{raw}{normalized}")
     else:
         text = text.replace("$ARGUMENTS", "")
     return text

@@ -30,6 +30,7 @@ def _args(**overrides):
         "buddy_model": None,
         "memory_dir": None,
         "no_auto_dream": False,
+        "use_gpu": None,
         "dream_interval": None,
         "dream_min_sessions": None,
     }
@@ -217,3 +218,23 @@ def test_kaggle_section_does_not_override_environment(tmp_path: Path, monkeypatc
 
     assert os.environ["KAGGLE_USERNAME"] == "env-user"
     assert os.environ["KAGGLE_KEY"] == "env-key"
+
+
+def test_load_app_config_reads_use_gpu(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.delenv("AUTODS_USE_GPU", raising=False)
+    config_path = tmp_path / "autods.toml"
+    config_path.write_text("use_gpu = true\n", encoding="utf-8")
+
+    config = load_app_config(_args(config=str(config_path)))
+
+    assert config.use_gpu is True
+
+
+def test_use_gpu_env_overrides_file(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setenv("AUTODS_USE_GPU", "true")
+    config_path = tmp_path / "autods.toml"
+    config_path.write_text("use_gpu = false\n", encoding="utf-8")
+
+    config = load_app_config(_args(config=str(config_path)))
+
+    assert config.use_gpu is True
