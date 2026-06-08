@@ -4,8 +4,6 @@
 
 A Tamagotchi-style AI companion that lives in your terminal. Each user gets a unique pet determined by a seeded PRNG — same username always produces the same species, rarity, and stats.
 
-![Custom Pikachu buddy](../assets/buddy-pikachu.jpg)
-
 ## Quick Start
 
 ```

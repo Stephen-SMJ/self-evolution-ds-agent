@@ -11,7 +11,6 @@ its offline self-evolution corpus.
 ├── tests/                       # Agent tests
 ├── docs/                        # Runtime documentation
 ├── .autods/skills/              # Project-local AutoDS skills
-├── agentic-kaggle-skill/        # Source/reference Kaggle skill
 ├── offline/                     # Offline self-evolution corpus and distillation
 │   ├── Audio/ CV/ GenAI/ ...
 │   ├── distillation/

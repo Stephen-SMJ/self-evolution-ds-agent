@@ -59,7 +59,6 @@ Still evolving:
 │   └── buddy/                   # optional terminal companion feature
 ├── .autods/skills/              # project-local skills used by AutoDS
 │   └── autods-kaggle-distilled/ # Kaggle/self-evolution skill
-├── agentic-kaggle-skill/        # reference skill material
 ├── docs/                        # agent runtime docs
 ├── tests/                       # runtime tests
 ├── offline/                     # offline self-evolution corpus
