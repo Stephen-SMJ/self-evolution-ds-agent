@@ -260,6 +260,10 @@ tokens.
 the detected GPU names, memory, and driver version to the system prompt. Keep it
 `false` or omit it on CPU-only machines.
 
+Sandbox is disabled by default. Keeping `[sandbox] enabled = false` in
+`.autods.toml` makes that explicit and lets Bash commands run directly in the
+local workspace.
+
 Full configuration guide:
 
 ```text
@@ -320,6 +324,16 @@ Kaggle workflow:
 ```text
 /kaggle https://www.kaggle.com/competitions/titanic
 ```
+
+Competition sub-pages work too. AutoDS routes `/kaggle` commands through the
+Kaggle skill and normalizes URLs like this to the competition slug `titanic`:
+
+```text
+/kaggle https://www.kaggle.com/competitions/titanic/leaderboard
+```
+
+The same normalization handles common Kaggle competition pages such as `/data`,
+`/code`, `/rules`, `/discussion`, and `/submissions`.
 
 Useful slash commands:
 
