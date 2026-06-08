@@ -10,12 +10,12 @@
   ],
   "buckets": {
     "70pct": {
-      "rank": 1616,
+      "rank": 1575,
       "quality": "strong",
       "score": 55,
       "reasons": "bad_keyword",
       "source": {
-        "path": "Tabular/spaceship-titanic/rank1616_70pct/spaceship-titanic-0527.ipynb",
+        "path": "Tabular/spaceship-titanic/rank1575_70pct/spaceship-titanic-0527.ipynb",
         "file_name": "spaceship-titanic-0527.ipynb",
         "suffix": ".ipynb",
         "cell_count": 22,
@@ -207,12 +207,12 @@
       }
     },
     "20pct": {
-      "rank": 440,
+      "rank": 432,
       "quality": "strong",
       "score": 73,
       "reasons": "",
       "source": {
-        "path": "Tabular/spaceship-titanic/rank440_20pct/spaceship-titanic.ipynb",
+        "path": "Tabular/spaceship-titanic/rank432_20pct/spaceship-titanic.ipynb",
         "file_name": "spaceship-titanic.ipynb",
         "suffix": ".ipynb",
         "cell_count": 33,

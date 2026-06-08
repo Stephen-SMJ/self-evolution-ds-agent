@@ -2,9 +2,9 @@
 
 Buckets: `70pct -> 40pct -> 20pct -> 10pct -> 1st`
 
-## 70pct rank 8833 quality strong score 55
+## 70pct rank 8790 quality strong score 55
 
-File: `Tabular/titanic/rank8833_70pct/titanic-model.ipynb`
+File: `Tabular/titanic/rank8790_70pct/titanic-model.ipynb`
 Cells: 36 total, 36 code, 0 markdown
 
 ### Cell 0 code
@@ -111,9 +111,9 @@ model = XGBClassifier(
 submission.to_csv('gender_submission.csv', index=False)
 ```
 
-## 40pct rank 4868 quality strong score 51
+## 40pct rank 4820 quality strong score 51
 
-File: `Tabular/titanic/rank4868_40pct/gettingstartedwithtitanic.ipynb`
+File: `Tabular/titanic/rank4820_40pct/gettingstartedwithtitanic.ipynb`
 Cells: 4 total, 4 code, 0 markdown
 
 ### Cell 1 code
@@ -138,9 +138,9 @@ model = XGBClassifier(
 output.to_csv('submission.csv', index=False)
 ```
 
-## 20pct rank 2509 quality strong score 55
+## 20pct rank 2445 quality strong score 55
 
-File: `Tabular/titanic/rank2509_20pct/getting-started-with-titanic.ipynb`
+File: `Tabular/titanic/rank2445_20pct/getting-started-with-titanic.ipynb`
 Cells: 14 total, 14 code, 0 markdown
 
 ### Cell 0 code
@@ -210,9 +210,9 @@ print("Desvio:", scores.std())
 submission.to_csv("submission.csv", index=False)
 ```
 
-## 10pct rank 1500 quality strong score 73
+## 10pct rank 1487 quality strong score 73
 
-File: `Tabular/titanic/rank1500_10pct/titanic-78-95-accurancy-eda-ensemble-learning.ipynb`
+File: `Tabular/titanic/rank1487_10pct/titanic-78-95-accurancy-eda-ensemble-learning.ipynb`
 Cells: 36 total, 19 code, 17 markdown
 
 ### Cell 1 markdown
@@ -302,82 +302,108 @@ df_plot = pd.read_csv('/kaggle/input/competitions/titanic/test.csv')
 - **Family Structures**: Combining `SibSp` and `Parch` into a single `Family` metric lets us evaluate social group dynamics, while the `Alone` flag captures the survival differences between solo passengers and family units.
 ```
 
-## 1st rank 874 quality strong score 78
+## 1st rank 4 quality strong score 78
 
-File: `Tabular/titanic/rank874_1st/ml-titanic-competition.ipynb`
-Cells: 23 total, 18 code, 5 markdown
+File: `Tabular/titanic/rank4_1st/titanic-cv-v2.ipynb`
+Cells: 17 total, 15 code, 2 markdown
+
+### Cell 0 markdown
+
+```
+# Titanic — Clean Feature Engineering + CV Ensemble (CatBoost / LightGBM)
+- Uses Stratified K-Fold CV with OOF probabilities
+- Tunes a classification threshold on OOF
+- Blends CatBoost + LightGBM and outputs `/kaggle/working/submission.csv`
+```
 
 ### Cell 1 code
 
 ```
-import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import log_loss, accuracy_score, classification_report
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import accuracy_score, confusion_matrix
+from catboost import CatBoostClassifier, Pool
+import lightgbm as lgb
 ```
 
-### Cell 2 markdown
+### Cell 2 code
 
 ```
-# 01: Exploratory Data Analysis and Features creation
-First, let's dive into the data, change them into numerical values, plot some of them and create our own features
+train = pd.read_csv(TRAIN_PATH)
+test = pd.read_csv(TEST_PATH)
 ```
 
-### Cell 3 code
+### Cell 4 code
 
 ```
-unprocessed_data = pd.read_csv("/kaggle/input/competitions/titanic/train.csv")
+    g1 = df.groupby(["Title", "Pclass", "Sex"])["Age"].median()
+    g2 = df.groupby(["Pclass", "Sex"])["Age"].median()
 ```
 
-### Cell 12 markdown
+### Cell 8 code
 
 ```
-# 02: Processing and scaling of the features
-Now let's process our features and create our training and test sets
+axes[0].bar(tmp.groupby("Sex")["Survived"].mean().index, tmp.groupby("Sex")["Survived"].mean().values)
+axes[1].bar(tmp.groupby("Pclass")["Survived"].mean().index, tmp.groupby("Pclass")["Survived"].mean().values)
+axes[2].bar(tmp.groupby("Embarked")["Survived"].mean().index, tmp.groupby("Embarked")["Survived"].mean().values)
 ```
 
-### Cell 15 markdown
+### Cell 9 code
 
 ```
-# 03: Definition of the model and training
-Let's define the model and analyse the outputs on the training and test set
+def tune_threshold(y_true, proba):
+        a = accuracy_score(y_true, (proba >= t).astype(int))
 ```
 
-### Cell 16 code
+### Cell 10 code
 
 ```
-titanic_model = LogisticRegression(
-                     # l2 (Ridge) keeps all features. l1 (Lasso) can zero out some weights.
+skf = StratifiedKFold(n_splits=N_SPLITS, shuffle=True, random_state=SEED)
+oof_cb = np.zeros(len(X), dtype=float)
+for fold, (trn, val) in enumerate(skf.split(X, y), 1):
+    m = CatBoostClassifier(
+        eval_metric="Accuracy",
+        early_stopping_rounds=400,
+    oof_cb[val] = m.predict_proba(va_pool)[:, 1]
+t_cb, a_cb = tune_threshold(y, oof_cb)
 ```
 
-### Cell 17 code
+### Cell 11 code
 
 ```
-    LogisticRegression(penalty='l2', max_iter=10000, solver='lbfgs', random_state=42),
-    cv=5,           # cross-validation on the dataset divided into 5 (4 for train, 1 for test)
+pred_cb = (oof_cb >= t_cb).astype(int)
 ```
 
-### Cell 18 code
+### Cell 12 code
 
 ```
-print(f"Accuracy train : {accuracy_score(Y_train, y_pred_train):.4f}")
-print(f"Accuracy val   : {accuracy_score(Y_test,  y_pred_val):.4f}")
+plt.title("CatBoost OOF Confusion Matrix")
 ```
 
-### Cell 20 markdown
+### Cell 13 code
 
 ```
-# 04: Predictions on the Titanic survivors
-Now lets's apply our model and predict the survivors of the competition set
+skf2 = StratifiedKFold(n_splits=N_SPLITS, shuffle=True, random_state=SEED)
+oof_lgb = np.zeros(len(X), dtype=float)
+for fold, (trn, val) in enumerate(skf2.split(X, y), 1):
+    m = lgb.LGBMClassifier(
+        eval_metric="binary_logloss",
+        callbacks=[lgb.early_stopping(400, verbose=False)]
+    oof_lgb[val] = m.predict_proba(X_va)[:, 1]
+t_lgb, a_lgb = tune_threshold(y, oof_lgb)
 ```
 
-### Cell 21 code
+### Cell 14 code
 
 ```
-predictions_data = pd.read_csv("/kaggle/input/competitions/titanic/test.csv")
+    p = w * oof_cb + (1 - w) * oof_lgb
+    t, a = tune_threshold(y, p)
 ```
 
-### Cell 22 code
+### Cell 15 code
 
 ```
-submission.to_csv("submission.csv", index=False)
+oof_blend = w * oof_cb + (1 - w) * oof_lgb
+test_blend = w * test_cb + (1 - w) * test_lgb
+acc_blend = accuracy_score(y, (oof_blend >= t).astype(int))
+acc_blend, w, t
 ```

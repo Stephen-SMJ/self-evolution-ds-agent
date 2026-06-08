@@ -10,12 +10,12 @@
   ],
   "buckets": {
     "70pct": {
-      "rank": 8833,
+      "rank": 8790,
       "quality": "strong",
       "score": 55,
       "reasons": "bad_keyword",
       "source": {
-        "path": "Tabular/titanic/rank8833_70pct/titanic-model.ipynb",
+        "path": "Tabular/titanic/rank8790_70pct/titanic-model.ipynb",
         "file_name": "titanic-model.ipynb",
         "suffix": ".ipynb",
         "cell_count": 36,
@@ -86,12 +86,12 @@
       }
     },
     "40pct": {
-      "rank": 4868,
+      "rank": 4820,
       "quality": "strong",
       "score": 51,
       "reasons": "",
       "source": {
-        "path": "Tabular/titanic/rank4868_40pct/gettingstartedwithtitanic.ipynb",
+        "path": "Tabular/titanic/rank4820_40pct/gettingstartedwithtitanic.ipynb",
         "file_name": "gettingstartedwithtitanic.ipynb",
         "suffix": ".ipynb",
         "cell_count": 4,
@@ -117,12 +117,12 @@
       }
     },
     "20pct": {
-      "rank": 2509,
+      "rank": 2445,
       "quality": "strong",
       "score": 55,
       "reasons": "bad_keyword",
       "source": {
-        "path": "Tabular/titanic/rank2509_20pct/getting-started-with-titanic.ipynb",
+        "path": "Tabular/titanic/rank2445_20pct/getting-started-with-titanic.ipynb",
         "file_name": "getting-started-with-titanic.ipynb",
         "suffix": ".ipynb",
         "cell_count": 14,
@@ -173,12 +173,12 @@
       }
     },
     "10pct": {
-      "rank": 1500,
+      "rank": 1487,
       "quality": "strong",
       "score": 73,
       "reasons": "",
       "source": {
-        "path": "Tabular/titanic/rank1500_10pct/titanic-78-95-accurancy-eda-ensemble-learning.ipynb",
+        "path": "Tabular/titanic/rank1487_10pct/titanic-78-95-accurancy-eda-ensemble-learning.ipynb",
         "file_name": "titanic-78-95-accurancy-eda-ensemble-learning.ipynb",
         "suffix": ".ipynb",
         "cell_count": 36,
@@ -304,72 +304,82 @@
       }
     },
     "1st": {
-      "rank": 874,
+      "rank": 4,
       "quality": "strong",
       "score": 78,
       "reasons": "",
       "source": {
-        "path": "Tabular/titanic/rank874_1st/ml-titanic-competition.ipynb",
-        "file_name": "ml-titanic-competition.ipynb",
+        "path": "Tabular/titanic/rank4_1st/titanic-cv-v2.ipynb",
+        "file_name": "titanic-cv-v2.ipynb",
         "suffix": ".ipynb",
-        "cell_count": 23,
-        "code_cell_count": 18,
-        "markdown_cell_count": 5,
+        "cell_count": 17,
+        "code_cell_count": 15,
+        "markdown_cell_count": 2,
         "snippets": [
+          {
+            "cell_index": 0,
+            "cell_type": "markdown",
+            "snippet": "# Titanic — Clean Feature Engineering + CV Ensemble (CatBoost / LightGBM)\n- Uses Stratified K-Fold CV with OOF probabilities\n- Tunes a classification threshold on OOF\n- Blends CatBoost + LightGBM and outputs `/kaggle/working/submission.csv`"
+          },
           {
             "cell_index": 1,
             "cell_type": "code",
-            "snippet": "import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import log_loss, accuracy_score, classification_report"
+            "snippet": "from sklearn.model_selection import StratifiedKFold\nfrom sklearn.metrics import accuracy_score, confusion_matrix\nfrom catboost import CatBoostClassifier, Pool\nimport lightgbm as lgb"
           },
           {
             "cell_index": 2,
-            "cell_type": "markdown",
-            "snippet": "# 01: Exploratory Data Analysis and Features creation\nFirst, let's dive into the data, change them into numerical values, plot some of them and create our own features"
+            "cell_type": "code",
+            "snippet": "train = pd.read_csv(TRAIN_PATH)\ntest = pd.read_csv(TEST_PATH)"
           },
           {
-            "cell_index": 3,
+            "cell_index": 4,
             "cell_type": "code",
-            "snippet": "unprocessed_data = pd.read_csv(\"/kaggle/input/competitions/titanic/train.csv\")"
+            "snippet": "    g1 = df.groupby([\"Title\", \"Pclass\", \"Sex\"])[\"Age\"].median()\n    g2 = df.groupby([\"Pclass\", \"Sex\"])[\"Age\"].median()"
+          },
+          {
+            "cell_index": 8,
+            "cell_type": "code",
+            "snippet": "axes[0].bar(tmp.groupby(\"Sex\")[\"Survived\"].mean().index, tmp.groupby(\"Sex\")[\"Survived\"].mean().values)\naxes[1].bar(tmp.groupby(\"Pclass\")[\"Survived\"].mean().index, tmp.groupby(\"Pclass\")[\"Survived\"].mean().values)\naxes[2].bar(tmp.groupby(\"Embarked\")[\"Survived\"].mean().index, tmp.groupby(\"Embarked\")[\"Survived\"].mean().values)"
+          },
+          {
+            "cell_index": 9,
+            "cell_type": "code",
+            "snippet": "def tune_threshold(y_true, proba):\n        a = accuracy_score(y_true, (proba >= t).astype(int))"
+          },
+          {
+            "cell_index": 10,
+            "cell_type": "code",
+            "snippet": "skf = StratifiedKFold(n_splits=N_SPLITS, shuffle=True, random_state=SEED)\noof_cb = np.zeros(len(X), dtype=float)\nfor fold, (trn, val) in enumerate(skf.split(X, y), 1):\n    m = CatBoostClassifier(\n        eval_metric=\"Accuracy\",\n        early_stopping_rounds=400,\n    oof_cb[val] = m.predict_proba(va_pool)[:, 1]\nt_cb, a_cb = tune_threshold(y, oof_cb)"
+          },
+          {
+            "cell_index": 11,
+            "cell_type": "code",
+            "snippet": "pred_cb = (oof_cb >= t_cb).astype(int)"
           },
           {
             "cell_index": 12,
-            "cell_type": "markdown",
-            "snippet": "# 02: Processing and scaling of the features\nNow let's process our features and create our training and test sets"
+            "cell_type": "code",
+            "snippet": "plt.title(\"CatBoost OOF Confusion Matrix\")"
+          },
+          {
+            "cell_index": 13,
+            "cell_type": "code",
+            "snippet": "skf2 = StratifiedKFold(n_splits=N_SPLITS, shuffle=True, random_state=SEED)\noof_lgb = np.zeros(len(X), dtype=float)\nfor fold, (trn, val) in enumerate(skf2.split(X, y), 1):\n    m = lgb.LGBMClassifier(\n        eval_metric=\"binary_logloss\",\n        callbacks=[lgb.early_stopping(400, verbose=False)]\n    oof_lgb[val] = m.predict_proba(X_va)[:, 1]\nt_lgb, a_lgb = tune_threshold(y, oof_lgb)"
+          },
+          {
+            "cell_index": 14,
+            "cell_type": "code",
+            "snippet": "    p = w * oof_cb + (1 - w) * oof_lgb\n    t, a = tune_threshold(y, p)"
           },
           {
             "cell_index": 15,
-            "cell_type": "markdown",
-            "snippet": "# 03: Definition of the model and training\nLet's define the model and analyse the outputs on the training and test set"
+            "cell_type": "code",
+            "snippet": "oof_blend = w * oof_cb + (1 - w) * oof_lgb\ntest_blend = w * test_cb + (1 - w) * test_lgb\nacc_blend = accuracy_score(y, (oof_blend >= t).astype(int))\nacc_blend, w, t"
           },
           {
             "cell_index": 16,
             "cell_type": "code",
-            "snippet": "titanic_model = LogisticRegression(\n                     # l2 (Ridge) keeps all features. l1 (Lasso) can zero out some weights."
-          },
-          {
-            "cell_index": 17,
-            "cell_type": "code",
-            "snippet": "    LogisticRegression(penalty='l2', max_iter=10000, solver='lbfgs', random_state=42),\n    cv=5,           # cross-validation on the dataset divided into 5 (4 for train, 1 for test)"
-          },
-          {
-            "cell_index": 18,
-            "cell_type": "code",
-            "snippet": "print(f\"Accuracy train : {accuracy_score(Y_train, y_pred_train):.4f}\")\nprint(f\"Accuracy val   : {accuracy_score(Y_test,  y_pred_val):.4f}\")"
-          },
-          {
-            "cell_index": 20,
-            "cell_type": "markdown",
-            "snippet": "# 04: Predictions on the Titanic survivors\nNow lets's apply our model and predict the survivors of the competition set"
-          },
-          {
-            "cell_index": 21,
-            "cell_type": "code",
-            "snippet": "predictions_data = pd.read_csv(\"/kaggle/input/competitions/titanic/test.csv\")"
-          },
-          {
-            "cell_index": 22,
-            "cell_type": "code",
-            "snippet": "submission.to_csv(\"submission.csv\", index=False)"
+            "snippet": "pred_test = (test_blend >= t).astype(int)\nsubmission.to_csv(out_path, index=False)"
           }
         ]
       }

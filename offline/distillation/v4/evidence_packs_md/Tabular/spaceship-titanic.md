@@ -2,9 +2,9 @@
 
 Buckets: `70pct -> 40pct -> 20pct -> 10pct -> 1st`
 
-## 70pct rank 1616 quality strong score 55
+## 70pct rank 1575 quality strong score 55
 
-File: `Tabular/spaceship-titanic/rank1616_70pct/spaceship-titanic-0527.ipynb`
+File: `Tabular/spaceship-titanic/rank1575_70pct/spaceship-titanic-0527.ipynb`
 Cells: 22 total, 16 code, 6 markdown
 
 ### Cell 0 code
@@ -188,9 +188,9 @@ Some missing values can be filled with structural rules before the general model
     .agg(Rows='count', TransportedRate='mean')
 ```
 
-## 20pct rank 440 quality strong score 73
+## 20pct rank 432 quality strong score 73
 
-File: `Tabular/spaceship-titanic/rank440_20pct/spaceship-titanic.ipynb`
+File: `Tabular/spaceship-titanic/rank432_20pct/spaceship-titanic.ipynb`
 Cells: 33 total, 32 code, 1 markdown
 
 ### Cell 0 markdown

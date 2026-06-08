@@ -2,9 +2,9 @@
 
 Buckets: `70pct -> 40pct -> 20pct -> 10pct -> 1st`
 
-## 70pct rank 1063 quality strong score 65
+## 70pct rank 1062 quality strong score 65
 
-File: `CV/digit-recognizer/rank1063_70pct/digitrecognizer.ipynb`
+File: `CV/digit-recognizer/rank1062_70pct/digitrecognizer.ipynb`
 Cells: 13 total, 7 code, 6 markdown
 
 ### Cell 1 code
@@ -67,9 +67,9 @@ test = pd.read_csv('/kaggle/input/competitions/digit-recognizer/test.csv')
 submission.to_csv('submission.csv', index=False)
 ```
 
-## 40pct rank 567 quality strong score 55
+## 40pct rank 548 quality strong score 55
 
-File: `CV/digit-recognizer/rank567_40pct/sine-multi-scale-cnn-99-1399-params-11-class.ipynb`
+File: `CV/digit-recognizer/rank548_40pct/sine-multi-scale-cnn-99-1399-params-11-class.ipynb`
 Cells: 11 total, 11 code, 0 markdown
 
 ### Cell 0 code
@@ -348,9 +348,9 @@ plt.title('Matrice de confusion (validation)')
 submission.to_csv('submission.csv', index=False)
 ```
 
-## 1st rank 8 quality strong score 64
+## 1st rank 7 quality strong score 64
 
-File: `CV/digit-recognizer/rank8_1st/digit-recognizer-cnn-public-mnist-variants.ipynb`
+File: `CV/digit-recognizer/rank7_1st/digit-recognizer-cnn-public-mnist-variants.ipynb`
 Cells: 6 total, 5 code, 1 markdown
 
 ### Cell 0 markdown

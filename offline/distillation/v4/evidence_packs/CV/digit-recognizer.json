@@ -10,12 +10,12 @@
   ],
   "buckets": {
     "70pct": {
-      "rank": 1063,
+      "rank": 1062,
       "quality": "strong",
       "score": 65,
       "reasons": "",
       "source": {
-        "path": "CV/digit-recognizer/rank1063_70pct/digitrecognizer.ipynb",
+        "path": "CV/digit-recognizer/rank1062_70pct/digitrecognizer.ipynb",
         "file_name": "digitrecognizer.ipynb",
         "suffix": ".ipynb",
         "cell_count": 13,
@@ -66,12 +66,12 @@
       }
     },
     "40pct": {
-      "rank": 567,
+      "rank": 548,
       "quality": "strong",
       "score": 55,
       "reasons": "",
       "source": {
-        "path": "CV/digit-recognizer/rank567_40pct/sine-multi-scale-cnn-99-1399-params-11-class.ipynb",
+        "path": "CV/digit-recognizer/rank548_40pct/sine-multi-scale-cnn-99-1399-params-11-class.ipynb",
         "file_name": "sine-multi-scale-cnn-99-1399-params-11-class.ipynb",
         "suffix": ".ipynb",
         "cell_count": 11,
@@ -329,12 +329,12 @@
       }
     },
     "1st": {
-      "rank": 8,
+      "rank": 7,
       "quality": "strong",
       "score": 64,
       "reasons": "",
       "source": {
-        "path": "CV/digit-recognizer/rank8_1st/digit-recognizer-cnn-public-mnist-variants.ipynb",
+        "path": "CV/digit-recognizer/rank7_1st/digit-recognizer-cnn-public-mnist-variants.ipynb",
         "file_name": "digit-recognizer-cnn-public-mnist-variants.ipynb",
         "suffix": ".ipynb",
         "cell_count": 6,
