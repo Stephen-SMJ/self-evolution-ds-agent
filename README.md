@@ -199,8 +199,6 @@ pip install -e ".[dev]"
 
 ## Model Configuration
 
-No real API key is committed to this repository.
-
 Set an OpenAI-compatible endpoint:
 
 ```bash
@@ -230,6 +228,41 @@ Full configuration guide:
 ```text
 CONFIGURATION.md
 ```
+
+## Full-Access Mode
+
+For exploratory experiments where you do not want AutoDS to ask for every tool permission, start it with automatic approval:
+
+```bash
+autods --auto-approve
+```
+
+For a Kaggle workflow:
+
+```bash
+autods --auto-approve
+```
+
+Then run inside the AutoDS terminal:
+
+```text
+/kaggle <competition-url-or-slug>
+```
+
+`--auto-approve` means AutoDS will approve tool calls without prompting you. To also run Bash commands without sandbox isolation, keep sandbox disabled:
+
+```toml
+[sandbox]
+enabled = false
+```
+
+The same setting can be changed in the interactive terminal:
+
+```text
+/sandbox mode disabled
+```
+
+This is the closest local equivalent of full-access mode: no permission prompts from AutoDS and no sandbox wrapping for shell commands.
 
 ## Kaggle Configuration
 

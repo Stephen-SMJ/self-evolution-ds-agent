@@ -45,9 +45,8 @@ autods --coordinator
 
 ## LLM API Configuration
 
-AutoDS uses an OpenAI-compatible provider by default, but no real key is
-committed to the repository. Set credentials through environment variables or a
-local config file.
+AutoDS uses an OpenAI-compatible provider by default. Set credentials through
+environment variables or a local config file.
 
 Environment variables:
 
@@ -82,6 +81,52 @@ effort = "medium"
 
 Do not commit `.env`, `.env.local`, `.autods.toml`, Kaggle credential files, or
 raw API tokens.
+
+## Full-Access Permission Mode
+
+For exploration and experiments, you can start AutoDS in a mode that does not ask
+for tool permission confirmations:
+
+```bash
+autods --auto-approve
+```
+
+For one-shot execution:
+
+```bash
+autods --auto-approve "summarize this repository"
+```
+
+For Kaggle work, start the terminal this way and then run `/kaggle` inside it:
+
+```bash
+autods --auto-approve
+```
+
+```text
+/kaggle <competition-url-or-slug>
+```
+
+`--auto-approve` automatically approves AutoDS tool calls. It does not by itself
+change sandbox behavior. If you want full local access for Bash commands as well,
+keep sandbox disabled in `.autods.toml` or `~/.config/autods/config.toml`:
+
+```toml
+[sandbox]
+enabled = false
+```
+
+You can also switch it from inside the terminal:
+
+```text
+/sandbox mode disabled
+```
+
+With `autods --auto-approve` plus `[sandbox] enabled = false`, AutoDS will not ask
+for user permission before tool calls and Bash commands will run directly in the
+local environment. Use this only in a workspace where you are comfortable letting
+the agent read, write, install, submit, and run commands without per-action
+confirmation.
 
 ## Kaggle Configuration
 

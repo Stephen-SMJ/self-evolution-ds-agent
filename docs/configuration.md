@@ -46,6 +46,31 @@ autods \
   --resume 1
 ```
 
+## Full-Access Permission Mode
+
+Use this when you want AutoDS to run without asking for per-tool permission:
+
+```bash
+autods --auto-approve
+```
+
+For full local shell access, also disable sandbox in `.autods.toml` or
+`~/.config/autods/config.toml`:
+
+```toml
+[sandbox]
+enabled = false
+```
+
+Equivalent interactive command:
+
+```text
+/sandbox mode disabled
+```
+
+`--auto-approve` removes AutoDS permission prompts. Disabling sandbox makes Bash
+commands run directly instead of through bubblewrap isolation.
+
 ## TOML Config Files
 
 Loaded in order (later overrides earlier):
