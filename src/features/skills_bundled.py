@@ -284,7 +284,11 @@ PY
 If credentials are missing, tell the user that Kaggle CLI normally needs
 `KAGGLE_USERNAME` and `KAGGLE_KEY` or `~/.kaggle/kaggle.json`. If the environment
 uses `KGAT_API_TOKEN`, use it only through the supported gateway or wrapper
-available in the local project; do not invent a Kaggle username from it.
+available in the local project; do not invent a Kaggle username from it. If a
+401 occurs while `KAGGLE_KEY` starts with `KGAT_`, explain that `KGAT_...` is a
+gateway token, not an official Kaggle API key, and should be configured as
+`[kaggle] kgat_api_token = "KGAT_..."` instead of `[kaggle] key = "KGAT_..."`.
+Do not claim the token is expired unless the gateway itself reports expiration.
 
 ## Phase 3: Baseline First
 

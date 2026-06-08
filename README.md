@@ -217,7 +217,7 @@ effort = "medium"
 
 [kaggle]
 username = "<your-kaggle-username>"
-key = "<your-kaggle-api-key>"
+key = "<your-official-kaggle-api-key>"
 
 [sandbox]
 enabled = false
@@ -229,6 +229,10 @@ For a gateway-token Kaggle environment:
 [kaggle]
 kgat_api_token = "<your-local-gateway-token>"
 ```
+
+Do not put a `KGAT_...` token in `key`. `key` is for the official Kaggle API key
+from Kaggle settings or `~/.kaggle/kaggle.json`; `KGAT_...` belongs in
+`kgat_api_token`.
 
 When AutoDS starts, it exports `[kaggle]` values into the process environment as
 `KAGGLE_USERNAME`, `KAGGLE_KEY`, `KGAT_API_TOKEN`, and `KAGGLE_API_TOKEN`, so the

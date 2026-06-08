@@ -220,6 +220,28 @@ def test_kaggle_section_does_not_override_environment(tmp_path: Path, monkeypatc
     assert os.environ["KAGGLE_KEY"] == "env-key"
 
 
+def test_kaggle_key_with_kgat_prefix_is_gateway_token(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.delenv("KAGGLE_USERNAME", raising=False)
+    monkeypatch.delenv("KAGGLE_KEY", raising=False)
+    monkeypatch.delenv("KGAT_API_TOKEN", raising=False)
+    monkeypatch.delenv("KAGGLE_API_TOKEN", raising=False)
+
+    config_path = tmp_path / "autods.toml"
+    config_path.write_text(
+        '[kaggle]\n'
+        'username = "kaggle-user"\n'
+        'key = "KGAT_test_gateway_token"\n',
+        encoding="utf-8",
+    )
+
+    load_app_config(_args(config=str(config_path)))
+
+    assert os.environ["KAGGLE_USERNAME"] == "kaggle-user"
+    assert "KAGGLE_KEY" not in os.environ
+    assert os.environ["KGAT_API_TOKEN"] == "KGAT_test_gateway_token"
+    assert os.environ["KAGGLE_API_TOKEN"] == "KGAT_test_gateway_token"
+
+
 def test_load_app_config_reads_use_gpu(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     monkeypatch.delenv("AUTODS_USE_GPU", raising=False)
     config_path = tmp_path / "autods.toml"
