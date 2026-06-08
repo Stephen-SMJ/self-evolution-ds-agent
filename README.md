@@ -242,6 +242,10 @@ When AutoDS starts, it exports `[kaggle]` values into the process environment as
 `/kaggle` workflow and child shell commands can use them. Existing shell
 environment variables take priority over `.autods.toml`.
 
+If AutoDS appears to use an old Kaggle gateway token, check the parent shell and
+`~/.kaggle/access_token`: inherited environment variables take precedence, and
+the agent should not manually read or re-export raw token files during a run.
+
 Environment variables also work:
 
 ```bash

@@ -218,6 +218,8 @@ class TestBundledSkills:
         assert "read the specific V4 evidence" in p
         assert "Training runtime policy" in p
         assert "900-3600 seconds" in p
+        assert "Never print, cat, or paste raw token values" in p
+        assert 'KAGGLE_API_TOKEN="$KAGGLE_API_TOKEN"' in p
 
     def test_kaggle_prompt_parses_leaderboard_url(self):
         register_bundled_skills()

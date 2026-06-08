@@ -57,6 +57,16 @@ For planning a new competition, prefer V4 deep-read distillation when present. V
 9. If the competition appears in `offline/distillation/v4/evidence_packs_md/<Domain>/<slug>.md`, read that evidence pack before choosing the next non-trivial experiment.
 10. Do not stop after a valid baseline. Continue the experiment loop automatically until a stopping condition is reached or the user asks to pause.
 
+## Credential Policy
+
+- Treat `.autods.toml` / inherited environment variables as the source of truth.
+- Never print, cat, or paste raw values from `.autods.toml`, `~/.kaggle/kaggle.json`, `~/.kaggle/access_token`, or environment variables.
+- Only report credential presence as booleans such as `KAGGLE_USERNAME: true`.
+- Do not create or overwrite `~/.kaggle/kaggle.json` or `~/.kaggle/access_token` unless the user explicitly asks for credential setup.
+- If `KGAT_API_TOKEN` or `KAGGLE_API_TOKEN` exists, gateway auth is already configured. Do not search for another token and do not hardcode literal tokens in Bash commands.
+- If a command needs explicit gateway auth, use variable expansion such as `KAGGLE_API_TOKEN="$KAGGLE_API_TOKEN" kaggle ...`, not a pasted token.
+- Shell exports inside one Bash call do not persist to later Bash calls; persistent credentials should come from AutoDS config/env.
+
 ## First-Pass Strategy
 
 For most competitions:

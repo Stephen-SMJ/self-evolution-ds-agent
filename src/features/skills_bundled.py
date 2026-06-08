@@ -278,8 +278,25 @@ print("KAGGLE_USERNAME:", bool(os.getenv("KAGGLE_USERNAME")))
 print("KAGGLE_KEY:", bool(os.getenv("KAGGLE_KEY")))
 print("KAGGLE_CONFIG_DIR:", os.getenv("KAGGLE_CONFIG_DIR"))
 print("KGAT_API_TOKEN:", bool(os.getenv("KGAT_API_TOKEN")))
+print("KAGGLE_API_TOKEN:", bool(os.getenv("KAGGLE_API_TOKEN")))
 PY
 ```
+
+Credential safety:
+- Never print, cat, or paste raw token values from `.autods.toml`,
+  `~/.kaggle/kaggle.json`, `~/.kaggle/access_token`, or environment variables.
+  Only print whether a variable/file exists.
+- Do not create or overwrite `~/.kaggle/kaggle.json` or `~/.kaggle/access_token`
+  during a competition run unless the user explicitly asks for credential setup.
+- If `KGAT_API_TOKEN` or `KAGGLE_API_TOKEN` is already set, treat gateway auth as
+  configured. Do not search for another token and do not manually export a
+  literal token into later commands.
+- Prefer using the inherited environment from AutoDS. If a command requires an
+  explicit env assignment, use shell variable expansion like
+  `KAGGLE_API_TOKEN="$KAGGLE_API_TOKEN"`, never a hardcoded token value.
+- Remember that shell exports inside one Bash call do not persist to later Bash
+  calls. Persistent credentials should come from AutoDS config/env, not ad-hoc
+  exports during the workflow.
 
 If credentials are missing, tell the user that Kaggle CLI normally needs
 `KAGGLE_USERNAME` and `KAGGLE_KEY` or `~/.kaggle/kaggle.json`. If the environment
