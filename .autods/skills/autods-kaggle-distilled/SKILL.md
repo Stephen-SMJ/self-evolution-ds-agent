@@ -54,6 +54,8 @@ For planning a new competition, prefer V4 deep-read distillation when present. V
    - Is the improvement from feature/model/validation/ensemble?
    - Is the model exploiting leakage or public LB noise?
    - What reusable skill should be written down?
+9. If the competition appears in `offline/distillation/v4/evidence_packs_md/<Domain>/<slug>.md`, read that evidence pack before choosing the next non-trivial experiment.
+10. Do not stop after a valid baseline. Continue the experiment loop automatically until a stopping condition is reached or the user asks to pause.
 
 ## First-Pass Strategy
 
@@ -66,6 +68,18 @@ For most competitions:
 5. Add OOF predictions and error analysis.
 6. Add small, controlled ensembles only after individual models are validated.
 7. Avoid large rewrites until the experiment table shows a real bottleneck.
+
+## Autonomous Iteration Policy
+
+The default behavior is self-evolution, not one-shot baseline generation.
+
+- After the first baseline and public score, immediately choose the next highest-ROI experiment.
+- Do not ask "Want me to continue iterating?" at the end of a baseline run.
+- Ask before a new Kaggle submission unless the user explicitly approved automatic submissions/full-access for the session.
+- Continue while the result is far from the target tier and there is remaining submission/time/compute budget.
+- Stop or ask for direction only when blocked, when rules/submission limits make continued iteration risky, when three meaningful experiments fail to improve CV or LB, or when the user explicitly stops.
+- When CV is much higher than public LB, prioritize validation repair, leakage checks, distribution shift analysis, simpler robust models, and feature ablation before stacking more complex models.
+- Always update `AUTODS.md` with the experiment result, LB/CV gap, decision, and next experiment.
 
 ## Reference Files
 

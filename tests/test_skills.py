@@ -214,6 +214,8 @@ class TestBundledSkills:
         assert ".venv/bin/python -m pip install" in p
         assert "--break-system-packages" in p
         assert "playground-series" in p
+        assert "Do not stop after the first valid baseline" in p
+        assert "read the specific V4 evidence" in p
 
     def test_kaggle_prompt_parses_leaderboard_url(self):
         register_bundled_skills()

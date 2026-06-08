@@ -342,6 +342,26 @@ submission commands if supported by the current Kaggle CLI version.
 
 ## Phase 5: Iteration and Self-Evolution
 
+Do not stop after the first valid baseline. Once a baseline exists, continue the
+self-evolution loop autonomously unless a risky action requires confirmation.
+In particular:
+
+- Do not ask "Want me to continue iterating?" after a baseline or after a public
+  score is available.
+- If the user has approved a submission for the current workflow, use the score
+  as feedback and immediately plan the next experiment.
+- Ask before each additional Kaggle submission unless the user explicitly allowed
+  automatic submissions for the session or configured full-access behavior.
+- Continue improving until one of these stopping conditions is reached:
+  submission limit/rules risk, time budget, compute budget, repeated failures,
+  three consecutive meaningful experiments without CV or LB improvement, or a
+  user stop/pause instruction.
+- If public LB is far below CV, prioritize validation repair, leakage checks,
+  simpler robust models, and test-distribution diagnostics before adding model
+  complexity.
+- For competitions present in the offline corpus, read the specific V4 evidence
+  pack and V2/V3 traces before choosing the next high-ROI experiment.
+
 After each experiment, update the experiment log:
 
 | run | change | local CV | public score | status | lesson | next |
@@ -355,12 +375,16 @@ Use a disciplined loop:
 3. Compare local validation and public leaderboard.
 4. Keep winning changes, revert or isolate losing changes.
 5. Extract reusable lessons into `AUTODS.md`, a project skill, or memory.
+6. Select and run the next experiment without asking the user unless it requires
+   a new Kaggle submission or another risky external action.
 
 Score handling:
 - Submit early to establish a baseline.
 - Do not over-trust very early public scores on competitions with delayed evaluation.
 - Wait for completion/stabilization before making major strategic decisions.
 - Track both local validation and public score to detect leaderboard overfitting.
+- If leaderboard rank is available, record rank/percentile and continue while
+  the current result is far from the target tier.
 
 ## Troubleshooting Patterns
 

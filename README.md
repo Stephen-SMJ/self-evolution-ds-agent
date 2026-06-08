@@ -107,6 +107,10 @@ Domain coverage:
 | Tabular | 5 |
 | Time-Series | 5 |
 
+Example: `titanic` is included in the Tabular offline corpus with all five rank
+buckets (`70pct`, `40pct`, `20pct`, `10pct`, `1st`) and V4 evidence packs under
+`offline/distillation/v4/evidence_packs_md/Tabular/titanic.md`.
+
 Important files:
 
 ```text
@@ -338,6 +342,13 @@ Kaggle skill and normalizes URLs like this to the competition slug `titanic`:
 
 The same normalization handles common Kaggle competition pages such as `/data`,
 `/code`, `/rules`, `/discussion`, and `/submissions`.
+
+After a baseline is submitted and scored, AutoDS should continue the
+self-evolution loop by default: inspect the CV/LB gap, read any matching offline
+distillation evidence, run the next high-ROI experiment, and update
+`competitions/<slug>/AUTODS.md`. It should not stop with "Want me to continue?"
+unless it is blocked, at a submission/rules risk point, or the user explicitly
+asks it to pause.
 
 Useful slash commands:
 
