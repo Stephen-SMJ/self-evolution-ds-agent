@@ -79,6 +79,31 @@ max_tokens = 8192
 effort = "medium"
 ```
 
+You can also put Kaggle credentials in the same local `.autods.toml`:
+
+```toml
+[kaggle]
+username = "<your-kaggle-username>"
+key = "<your-kaggle-api-key>"
+```
+
+Full local example:
+
+```toml
+provider = "openai"
+
+[openai]
+api_key = "<your-openai-compatible-api-key>"
+base_url = "<your-openai-compatible-base-url>"
+model = "mimo-v2.5-pro"
+max_tokens = 8192
+effort = "medium"
+
+[kaggle]
+username = "<your-kaggle-username>"
+key = "<your-kaggle-api-key>"
+```
+
 Do not commit `.env`, `.env.local`, `.autods.toml`, Kaggle credential files, or
 raw API tokens.
 
@@ -139,7 +164,29 @@ Install dependencies:
 pip install kaggle pandas numpy scikit-learn
 ```
 
-Preferred Kaggle credentials:
+Preferred local setup: put Kaggle credentials in `.autods.toml` next to the LLM
+settings:
+
+```toml
+[kaggle]
+username = "<your-kaggle-username>"
+key = "<your-kaggle-api-key>"
+```
+
+When AutoDS starts, these are exported into the process environment as
+`KAGGLE_USERNAME` and `KAGGLE_KEY`, so the `/kaggle` workflow and shell commands
+can use the official Kaggle CLI.
+
+Gateway-token setup:
+
+```toml
+[kaggle]
+kgat_api_token = "<your-local-gateway-token>"
+```
+
+`kgat_api_token` is exported as both `KGAT_API_TOKEN` and `KAGGLE_API_TOKEN`.
+
+Shell environment variables also work and take priority over `.autods.toml`:
 
 ```bash
 export KAGGLE_USERNAME=<your-kaggle-username>
@@ -256,4 +303,3 @@ broken = [p for p in Path("offline/distillation").rglob("*") if p.is_symlink() a
 print("broken symlinks:", len(broken))
 PY
 ```
-

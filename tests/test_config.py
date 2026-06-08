@@ -1,4 +1,5 @@
 from argparse import Namespace
+import os
 from pathlib import Path
 
 import pytest
@@ -175,3 +176,44 @@ def test_openai_env_wins_when_provider_is_openai(monkeypatch: pytest.MonkeyPatch
     assert config.base_url == "https://openai.env"
     assert config.model == "gpt-4.1"
     assert config.buddy_model == "gpt-4.1-mini"
+
+
+def test_load_app_config_exports_kaggle_section(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.delenv("KAGGLE_USERNAME", raising=False)
+    monkeypatch.delenv("KAGGLE_KEY", raising=False)
+    monkeypatch.delenv("KGAT_API_TOKEN", raising=False)
+    monkeypatch.delenv("KAGGLE_API_TOKEN", raising=False)
+
+    config_path = tmp_path / "autods.toml"
+    config_path.write_text(
+        '[kaggle]\n'
+        'username = "kaggle-user"\n'
+        'key = "kaggle-key"\n'
+        'kgat_api_token = "gateway-token"\n',
+        encoding="utf-8",
+    )
+
+    load_app_config(_args(config=str(config_path)))
+
+    assert os.environ["KAGGLE_USERNAME"] == "kaggle-user"
+    assert os.environ["KAGGLE_KEY"] == "kaggle-key"
+    assert os.environ["KGAT_API_TOKEN"] == "gateway-token"
+    assert os.environ["KAGGLE_API_TOKEN"] == "gateway-token"
+
+
+def test_kaggle_section_does_not_override_environment(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setenv("KAGGLE_USERNAME", "env-user")
+    monkeypatch.setenv("KAGGLE_KEY", "env-key")
+
+    config_path = tmp_path / "autods.toml"
+    config_path.write_text(
+        '[kaggle]\n'
+        'username = "file-user"\n'
+        'key = "file-key"\n',
+        encoding="utf-8",
+    )
+
+    load_app_config(_args(config=str(config_path)))
+
+    assert os.environ["KAGGLE_USERNAME"] == "env-user"
+    assert os.environ["KAGGLE_KEY"] == "env-key"

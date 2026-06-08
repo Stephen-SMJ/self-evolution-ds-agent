@@ -272,14 +272,34 @@ Install the Kaggle CLI dependency:
 pip install kaggle
 ```
 
-Use the standard Kaggle credentials:
+You can keep Kaggle credentials in the same local `.autods.toml` as the LLM API:
+
+```toml
+[kaggle]
+username = "<your-kaggle-username>"
+key = "<your-kaggle-api-key>"
+```
+
+For a gateway-token environment:
+
+```toml
+[kaggle]
+kgat_api_token = "<your-local-gateway-token>"
+```
+
+When AutoDS starts, it exports these values into the process environment as
+`KAGGLE_USERNAME`, `KAGGLE_KEY`, `KGAT_API_TOKEN`, and `KAGGLE_API_TOKEN` so the
+`/kaggle` workflow and child shell commands can use them. Existing shell
+environment variables take priority over `.autods.toml`.
+
+The standard Kaggle CLI environment variables also work:
 
 ```bash
 export KAGGLE_USERNAME=<your-kaggle-username>
 export KAGGLE_KEY=<your-kaggle-api-key>
 ```
 
-Or configure:
+Or use Kaggle's default file:
 
 ```text
 ~/.kaggle/kaggle.json

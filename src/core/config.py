@@ -141,6 +141,7 @@ def default_max_tokens_for_model(
 def load_app_config(args: Namespace) -> AppConfig:
     file_values, config_paths = _load_file_values(args.config)
     env_values = _load_env_values()
+    _apply_kaggle_env(file_values.get("kaggle", {}))
 
     raw_provider = (
         getattr(args, "provider", None)
@@ -251,6 +252,7 @@ def _load_file_values(explicit_path: str | None) -> tuple[dict[str, Any], tuple[
     values: dict[str, Any] = {
         "top": {},
         "providers": {"anthropic": {}, "openai": {}},
+        "kaggle": {},
     }
     loaded_paths: list[Path] = []
 
@@ -283,12 +285,17 @@ def _read_config_file(path: Path) -> dict[str, Any]:
     values: dict[str, Any] = {
         "top": {},
         "providers": {"anthropic": {}, "openai": {}},
+        "kaggle": {},
     }
 
     for provider in ("anthropic", "openai"):
         section = data.get(provider, {})
         if isinstance(section, dict):
             values["providers"][provider].update(section)
+
+    kaggle_section = data.get("kaggle", {})
+    if isinstance(kaggle_section, dict):
+        values["kaggle"].update(kaggle_section)
 
     for key in (
         "provider",
@@ -381,6 +388,25 @@ def _merge_file_values(target: dict[str, Any], incoming: dict[str, Any]) -> None
     target["top"].update(incoming.get("top", {}))
     for provider in ("anthropic", "openai"):
         target["providers"][provider].update(incoming.get("providers", {}).get(provider, {}))
+    target.setdefault("kaggle", {}).update(incoming.get("kaggle", {}))
+
+
+def _apply_kaggle_env(kaggle_values: dict[str, Any]) -> None:
+    mappings = {
+        "username": "KAGGLE_USERNAME",
+        "key": "KAGGLE_KEY",
+        "kgat_api_token": "KGAT_API_TOKEN",
+        "api_token": "KAGGLE_API_TOKEN",
+        "gateway_token": "KAGGLE_API_TOKEN",
+    }
+    for config_key, env_key in mappings.items():
+        value = kaggle_values.get(config_key)
+        if value is not None and not os.getenv(env_key):
+            os.environ[env_key] = str(value)
+    gateway_value = kaggle_values.get("kgat_api_token") or kaggle_values.get("gateway_token")
+    if gateway_value is not None:
+        os.environ.setdefault("KGAT_API_TOKEN", str(gateway_value))
+        os.environ.setdefault("KAGGLE_API_TOKEN", str(gateway_value))
 
 
 def _provider_env_values(env_values: dict[str, Any], provider: str) -> dict[str, Any]:

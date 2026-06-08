@@ -91,6 +91,23 @@ base_url = "<your-openai-compatible-base-url>"
 model = "mimo-v2.5-pro"
 ```
 
+### AutoDS gateway + Kaggle example
+
+```toml
+provider = "openai"
+
+[openai]
+api_key = "<your-openai-compatible-api-key>"
+base_url = "<your-openai-compatible-base-url>"
+model = "mimo-v2.5-pro"
+max_tokens = 8192
+effort = "medium"
+
+[kaggle]
+username = "<your-kaggle-username>"
+key = "<your-kaggle-api-key>"
+```
+
 ### OpenAI example
 
 ```toml
@@ -123,7 +140,27 @@ When `provider = "openai"`, `AUTODS_API_KEY` / `AUTODS_BASE_URL` or `OPENAI_API_
 AutoDS's `/kaggle` workflow uses the official Kaggle CLI when it needs to list
 files, download competition data, submit predictions, or manage notebooks.
 
-Preferred Kaggle CLI credentials:
+Preferred local setup in `.autods.toml`:
+
+```toml
+[kaggle]
+username = "<your-kaggle-username>"
+key = "<your-kaggle-api-key>"
+```
+
+AutoDS exports these values as `KAGGLE_USERNAME` and `KAGGLE_KEY` when it starts.
+Existing shell environment variables take priority over `.autods.toml`.
+
+Gateway-token setup:
+
+```toml
+[kaggle]
+kgat_api_token = "<your-kgat-token>"
+```
+
+`kgat_api_token` is exported as both `KGAT_API_TOKEN` and `KAGGLE_API_TOKEN`.
+
+Shell environment variables also work:
 
 ```bash
 export KAGGLE_USERNAME=<your-kaggle-username>
@@ -147,5 +184,6 @@ export KGAT_API_TOKEN=<your-kgat-token>
 export KAGGLE_API_TOKEN=<your-kgat-token>
 ```
 
-The Kaggle CLI still requires `KAGGLE_USERNAME` and `KAGGLE_KEY` unless a local
-wrapper or gateway in your environment explicitly supports `KGAT_API_TOKEN`.
+The official Kaggle CLI still requires `KAGGLE_USERNAME` and `KAGGLE_KEY` unless
+a local wrapper or gateway in your environment explicitly supports
+`KGAT_API_TOKEN`.
