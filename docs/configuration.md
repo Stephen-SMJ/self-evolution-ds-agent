@@ -1,20 +1,51 @@
 # Configuration
 
-## API Settings
+## Local Settings
 
-### AutoDS gateway (default)
+Use `.autods.toml` for both the LLM endpoint and Kaggle credentials:
+
+```toml
+provider = "openai"
+
+[openai]
+api_key = "<your-openai-compatible-api-key>"
+base_url = "<your-openai-compatible-base-url>"
+model = "mimo-v2.5-pro"
+max_tokens = 8192
+effort = "medium"
+
+[kaggle]
+username = "<your-kaggle-username>"
+key = "<your-kaggle-api-key>"
+
+[sandbox]
+enabled = false
+```
+
+For a gateway-token Kaggle environment:
+
+```toml
+[kaggle]
+kgat_api_token = "<your-kgat-token>"
+```
+
+AutoDS exports `[kaggle]` values as `KAGGLE_USERNAME`, `KAGGLE_KEY`,
+`KGAT_API_TOKEN`, and `KAGGLE_API_TOKEN` when it starts.
+
+Environment variables also work and take priority over `.autods.toml`:
 
 ```bash
 export AUTODS_PROVIDER=openai
 export AUTODS_API_KEY=<your-openai-compatible-api-key>
 export AUTODS_BASE_URL=<your-openai-compatible-base-url>
 export AUTODS_MODEL=mimo-v2.5-pro
+export KAGGLE_USERNAME=<your-kaggle-username>
+export KAGGLE_KEY=<your-kaggle-api-key>
 ```
 
-### OpenAI-compatible override
+OpenAI-compatible aliases are also accepted:
 
 ```bash
-export AUTODS_PROVIDER=openai
 export OPENAI_API_KEY=sk-...
 export OPENAI_BASE_URL=https://your-openai-gateway.example.com
 ```
@@ -31,6 +62,10 @@ export OPENAI_BASE_URL=https://your-openai-gateway.example.com
 | `AUTODS_BASE_URL` | Base URL for OpenAI-compatible endpoints |
 | `AUTODS_BUDDY_MODEL` | Model for companion pet reactions |
 | `AUTODS_BUDDY_SEED` | Override buddy seed for specific companion |
+| `KAGGLE_USERNAME` | Kaggle username |
+| `KAGGLE_KEY` | Kaggle API key |
+| `KGAT_API_TOKEN` | Optional Kaggle gateway token |
+| `KAGGLE_API_TOKEN` | Optional Kaggle gateway token alias |
 
 ## CLI Flags
 
@@ -71,7 +106,7 @@ Equivalent interactive command:
 `--auto-approve` removes AutoDS permission prompts. Disabling sandbox makes Bash
 commands run directly instead of through bubblewrap isolation.
 
-## TOML Config Files
+## Config File Loading
 
 Loaded in order (later overrides earlier):
 
@@ -80,35 +115,7 @@ Loaded in order (later overrides earlier):
 
 Point to a specific file with `--config`.
 
-### AutoDS gateway example
-
-```toml
-provider = "openai"
-
-[openai]
-api_key = "<your-openai-compatible-api-key>"
-base_url = "<your-openai-compatible-base-url>"
-model = "mimo-v2.5-pro"
-```
-
-### AutoDS gateway + Kaggle example
-
-```toml
-provider = "openai"
-
-[openai]
-api_key = "<your-openai-compatible-api-key>"
-base_url = "<your-openai-compatible-base-url>"
-model = "mimo-v2.5-pro"
-max_tokens = 8192
-effort = "medium"
-
-[kaggle]
-username = "<your-kaggle-username>"
-key = "<your-kaggle-api-key>"
-```
-
-### OpenAI example
+### Alternative OpenAI Example
 
 ```toml
 provider = "openai"
@@ -134,38 +141,6 @@ model = "qwen/qwen3.6-plus-preview:free"
 ```
 
 When `provider = "openai"`, `AUTODS_API_KEY` / `AUTODS_BASE_URL` or `OPENAI_API_KEY` / `OPENAI_BASE_URL` are used. When `provider = "anthropic"`, `ANTHROPIC_API_KEY` / `ANTHROPIC_BASE_URL` are used.
-
-## Kaggle Credentials
-
-AutoDS's `/kaggle` workflow uses the official Kaggle CLI when it needs to list
-files, download competition data, submit predictions, or manage notebooks.
-
-Preferred local setup in `.autods.toml`:
-
-```toml
-[kaggle]
-username = "<your-kaggle-username>"
-key = "<your-kaggle-api-key>"
-```
-
-AutoDS exports these values as `KAGGLE_USERNAME` and `KAGGLE_KEY` when it starts.
-Existing shell environment variables take priority over `.autods.toml`.
-
-Gateway-token setup:
-
-```toml
-[kaggle]
-kgat_api_token = "<your-kgat-token>"
-```
-
-`kgat_api_token` is exported as both `KGAT_API_TOKEN` and `KAGGLE_API_TOKEN`.
-
-Shell environment variables also work:
-
-```bash
-export KAGGLE_USERNAME=<your-kaggle-username>
-export KAGGLE_KEY=<your-kaggle-api-key>
-```
 
 Equivalent file-based setup:
 

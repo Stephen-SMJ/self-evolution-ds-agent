@@ -43,21 +43,56 @@ autods --auto-approve
 autods --coordinator
 ```
 
-## LLM API Configuration
+## Local Configuration
 
-AutoDS uses an OpenAI-compatible provider by default. Set credentials through
-environment variables or a local config file.
+AutoDS uses one local config file for the LLM endpoint, Kaggle credentials,
+permission mode, and runtime settings. The default project-local file is
+`.autods.toml`; a global config can also live at `~/.config/autods/config.toml`.
 
-Environment variables:
+Recommended `.autods.toml`:
+
+```toml
+provider = "openai"
+
+[openai]
+api_key = "<your-openai-compatible-api-key>"
+base_url = "<your-openai-compatible-base-url>"
+model = "mimo-v2.5-pro"
+max_tokens = 8192
+effort = "medium"
+
+[kaggle]
+username = "<your-kaggle-username>"
+key = "<your-kaggle-api-key>"
+
+[sandbox]
+enabled = false
+```
+
+For a gateway-token Kaggle environment, use this instead of `username`/`key` if
+that is how your local gateway is configured:
+
+```toml
+[kaggle]
+kgat_api_token = "<your-local-gateway-token>"
+```
+
+When AutoDS starts, `[kaggle]` values are exported into the process environment
+as `KAGGLE_USERNAME`, `KAGGLE_KEY`, `KGAT_API_TOKEN`, and `KAGGLE_API_TOKEN`.
+Child shell commands and the `/kaggle` workflow inherit those values.
+
+Shell environment variables also work and take priority over `.autods.toml`:
 
 ```bash
 export AUTODS_PROVIDER=openai
 export AUTODS_API_KEY=<your-openai-compatible-api-key>
 export AUTODS_BASE_URL=<your-openai-compatible-base-url>
 export AUTODS_MODEL=mimo-v2.5-pro
+export KAGGLE_USERNAME=<your-kaggle-username>
+export KAGGLE_KEY=<your-kaggle-api-key>
 ```
 
-Optional:
+Optional environment variables:
 
 ```bash
 export AUTODS_MAX_TOKENS=8192
@@ -66,42 +101,21 @@ export AUTODS_BUDDY_MODEL=<optional-companion-model>
 export AUTODS_MEMORY_DIR=$HOME/.config/autods/memory
 ```
 
-Equivalent `.autods.toml`:
+Install Kaggle dependencies before using `/kaggle`:
 
-```toml
-provider = "openai"
-
-[openai]
-api_key = "<your-openai-compatible-api-key>"
-base_url = "<your-openai-compatible-base-url>"
-model = "mimo-v2.5-pro"
-max_tokens = 8192
-effort = "medium"
+```bash
+pip install kaggle pandas numpy scikit-learn
 ```
 
-You can also put Kaggle credentials in the same local `.autods.toml`:
+Kaggle's default credential file is still supported as a fallback:
 
-```toml
-[kaggle]
-username = "<your-kaggle-username>"
-key = "<your-kaggle-api-key>"
-```
-
-Full local example:
-
-```toml
-provider = "openai"
-
-[openai]
-api_key = "<your-openai-compatible-api-key>"
-base_url = "<your-openai-compatible-base-url>"
-model = "mimo-v2.5-pro"
-max_tokens = 8192
-effort = "medium"
-
-[kaggle]
-username = "<your-kaggle-username>"
-key = "<your-kaggle-api-key>"
+```bash
+mkdir -p ~/.kaggle
+chmod 700 ~/.kaggle
+cat > ~/.kaggle/kaggle.json <<'JSON'
+{"username":"<your-kaggle-username>","key":"<your-kaggle-api-key>"}
+JSON
+chmod 600 ~/.kaggle/kaggle.json
 ```
 
 Do not commit `.env`, `.env.local`, `.autods.toml`, Kaggle credential files, or
@@ -152,66 +166,6 @@ for user permission before tool calls and Bash commands will run directly in the
 local environment. Use this only in a workspace where you are comfortable letting
 the agent read, write, install, submit, and run commands without per-action
 confirmation.
-
-## Kaggle Configuration
-
-The `/kaggle` workflow uses the Kaggle CLI for data download, notebook
-operations, submissions, and submission status checks.
-
-Install dependencies:
-
-```bash
-pip install kaggle pandas numpy scikit-learn
-```
-
-Preferred local setup: put Kaggle credentials in `.autods.toml` next to the LLM
-settings:
-
-```toml
-[kaggle]
-username = "<your-kaggle-username>"
-key = "<your-kaggle-api-key>"
-```
-
-When AutoDS starts, these are exported into the process environment as
-`KAGGLE_USERNAME` and `KAGGLE_KEY`, so the `/kaggle` workflow and shell commands
-can use the official Kaggle CLI.
-
-Gateway-token setup:
-
-```toml
-[kaggle]
-kgat_api_token = "<your-local-gateway-token>"
-```
-
-`kgat_api_token` is exported as both `KGAT_API_TOKEN` and `KAGGLE_API_TOKEN`.
-
-Shell environment variables also work and take priority over `.autods.toml`:
-
-```bash
-export KAGGLE_USERNAME=<your-kaggle-username>
-export KAGGLE_KEY=<your-kaggle-api-key>
-```
-
-File-based alternative:
-
-```bash
-mkdir -p ~/.kaggle
-chmod 700 ~/.kaggle
-cat > ~/.kaggle/kaggle.json <<'JSON'
-{"username":"<your-kaggle-username>","key":"<your-kaggle-api-key>"}
-JSON
-chmod 600 ~/.kaggle/kaggle.json
-```
-
-If your environment provides a Kaggle gateway token, expose it locally only:
-
-```bash
-export KGAT_API_TOKEN=<your-local-gateway-token>
-export KAGGLE_API_TOKEN=<your-local-gateway-token>
-```
-
-These values are intentionally ignored by git.
 
 ## Skills
 

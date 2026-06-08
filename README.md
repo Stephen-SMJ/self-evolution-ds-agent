@@ -197,18 +197,9 @@ source .venv/bin/activate
 pip install -e ".[dev]"
 ```
 
-## Model Configuration
+## Local Configuration
 
-Set an OpenAI-compatible endpoint:
-
-```bash
-export AUTODS_PROVIDER=openai
-export AUTODS_API_KEY=<your-openai-compatible-api-key>
-export AUTODS_BASE_URL=<your-openai-compatible-base-url>
-export AUTODS_MODEL=mimo-v2.5-pro
-```
-
-Optional local config:
+Keep the LLM API and Kaggle credentials together in a local `.autods.toml`:
 
 ```toml
 provider = "openai"
@@ -219,9 +210,43 @@ base_url = "<your-openai-compatible-base-url>"
 model = "mimo-v2.5-pro"
 max_tokens = 8192
 effort = "medium"
+
+[kaggle]
+username = "<your-kaggle-username>"
+key = "<your-kaggle-api-key>"
 ```
 
-Save that as `.autods.toml` locally if needed. Do not commit local credentials.
+For a gateway-token Kaggle environment:
+
+```toml
+[kaggle]
+kgat_api_token = "<your-local-gateway-token>"
+```
+
+When AutoDS starts, it exports `[kaggle]` values into the process environment as
+`KAGGLE_USERNAME`, `KAGGLE_KEY`, `KGAT_API_TOKEN`, and `KAGGLE_API_TOKEN`, so the
+`/kaggle` workflow and child shell commands can use them. Existing shell
+environment variables take priority over `.autods.toml`.
+
+Environment variables also work:
+
+```bash
+export AUTODS_PROVIDER=openai
+export AUTODS_API_KEY=<your-openai-compatible-api-key>
+export AUTODS_BASE_URL=<your-openai-compatible-base-url>
+export AUTODS_MODEL=mimo-v2.5-pro
+export KAGGLE_USERNAME=<your-kaggle-username>
+export KAGGLE_KEY=<your-kaggle-api-key>
+```
+
+Install the Kaggle CLI dependency before using `/kaggle`:
+
+```bash
+pip install kaggle
+```
+
+Do not commit `.autods.toml`, `.env`, Kaggle credential files, API keys, or
+tokens.
 
 Full configuration guide:
 
@@ -263,49 +288,6 @@ The same setting can be changed in the interactive terminal:
 ```
 
 This is the closest local equivalent of full-access mode: no permission prompts from AutoDS and no sandbox wrapping for shell commands.
-
-## Kaggle Configuration
-
-Install the Kaggle CLI dependency:
-
-```bash
-pip install kaggle
-```
-
-You can keep Kaggle credentials in the same local `.autods.toml` as the LLM API:
-
-```toml
-[kaggle]
-username = "<your-kaggle-username>"
-key = "<your-kaggle-api-key>"
-```
-
-For a gateway-token environment:
-
-```toml
-[kaggle]
-kgat_api_token = "<your-local-gateway-token>"
-```
-
-When AutoDS starts, it exports these values into the process environment as
-`KAGGLE_USERNAME`, `KAGGLE_KEY`, `KGAT_API_TOKEN`, and `KAGGLE_API_TOKEN` so the
-`/kaggle` workflow and child shell commands can use them. Existing shell
-environment variables take priority over `.autods.toml`.
-
-The standard Kaggle CLI environment variables also work:
-
-```bash
-export KAGGLE_USERNAME=<your-kaggle-username>
-export KAGGLE_KEY=<your-kaggle-api-key>
-```
-
-Or use Kaggle's default file:
-
-```text
-~/.kaggle/kaggle.json
-```
-
-Gateway tokens, if used in a local environment, should stay in environment variables and must not be committed.
 
 ## Running AutoDS
 
