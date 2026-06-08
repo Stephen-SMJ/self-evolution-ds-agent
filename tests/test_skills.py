@@ -216,6 +216,8 @@ class TestBundledSkills:
         assert "playground-series" in p
         assert "Do not stop after the first valid baseline" in p
         assert "read the specific V4 evidence" in p
+        assert "Training runtime policy" in p
+        assert "900-3600 seconds" in p
 
     def test_kaggle_prompt_parses_leaderboard_url(self):
         register_bundled_skills()

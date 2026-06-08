@@ -362,6 +362,21 @@ In particular:
 - For competitions present in the offline corpus, read the specific V4 evidence
   pack and V2/V3 traces before choosing the next high-ROI experiment.
 
+Training runtime policy:
+- Do not run a complex training, tuning, or ensemble script directly at full
+  scale first. Add a `--quick`/debug mode or small parameter set and run it as a
+  smoke test.
+- For quick smoke tests, use a short timeout such as 120-300 seconds.
+- For real training, hyperparameter search, CV, or ensemble generation, call
+  Bash with an explicit longer timeout, usually 900-3600 seconds depending on
+  dataset size and model type.
+- If a training command times out, inspect logs and code, reduce waste
+  (`n_estimators`, folds, grid size, parallelism, verbose logging, caching), then
+  rerun with an appropriate timeout. Do not blindly rerun the same command with
+  only a slightly larger timeout.
+- Record training time, timeout, and any quick/full mode distinction in
+  `AUTODS.md` so later runs can make better compute decisions.
+
 After each experiment, update the experiment log:
 
 | run | change | local CV | public score | status | lesson | next |

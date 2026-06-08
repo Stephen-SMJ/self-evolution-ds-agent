@@ -350,6 +350,12 @@ distillation evidence, run the next high-ROI experiment, and update
 unless it is blocked, at a submission/rules risk point, or the user explicitly
 asks it to pause.
 
+For non-trivial model training, tuning, notebook execution, and ensembles, AutoDS
+should first run a quick smoke test and then run the full job with an explicit
+long Bash timeout, typically 900-3600 seconds. If a training command times out,
+it should inspect and optimize the script before rerunning, not simply repeat the
+same command with a tiny timeout increase.
+
 Useful slash commands:
 
 ```text

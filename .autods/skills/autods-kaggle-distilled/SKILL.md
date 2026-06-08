@@ -81,6 +81,15 @@ The default behavior is self-evolution, not one-shot baseline generation.
 - When CV is much higher than public LB, prioritize validation repair, leakage checks, distribution shift analysis, simpler robust models, and feature ablation before stacking more complex models.
 - Always update `AUTODS.md` with the experiment result, LB/CV gap, decision, and next experiment.
 
+## Training Runtime Policy
+
+- Add a quick/debug mode to non-trivial training scripts before running full CV, tuning, or ensembles.
+- Run quick smoke tests first with small folds, fewer trees/epochs, or a small parameter grid.
+- Use short timeouts for smoke tests, usually 120-300 seconds.
+- Use explicit long Bash timeouts for full training, CV, hyperparameter search, notebook execution, and ensembles, usually 900-3600 seconds depending on workload.
+- If a command times out, inspect the code/logs and reduce wasted compute before rerunning. Do not repeat the same command with only a small timeout increase.
+- Record runtime, timeout, model size, folds, and quick/full mode in `AUTODS.md`.
+
 ## Reference Files
 
 Read these before making non-trivial modeling decisions:
