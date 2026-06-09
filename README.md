@@ -369,7 +369,16 @@ Useful slash commands:
 /test
 /commit
 /compact
-/resume
+/resume <number|session-id|folder|slug|title>
+```
+
+Kaggle sessions are tagged with their canonical local workspace, for example
+`competitions/titanic`. The history and resume list shows this folder so
+parallel competition runs are easier to distinguish, and you can resume by slug:
+
+```text
+/resume titanic
+/resume competitions/house-prices-advanced-regression-techniques
 ```
 
 Terminal note: AutoDS disables prompt-toolkit cursor-position requests by

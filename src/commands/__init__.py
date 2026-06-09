@@ -131,6 +131,7 @@ def _cmd_history(ctx: CommandContext, args: str) -> None:
     table.add_column("#", style="dim", width=4)
     table.add_column("ID", style="dim", width=10)
     table.add_column("Title")
+    table.add_column("Folder", width=28)
     table.add_column("Messages", justify="right", width=8)
     table.add_column("Updated", width=20)
 
@@ -138,11 +139,50 @@ def _cmd_history(ctx: CommandContext, args: str) -> None:
         table.add_row(
             str(i),
             meta.session_id[:8],
-            meta.title[:50],
+            short_session_title(meta),
+            (meta.workspace or "-")[:28],
             str(meta.message_count),
             meta.updated_at[:19].replace("T", " "),
         )
     ctx.console.print(table)
+
+
+def short_session_title(meta, limit: int = 50) -> str:
+    title = " ".join((meta.title or "(untitled)").split())
+    workspace = getattr(meta, "workspace", None)
+    if workspace and title.startswith("# Kaggle Competition Workflow"):
+        title = f"Kaggle: {workspace.removeprefix('competitions/')}"
+    if len(title) <= limit:
+        return title
+    return title[:limit - 1] + "…"
+
+
+def find_session(sessions, selector: str):
+    """Find a session by number, id prefix, workspace/slug, or title substring."""
+    selector = selector.strip()
+    if not selector:
+        return None
+
+    try:
+        idx = int(selector) - 1
+        if 0 <= idx < len(sessions):
+            return sessions[idx]
+    except ValueError:
+        pass
+
+    needle = selector.lower()
+    for meta in sessions:
+        if meta.session_id.lower().startswith(needle):
+            return meta
+
+    for meta in sessions:
+        workspace = (meta.workspace or "").lower()
+        slug = workspace.removeprefix("competitions/")
+        title = (meta.title or "").lower()
+        if needle == slug or needle in workspace or needle in title:
+            return meta
+
+    return None
 
 
 def _cmd_resume(ctx: CommandContext, args: str) -> None:
@@ -158,25 +198,10 @@ def _cmd_resume(ctx: CommandContext, args: str) -> None:
     if not args:
         # Show list and ask user to pick
         _cmd_history(ctx, "")
-        ctx.console.print("\n[dim]Usage: /resume <number> or /resume <session-id>[/dim]")
+        ctx.console.print("\n[dim]Usage: /resume <number|session-id|folder|slug|title>[/dim]")
         return
 
-    # Try as numeric index
-    target_meta = None
-    try:
-        idx = int(args.strip()) - 1
-        if 0 <= idx < len(sessions):
-            target_meta = sessions[idx]
-    except ValueError:
-        pass
-
-    # Try as session-id prefix
-    if target_meta is None:
-        needle = args.strip().lower()
-        for meta in sessions:
-            if meta.session_id.lower().startswith(needle):
-                target_meta = meta
-                break
+    target_meta = find_session(sessions, args)
 
     if target_meta is None:
         ctx.console.print(f"[red]Session not found: {args}[/red]")
@@ -216,7 +241,8 @@ def _cmd_resume(ctx: CommandContext, args: str) -> None:
 
     ctx.console.print(
         f"[green]✓[/green] Resumed session [bold]{target_meta.session_id[:8]}[/bold]: "
-        f"{target_meta.title[:50]}  ({len(messages)} messages)"
+        f"{short_session_title(target_meta)}  "
+        f"[dim]{target_meta.workspace or '-'}[/dim]  ({len(messages)} messages)"
     )
     if warning:
         ctx.console.print(f"[yellow]{warning}[/yellow]")
@@ -468,7 +494,7 @@ def _cmd_advisor(ctx: CommandContext, args: str) -> None:
 _COMMAND_TABLE: list[tuple[str, str, object]] = [
     ("help",     "Show available commands",                         _cmd_help),
     ("compact",  "Compress conversation context [instructions]",    _cmd_compact),
-    ("resume",   "Resume a past session [number|session-id]",       _cmd_resume),
+    ("resume",   "Resume a past session [number|id|folder|slug]",   _cmd_resume),
     ("history",  "List saved sessions for this directory",          _cmd_history),
     ("clear",    "Clear conversation, start new session",           _cmd_clear),
     ("memory",   "Show current memory index",                       _cmd_memory),

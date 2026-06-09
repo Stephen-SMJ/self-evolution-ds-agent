@@ -55,7 +55,7 @@ from features.memory import (
 )
 from features.skills import discover_skills, list_skills, build_skills_prompt_section
 from features.skills_bundled import register_bundled_skills
-from commands import parse_command, handle_command, CommandContext
+from commands import parse_command, handle_command, CommandContext, find_session, short_session_title
 from tui.prompt import bordered_prompt, slash_completer
 from tui.query import run_query
 from tui.input_parser import parse_input
@@ -134,7 +134,7 @@ def main() -> None:
     parser.add_argument("--buddy-model",
                         help="Override the model used by buddy / companion side-features")
     parser.add_argument("--resume", metavar="SESSION",
-                        help="Resume a previous session (id or index)")
+                        help="Resume a previous session (id, index, folder, slug, or title)")
     parser.add_argument("--memory-dir", help="Override memory directory path")
     parser.add_argument("--no-auto-dream", action="store_true",
                         help="Disable automatic dream consolidation")
@@ -368,17 +368,7 @@ def main() -> None:
     # Handle --resume
     if args.resume and session_store is not None:
         sessions = SessionStore.list_sessions(cwd)
-        target = None
-        try:
-            idx = int(args.resume) - 1
-            if 0 <= idx < len(sessions):
-                target = sessions[idx]
-        except ValueError:
-            needle = args.resume.lower()
-            for m in sessions:
-                if m.session_id.lower().startswith(needle):
-                    target = m
-                    break
+        target = find_session(sessions, args.resume)
         if target:
             meta, msgs = SessionStore.load_session(target.session_id, cwd)
             if msgs:
@@ -391,7 +381,8 @@ def main() -> None:
                     mode=current_session_mode(),
                 )
                 engine.set_session_store(session_store)
-                console.print(f"[green]✓[/green] Resumed: {target.title[:50]}  "
+                console.print(f"[green]✓[/green] Resumed: {short_session_title(target)}  "
+                              f"[dim]{target.workspace or '-'}[/dim]  "
                               f"({len(msgs)} messages)")
                 if warning:
                     console.print(f"[yellow]{warning}[/yellow]")

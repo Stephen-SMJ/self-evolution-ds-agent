@@ -36,6 +36,7 @@ class SessionMeta:
     updated_at: str
     message_count: int = 0
     mode: str | None = None
+    workspace: str | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -100,7 +101,38 @@ def _extract_text(content: Any) -> str:
             elif hasattr(block, "text"):
                 parts.append(getattr(block, "text", ""))
         return " ".join(parts)
+    if isinstance(content, dict):
+        parts: list[str] = []
+        for key in ("text", "content", "command", "file_path", "path"):
+            if key in content:
+                parts.append(_extract_text(content[key]))
+        if parts:
+            return " ".join(parts)
     return str(content)
+
+
+_KAGGLE_URL_RE = re.compile(r"kaggle\.com/competitions/([a-zA-Z0-9][a-zA-Z0-9-]*)")
+_COMPETITION_PATH_RE = re.compile(r"(?:^|[^\w-])competitions/([a-zA-Z0-9][a-zA-Z0-9-]*)")
+_KAGGLE_INPUT_RE = re.compile(r"User Competition Input\s*\n+\s*([^\n`]+)", re.IGNORECASE)
+_SLUG_RE = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9-]*$")
+
+
+def _infer_kaggle_workspace(content: Any) -> str | None:
+    """Infer the canonical local workspace from Kaggle URLs or paths."""
+    text = _extract_text(content)
+    for pattern in (_KAGGLE_URL_RE, _COMPETITION_PATH_RE):
+        match = pattern.search(text)
+        if match:
+            return f"competitions/{match.group(1)}"
+    input_match = _KAGGLE_INPUT_RE.search(text)
+    if input_match:
+        raw = input_match.group(1).strip().strip("/")
+        url_match = _KAGGLE_URL_RE.search(raw)
+        if url_match:
+            return f"competitions/{url_match.group(1)}"
+        if _SLUG_RE.fullmatch(raw):
+            return f"competitions/{raw}"
+    return None
 
 
 # ---------------------------------------------------------------------------
@@ -123,6 +155,27 @@ class SessionStore:
         self._meta_path = self._dir / f"{self.session_id}.meta.json"
         self._message_count = 0
         self._title: str = ""
+        self._workspace: str | None = None
+        self._created_at: str | None = None
+        self._load_existing_meta()
+
+    def _load_existing_meta(self) -> None:
+        """Seed in-memory counters when appending to an existing session."""
+        if not self._meta_path.exists():
+            return
+        try:
+            with open(self._meta_path, encoding="utf-8") as fh:
+                data = json.load(fh)
+        except Exception:
+            return
+        self._message_count = int(data.get("message_count") or 0)
+        title = data.get("title")
+        if isinstance(title, str) and title != "(untitled)":
+            self._title = title
+        self._created_at = data.get("created_at")
+        workspace = data.get("workspace")
+        if isinstance(workspace, str) and workspace:
+            self._workspace = workspace
 
     # -- writing -----------------------------------------------------------
 
@@ -138,6 +191,10 @@ class SessionStore:
         if not self._title and message.get("role") == "user":
             self._title = _generate_title(message.get("content", ""))
 
+        workspace = _infer_kaggle_workspace(message.get("content", ""))
+        if workspace:
+            self._workspace = workspace
+
         self._save_meta()
 
     def _save_meta(self) -> None:
@@ -147,12 +204,13 @@ class SessionStore:
             title=self._title or "(untitled)",
             cwd=self.cwd,
             model=self.model,
-            created_at=getattr(self, "_created_at", now),
+            created_at=self._created_at or now,
             updated_at=now,
             message_count=self._message_count,
             mode=self.mode,
+            workspace=self._workspace,
         )
-        if not hasattr(self, "_created_at"):
+        if self._created_at is None:
             self._created_at = now
         with open(self._meta_path, "w", encoding="utf-8") as fh:
             json.dump(asdict(meta), fh, ensure_ascii=False)
@@ -191,7 +249,10 @@ class SessionStore:
             try:
                 with open(meta_file, encoding="utf-8") as fh:
                     data = json.load(fh)
-                results.append(SessionMeta(**data))
+                meta = SessionMeta(**data)
+                if meta.workspace is None:
+                    meta.workspace = cls.infer_workspace(meta.session_id, cwd)
+                results.append(meta)
             except Exception:
                 continue
         results.sort(key=lambda m: m.updated_at, reverse=True)
@@ -207,7 +268,23 @@ class SessionStore:
             with open(meta_path, encoding="utf-8") as fh:
                 meta = SessionMeta(**json.load(fh))
         messages = cls.load_messages(session_id, cwd)
+        if meta is not None and meta.workspace is None:
+            meta.workspace = cls._infer_workspace_from_messages(messages)
         return meta, messages
+
+    @classmethod
+    def infer_workspace(cls, session_id: str, cwd: str) -> str | None:
+        """Infer a session workspace without requiring current metadata support."""
+        return cls._infer_workspace_from_messages(cls.load_messages(session_id, cwd))
+
+    @staticmethod
+    def _infer_workspace_from_messages(messages: list[dict]) -> str | None:
+        workspace = None
+        for message in messages:
+            candidate = _infer_kaggle_workspace(message.get("content", ""))
+            if candidate:
+                workspace = candidate
+        return workspace
 
 
 # ---------------------------------------------------------------------------
@@ -219,6 +296,10 @@ def _generate_title(content: Any) -> str:
     text = _extract_text(content).strip()
     if not text:
         return "(untitled)"
+    text = " ".join(text.split())
+    workspace = _infer_kaggle_workspace(content)
+    if workspace:
+        return f"Kaggle: {workspace.removeprefix('competitions/')}"
     # Truncate at word boundary
     if len(text) <= 80:
         return text

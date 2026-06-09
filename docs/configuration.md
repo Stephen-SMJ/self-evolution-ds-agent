@@ -89,7 +89,7 @@ autods \
   --max-tokens 8192 \
   --auto-approve \
   --coordinator \
-  --resume 1
+  --resume titanic
 ```
 
 ## Full-Access Permission Mode
