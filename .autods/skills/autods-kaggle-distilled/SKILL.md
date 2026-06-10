@@ -56,6 +56,7 @@ For planning a new competition, prefer V4 deep-read distillation when present. V
    - What reusable skill should be written down?
 9. If the competition appears in `offline/distillation/v4/evidence_packs_md/<Domain>/<slug>.md`, read that evidence pack before choosing the next non-trivial experiment.
 10. Do not stop after a valid baseline. Continue the experiment loop automatically until a stopping condition is reached or the user asks to pause.
+11. If online evolution is enabled in the system prompt, maintain the online evolution artifacts and promotion ledger described in `references/online-evolution.md`.
 
 ## Credential Policy
 
@@ -93,6 +94,38 @@ The default behavior is self-evolution, not one-shot baseline generation.
 - When CV is much higher than public LB, prioritize validation repair, leakage checks, distribution shift analysis, simpler robust models, and feature ablation before stacking more complex models.
 - Always update `AUTODS.md` with the experiment result, LB/CV gap, decision, and next experiment.
 
+## Online Evolution Policy
+
+When the system prompt says `Online evolution configured: true`, turn every
+competition run into reusable evidence:
+
+- Create or update `competitions/<slug>/evolution/runs.jsonl`,
+  `score_trends.md`, `lessons.md`, and `hypotheses.json`.
+- Append a structured run record after every meaningful local experiment or
+  submitted run.
+- Trigger reflection after every submission, every three local experiments, any
+  new best score, two regressions, or a major CV/LB disagreement.
+- Write reusable tactic candidates to
+  `.autods/online_evolution/promotion_ledger.jsonl`.
+- Write proposed global skill patches to
+  `.autods/online_evolution/skill_patch_proposals.md`.
+- Use `/evolve <slug>` when you need to initialize or refresh the deterministic
+  online evolution files from `runs.jsonl`.
+
+Promotion must be evidence-gated:
+
+- One competition can create local lessons and domain candidates.
+- A global patch to `.autods/skills/autods-kaggle-distilled/` requires positive
+  evidence from at least two distinct competitions in the same domain, or one
+  online competition plus matching offline V4 evidence and no contradictory
+  online evidence.
+- The patch must include where the tactic worked, score deltas, where it failed,
+  and when not to use it.
+- Do not promote public-LB noise, test-label hardcoding, leaderboard probing, or
+  competition-specific leakage.
+
+Read `references/online-evolution.md` for the exact file contract.
+
 ## Training Runtime Policy
 
 - Add a quick/debug mode to non-trivial training scripts before running full CV, tuning, or ensembles.
@@ -110,6 +143,7 @@ Read these before making non-trivial modeling decisions:
 - `references/v4-deep-read-distillation.md`
 - `references/domain-playbooks.md`
 - `references/evolution-rubric.md`
+- `references/online-evolution.md`
 - `references/v2-distilled-recipes.md`
 - `references/v3-semantic-distillation.md`
 - `references/distillation-summary.md`

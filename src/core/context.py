@@ -233,6 +233,25 @@ def _get_gpu_section(use_gpu: bool = False) -> str:
     return "\n".join(lines)
 
 
+def _get_online_evolution_section(enabled: bool = False) -> str:
+    if not enabled:
+        return (
+            "# Online Evolution\n"
+            " - Online evolution configured: false\n"
+            " - For Kaggle work, keep ordinary experiment notes in AUTODS.md, but do not update global skills or domain memory unless the user explicitly asks."
+        )
+
+    return """# Online Evolution
+ - Online evolution configured: true
+ - During Kaggle competition work, maintain structured per-competition evolution artifacts under `competitions/<slug>/evolution/`.
+ - Record every meaningful experiment in `runs.jsonl` with run id, domain, metric, change tags, feature changes, model changes, validation score, leaderboard score/rank if available, runtime, status, and lesson.
+ - After each submitted run, update `score_trends.md`, `lessons.md`, and `hypotheses.json`; classify each change as promoted, rejected, inconclusive, or validation-risk.
+ - Promotion is evidence-gated. A lesson may update project/domain memory after strong evidence in one competition, but a global skill patch needs cross-competition support.
+ - Do not patch `.autods/skills/autods-kaggle-distilled/` from a single competition result. First update `.autods/online_evolution/promotion_ledger.jsonl` and `.autods/online_evolution/skill_patch_proposals.md`.
+ - A global skill patch is allowed only when the same domain-level tactic has positive evidence in at least two distinct competitions, or one competition plus matching offline V4 evidence and no contradicting online evidence.
+ - Treat single public-LB gains as weak evidence when validation disagrees, sample size is tiny, or the tactic could be leaderboard leakage/hardcoding."""
+
+
 def _get_git_section(cwd: str) -> str:
     try:
         branch = subprocess.run(
@@ -369,6 +388,7 @@ def build_system_prompt(
     model: str = "",
     memory_dir: Path | None = None,
     use_gpu: bool = False,
+    online_evolution: bool = False,
 ) -> str:
     """Assemble the full system prompt from section functions.
 
@@ -390,6 +410,7 @@ def build_system_prompt(
         # Dynamic sections
         _get_env_section(cwd, model),
         _get_gpu_section(use_gpu),
+        _get_online_evolution_section(online_evolution),
         _get_git_section(cwd),
         _get_autods_md_section(cwd),
     ]

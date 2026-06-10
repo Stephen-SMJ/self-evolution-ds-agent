@@ -56,6 +56,7 @@ Recommended `.autods.toml`:
 ```toml
 provider = "openai"
 use_gpu = true
+online-evolution = true
 
 [openai]
 api_key = "<your-openai-compatible-api-key>"
@@ -100,6 +101,11 @@ competition workflow.
 at startup and include the detected GPU names, memory, and driver version in the
 system prompt. Omit it or set `use_gpu = false` for CPU-only work.
 
+`online-evolution = true` enables structured online competition learning. When
+enabled, Kaggle runs should maintain `competitions/<slug>/evolution/` and
+`.autods/online_evolution/`. Global skill updates are evidence-gated and require
+cross-competition support before patching `.autods/skills/autods-kaggle-distilled/`.
+
 Sandbox is off by default. Keeping `[sandbox] enabled = false` makes that
 explicit in local config.
 
@@ -110,6 +116,7 @@ export AUTODS_PROVIDER=openai
 export AUTODS_API_KEY=<your-openai-compatible-api-key>
 export AUTODS_BASE_URL=<your-openai-compatible-base-url>
 export AUTODS_MODEL=mimo-v2.5-pro
+export AUTODS_ONLINE_EVOLUTION=true
 export KAGGLE_USERNAME=<your-kaggle-username>
 export KAGGLE_KEY=<your-kaggle-api-key>
 ```
@@ -122,6 +129,7 @@ export AUTODS_EFFORT=medium
 export AUTODS_BUDDY_MODEL=<optional-companion-model>
 export AUTODS_MEMORY_DIR=$HOME/.config/autods/memory
 export AUTODS_USE_GPU=true
+export AUTODS_ONLINE_EVOLUTION=true
 ```
 
 Install Kaggle dependencies before using `/kaggle`:

@@ -257,6 +257,24 @@ def _cmd_clear(ctx: CommandContext, args: str) -> None:
     ctx.console.print("[green]✓[/green] Conversation cleared. New session started.")
 
 
+def _cmd_evolve(ctx: CommandContext, args: str) -> None:
+    if not args.strip():
+        ctx.console.print("[dim]Usage: /evolve <competition-slug|competitions/folder|kaggle-url>[/dim]")
+        return
+    from features.online_evolution import refresh_online_evolution
+
+    try:
+        result = refresh_online_evolution(Path(os.getcwd()), args)
+    except ValueError as exc:
+        ctx.console.print(f"[red]{exc}[/red]")
+        return
+
+    ctx.console.print(
+        f"[green]✓[/green] Refreshed online evolution for [bold]{result.slug}[/bold]: "
+        f"{result.run_count} runs, {result.ledger_records} new ledger records"
+    )
+
+
 def _cmd_memory(ctx: CommandContext, args: str) -> None:
     from features.memory import load_memory_index
 
@@ -497,6 +515,7 @@ _COMMAND_TABLE: list[tuple[str, str, object]] = [
     ("resume",   "Resume a past session [number|id|folder|slug]",   _cmd_resume),
     ("history",  "List saved sessions for this directory",          _cmd_history),
     ("clear",    "Clear conversation, start new session",           _cmd_clear),
+    ("evolve",   "Refresh online evolution files for a competition", _cmd_evolve),
     ("memory",   "Show current memory index",                       _cmd_memory),
     ("remember", "Save a note to the daily log [text]",             _cmd_remember),
     ("dream",    "Consolidate daily logs into topic files",          _cmd_dream),

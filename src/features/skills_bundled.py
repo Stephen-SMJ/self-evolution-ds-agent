@@ -247,6 +247,15 @@ If present, use it as the default competition prior. In particular:
    - experiment log table
    - submission checklist
 
+5. If online evolution is configured as enabled in the system prompt, also
+   create or update:
+   - `competitions/<slug>/evolution/runs.jsonl`
+   - `competitions/<slug>/evolution/score_trends.md`
+   - `competitions/<slug>/evolution/lessons.md`
+   - `competitions/<slug>/evolution/hypotheses.json`
+   - `.autods/online_evolution/promotion_ledger.jsonl`
+   - `.autods/online_evolution/skill_patch_proposals.md`
+
 ## Phase 2: Environment and Credentials
 
 Prefer the official Kaggle CLI when available.
@@ -402,6 +411,62 @@ After each experiment, update the experiment log:
 
 | run | change | local CV | public score | status | lesson | next |
 |-----|--------|----------|--------------|--------|--------|------|
+
+If online evolution is enabled, every meaningful run must also append one JSON
+object to `competitions/<slug>/evolution/runs.jsonl`:
+
+```json
+{
+  "run_id": "v03",
+  "competition": "<slug>",
+  "domain": "tabular",
+  "metric": "accuracy",
+  "direction": "higher",
+  "changes": ["CatBoost depth 8", "lr 0.05"],
+  "feature_changes": ["added ticket frequency"],
+  "model_changes": ["CatBoost"],
+  "validation": {"oof": 0.8169, "folds": 5},
+  "leaderboard": {"public": 0.80664, "rank": null, "percentile": null},
+  "delta_vs_previous": {"oof": 0.0013, "public": 0.00211},
+  "runtime_seconds": null,
+  "status": "promoted",
+  "lesson": "CatBoost depth/lr improved both OOF and public LB.",
+  "next": "Inspect feature importance and ablate noisy engineered features."
+}
+```
+
+Online reflection triggers:
+- after every Kaggle submission result
+- after every 3 local experiments without submission
+- after any new best validation or leaderboard score
+- after two consecutive regressions or a major CV/LB disagreement
+
+When a trigger fires, update:
+- `score_trends.md`: compact table of runs, OOF, LB, rank/percentile, and deltas.
+- `lessons.md`: promoted, rejected, inconclusive, and validation-risk lessons.
+- `hypotheses.json`: active hypotheses with evidence, next test, and stop rule.
+- `.autods/online_evolution/promotion_ledger.jsonl`: one record per reusable
+  tactic candidate with competition, domain, metric, evidence, and verdict.
+- The `/evolve <slug>` command can initialize or refresh these files from
+  `runs.jsonl` when you need a deterministic local update.
+
+Skill promotion gate:
+- Local lesson: allowed after one competition if evidence is useful; write only
+  to `competitions/<slug>/evolution/lessons.md` and `AUTODS.md`.
+- Domain memory candidate: allowed after a strong single-competition result or a
+  clear repeated pattern inside one competition; write to the promotion ledger
+  with verdict `domain_candidate`.
+- Global skill patch proposal: allowed only after the same tactic has positive
+  evidence in at least two distinct competitions in the same domain, or one
+  online competition plus matching offline V4 evidence and no contradicting
+  online evidence. Write the proposed patch to
+  `.autods/online_evolution/skill_patch_proposals.md`.
+- Patch `.autods/skills/autods-kaggle-distilled/` only when the global gate is
+  satisfied. The patch must name supporting competitions, score deltas, failure
+  cases, and when not to use the tactic.
+- Never promote tactics based only on public-LB noise, hardcoded test labels,
+  leaderboard probing, or competition-specific leakage that would violate rules
+  or fail to transfer.
 
 Use a disciplined loop:
 

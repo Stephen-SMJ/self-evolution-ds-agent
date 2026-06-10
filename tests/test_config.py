@@ -31,6 +31,7 @@ def _args(**overrides):
         "memory_dir": None,
         "no_auto_dream": False,
         "use_gpu": None,
+        "online_evolution": None,
         "dream_interval": None,
         "dream_min_sessions": None,
     }
@@ -264,3 +265,23 @@ def test_use_gpu_env_overrides_file(tmp_path: Path, monkeypatch: pytest.MonkeyPa
     config = load_app_config(_args(config=str(config_path)))
 
     assert config.use_gpu is True
+
+
+def test_load_app_config_reads_online_evolution_hyphen_key(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.delenv("AUTODS_ONLINE_EVOLUTION", raising=False)
+    config_path = tmp_path / "autods.toml"
+    config_path.write_text("online-evolution = true\n", encoding="utf-8")
+
+    config = load_app_config(_args(config=str(config_path)))
+
+    assert config.online_evolution is True
+
+
+def test_online_evolution_env_overrides_file(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setenv("AUTODS_ONLINE_EVOLUTION", "true")
+    config_path = tmp_path / "autods.toml"
+    config_path.write_text("online_evolution = false\n", encoding="utf-8")
+
+    config = load_app_config(_args(config=str(config_path)))
+
+    assert config.online_evolution is True

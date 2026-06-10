@@ -27,6 +27,26 @@ AutoDS is built around those details. The offline corpus is used as prior knowle
 
 This is an active research codebase, not a polished product.
 
+Current version: **online evolution v1**.
+
+This version adds the first real online self-evolution mechanism. It does not
+make AutoDS magically learn from every competition in the background yet; it
+creates the durable state and promotion rules that make online learning
+auditable and reusable:
+
+- `online-evolution = true` enables online evolution mode in `.autods.toml`.
+- The system prompt exposes whether online evolution is enabled.
+- Kaggle runs maintain structured evolution artifacts under
+  `competitions/<slug>/evolution/`.
+- `/evolve <slug>` initializes or refreshes score trends, lessons, hypotheses,
+  and global promotion candidates from `runs.jsonl`.
+- `.autods/online_evolution/promotion_ledger.jsonl` tracks reusable tactic
+  evidence across competitions.
+- `.autods/online_evolution/skill_patch_proposals.md` is the staging area for
+  proposed global skill updates.
+- Global patches to `.autods/skills/autods-kaggle-distilled/` are evidence-gated
+  and require cross-competition support, not a single lucky leaderboard gain.
+
 Implemented:
 
 - interactive terminal agent runtime
@@ -37,11 +57,13 @@ Implemented:
 - offline notebook corpus
 - V1-V4 distillation reports
 - V4 deep-read competition playbooks
+- online evolution v1 configuration, artifacts, `/evolve` command, and
+  cross-competition skill promotion rules
 
 Still evolving:
 
-- stronger online competition loop
-- automatic experiment tracking beyond `AUTODS.md`
+- automatic writing of high-quality `runs.jsonl` records during every tool run
+- automated skill patch application after promotion gates are satisfied
 - robust notebook execution and replay
 - V5 validation by actually running selected notebooks/experiments
 - domain-specific skill expansion after more offline distillation
@@ -210,6 +232,7 @@ Keep the LLM API and Kaggle credentials together in a local `.autods.toml`:
 ```toml
 provider = "openai"
 use_gpu = true
+online-evolution = true
 
 [openai]
 api_key = "<your-openai-compatible-api-key>"
@@ -255,6 +278,7 @@ export AUTODS_API_KEY=<your-openai-compatible-api-key>
 export AUTODS_BASE_URL=<your-openai-compatible-base-url>
 export AUTODS_MODEL=mimo-v2.5-pro
 export AUTODS_USE_GPU=true
+export AUTODS_ONLINE_EVOLUTION=true
 export KAGGLE_USERNAME=<your-kaggle-username>
 export KAGGLE_KEY=<your-kaggle-api-key>
 ```
@@ -360,11 +384,30 @@ long Bash timeout, typically 900-3600 seconds. If a training command times out,
 it should inspect and optimize the script before rerunning, not simply repeat the
 same command with a tiny timeout increase.
 
+When `online-evolution = true`, AutoDS also keeps structured online evolution
+state:
+
+```text
+competitions/<slug>/evolution/runs.jsonl
+competitions/<slug>/evolution/score_trends.md
+competitions/<slug>/evolution/lessons.md
+competitions/<slug>/evolution/hypotheses.json
+.autods/online_evolution/promotion_ledger.jsonl
+.autods/online_evolution/skill_patch_proposals.md
+```
+
+Skill updates are evidence-gated. A single competition can create local lessons
+and domain candidates, but patching `.autods/skills/autods-kaggle-distilled/`
+requires either positive evidence from at least two distinct competitions in the
+same domain, or one online competition plus matching offline V4 evidence with no
+contradicting online evidence.
+
 Useful slash commands:
 
 ```text
 /skills
 /kaggle <competition-url-or-slug>
+/evolve <competition-url-or-slug>
 /review
 /test
 /commit

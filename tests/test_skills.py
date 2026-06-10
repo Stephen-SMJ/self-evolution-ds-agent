@@ -221,6 +221,9 @@ class TestBundledSkills:
         assert "Never print, cat, or paste raw token values" in p
         assert "Kaggle credentials are preconfigured by AutoDS" in p
         assert "Do not run `kaggle auth login`" in p
+        assert "runs.jsonl" in p
+        assert "promotion_ledger.jsonl" in p
+        assert "at least two distinct competitions" in p
 
     def test_kaggle_prompt_parses_leaderboard_url(self):
         register_bundled_skills()
@@ -379,6 +382,11 @@ class TestAutocomplete:
         register_bundled_skills()
         results = self._completions("/ka")
         assert "/kaggle" in results
+
+    def test_slash_ev_includes_evolve(self):
+        register_bundled_skills()
+        results = self._completions("/ev")
+        assert "/evolve" in results
 
     def test_no_completions_without_slash(self):
         register_bundled_skills()

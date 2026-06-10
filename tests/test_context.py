@@ -49,6 +49,18 @@ def test_build_system_prompt_omits_gpu_info_by_default():
     assert "GPU Environment" not in prompt
 
 
+def test_build_system_prompt_marks_online_evolution_disabled_by_default():
+    prompt = build_system_prompt(cwd="/tmp")
+    assert "Online evolution configured: false" in prompt
+
+
+def test_build_system_prompt_includes_online_evolution_when_enabled():
+    prompt = build_system_prompt(cwd="/tmp", online_evolution=True)
+    assert "Online evolution configured: true" in prompt
+    assert "promotion_ledger.jsonl" in prompt
+    assert "at least two distinct competitions" in prompt
+
+
 def test_build_system_prompt_contains_working_directory():
     prompt = build_system_prompt(cwd="/some/test/dir")
     assert "/some/test/dir" in prompt

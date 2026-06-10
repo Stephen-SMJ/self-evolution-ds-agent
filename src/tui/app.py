@@ -105,6 +105,7 @@ def _run_dream(engine: Engine, memory_dir: Path,
         model=app_config.model,
         memory_dir=memory_dir,
         use_gpu=app_config.use_gpu,
+        online_evolution=app_config.online_evolution,
     )
     record_consolidation(memory_dir)
     if not quiet:
@@ -142,6 +143,10 @@ def main() -> None:
                         help="Tell AutoDS to inspect and prefer available GPU resources")
     parser.add_argument("--no-use-gpu", dest="use_gpu", action="store_false",
                         help="Disable GPU-aware prompting")
+    parser.add_argument("--online-evolution", dest="online_evolution", action="store_true", default=None,
+                        help="Enable online competition self-evolution artifacts and promotion rules")
+    parser.add_argument("--no-online-evolution", dest="online_evolution", action="store_false",
+                        help="Disable online competition self-evolution")
     parser.add_argument("--dream-interval", type=float,
                         help="Hours between auto-dream runs (default: 24)")
     parser.add_argument("--dream-min-sessions", type=int,
@@ -188,6 +193,7 @@ def main() -> None:
             model=app_config.model,
             memory_dir=memory_dir,
             use_gpu=app_config.use_gpu,
+            online_evolution=app_config.online_evolution,
         )
         if skills_section:
             prompt += "\n\n" + skills_section
@@ -214,6 +220,7 @@ def main() -> None:
             model=app_config.model,
             memory_dir=memory_dir,
             use_gpu=app_config.use_gpu,
+            online_evolution=app_config.online_evolution,
         )
         if skills_section:
             worker_prompt += "\n\n" + skills_section

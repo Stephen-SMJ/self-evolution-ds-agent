@@ -7,6 +7,7 @@ Use `.autods.toml` for both the LLM endpoint and Kaggle credentials:
 ```toml
 provider = "openai"
 use_gpu = true
+online-evolution = true
 
 [openai]
 api_key = "<your-openai-compatible-api-key>"
@@ -41,6 +42,11 @@ AutoDS exports `[kaggle]` values as `KAGGLE_USERNAME`, `KAGGLE_KEY`,
 include GPU names, memory, and driver version in the system prompt. Sandbox is
 off by default; `[sandbox] enabled = false` just records that explicitly.
 
+`online-evolution = true` enables structured online competition learning. Kaggle
+runs should maintain `competitions/<slug>/evolution/` and
+`.autods/online_evolution/`; global skill patches require cross-competition
+evidence before changing `.autods/skills/autods-kaggle-distilled/`.
+
 Environment variables also work and take priority over `.autods.toml`:
 
 ```bash
@@ -49,6 +55,7 @@ export AUTODS_API_KEY=<your-openai-compatible-api-key>
 export AUTODS_BASE_URL=<your-openai-compatible-base-url>
 export AUTODS_MODEL=mimo-v2.5-pro
 export AUTODS_USE_GPU=true
+export AUTODS_ONLINE_EVOLUTION=true
 export KAGGLE_USERNAME=<your-kaggle-username>
 export KAGGLE_KEY=<your-kaggle-api-key>
 ```
@@ -73,6 +80,7 @@ export OPENAI_BASE_URL=https://your-openai-gateway.example.com
 | `AUTODS_BUDDY_MODEL` | Model for companion pet reactions |
 | `AUTODS_BUDDY_SEED` | Override buddy seed for specific companion |
 | `AUTODS_USE_GPU` | Enable GPU-aware system prompt (`true`/`false`) |
+| `AUTODS_ONLINE_EVOLUTION` | Enable online evolution artifacts and promotion gates (`true`/`false`) |
 | `KAGGLE_USERNAME` | Kaggle username |
 | `KAGGLE_KEY` | Kaggle API key |
 | `KGAT_API_TOKEN` | Optional Kaggle gateway token |

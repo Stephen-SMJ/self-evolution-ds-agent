@@ -79,6 +79,7 @@ _ENV_BUDDY_MODEL = "AUTODS_BUDDY_MODEL"
 _ENV_ADVISOR_MODEL = "AUTODS_ADVISOR_MODEL"
 _ENV_ADVISOR_MAX_USES = "AUTODS_ADVISOR_MAX_USES"
 _ENV_USE_GPU = "AUTODS_USE_GPU"
+_ENV_ONLINE_EVOLUTION = "AUTODS_ONLINE_EVOLUTION"
 _DEFAULT_CONFIG_PATHS = (
     Path.home() / ".config" / "autods" / "config.toml",
     Path.cwd() / ".autods.toml",
@@ -99,6 +100,7 @@ class AppConfig:
     dream_min_sessions: int = 5
     auto_dream: bool = True
     use_gpu: bool = False
+    online_evolution: bool = False
     advisor_model: str = "claude-opus-4-6"
     advisor_max_uses: int = 3
     config_paths: tuple[Path, ...] = ()
@@ -213,6 +215,11 @@ def load_app_config(args: Namespace) -> AppConfig:
         raw_use_gpu = env_values.get("use_gpu", _file_value("use_gpu"))
     use_gpu = _parse_bool(raw_use_gpu, default=False)
 
+    raw_online_evolution = getattr(args, "online_evolution", None)
+    if raw_online_evolution is None:
+        raw_online_evolution = env_values.get("online_evolution", _file_value("online_evolution"))
+    online_evolution = _parse_bool(raw_online_evolution, default=False)
+
     raw_advisor_model = (
         getattr(args, "advisor_model", None)
         or env_values.get("advisor_model")
@@ -250,6 +257,7 @@ def load_app_config(args: Namespace) -> AppConfig:
         dream_min_sessions=dream_min_sessions,
         auto_dream=auto_dream,
         use_gpu=use_gpu,
+        online_evolution=online_evolution,
         advisor_model=advisor_model,
         advisor_max_uses=advisor_max_uses,
         config_paths=config_paths,
@@ -318,11 +326,13 @@ def _read_config_file(path: Path) -> dict[str, Any]:
         "dream_min_sessions",
         "auto_dream",
         "use_gpu",
+        "online_evolution",
+        "online-evolution",
         "advisor_model",
         "advisor_max_uses",
     ):
         if key in data:
-            values["top"][key] = data[key]
+            values["top"][key.replace("-", "_")] = data[key]
 
     return values
 
@@ -359,6 +369,8 @@ def _load_env_values() -> dict[str, Any]:
         values["advisor_max_uses"] = os.environ[_ENV_ADVISOR_MAX_USES]
     if os.getenv(_ENV_USE_GPU):
         values["use_gpu"] = os.environ[_ENV_USE_GPU]
+    if os.getenv(_ENV_ONLINE_EVOLUTION):
+        values["online_evolution"] = os.environ[_ENV_ONLINE_EVOLUTION]
     return values
 
 
