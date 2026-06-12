@@ -24,6 +24,32 @@ key = "<your-official-kaggle-api-key>"
 enabled = false
 ```
 
+ACP mode can be used instead of direct API keys:
+
+```toml
+provider = "acp"
+use_gpu = true
+online-evolution = true
+
+[acp]
+agent = "codex"
+cwd = "."
+session = "autods"
+command = "acpx"
+timeout = 1800
+approve_all = false
+# model = "gpt-5.2[high]"
+
+[kaggle]
+username = "<your-kaggle-username>"
+key = "<your-official-kaggle-api-key>"
+```
+
+In ACP mode, AutoDS calls `acpx --format json` and keeps a persistent named acpx
+session. No LLM `api_key` or `base_url` is needed; the selected ACP-compatible
+agent handles its own authentication and tool execution. Install acpx globally
+with `npm install -g acpx@latest`, or set `command = "npx acpx@latest"`.
+
 For a gateway-token Kaggle environment:
 
 ```toml
@@ -56,6 +82,8 @@ export AUTODS_BASE_URL=<your-openai-compatible-base-url>
 export AUTODS_MODEL=mimo-v2.5-pro
 export AUTODS_USE_GPU=true
 export AUTODS_ONLINE_EVOLUTION=true
+export AUTODS_ACP_AGENT=codex
+export AUTODS_ACP_SESSION=autods
 export KAGGLE_USERNAME=<your-kaggle-username>
 export KAGGLE_KEY=<your-kaggle-api-key>
 ```
@@ -81,6 +109,10 @@ export OPENAI_BASE_URL=https://your-openai-gateway.example.com
 | `AUTODS_BUDDY_SEED` | Override buddy seed for specific companion |
 | `AUTODS_USE_GPU` | Enable GPU-aware system prompt (`true`/`false`) |
 | `AUTODS_ONLINE_EVOLUTION` | Enable online evolution artifacts and promotion gates (`true`/`false`) |
+| `AUTODS_ACP_AGENT` | ACP agent passed to acpx, for example `codex` or `claude` |
+| `AUTODS_ACP_SESSION` | Persistent acpx session name |
+| `AUTODS_ACP_COMMAND` | acpx executable, for example `acpx` or `npx acpx@latest` |
+| `AUTODS_ACP_TIMEOUT` | acpx turn timeout in seconds |
 | `KAGGLE_USERNAME` | Kaggle username |
 | `KAGGLE_KEY` | Kaggle API key |
 | `KGAT_API_TOKEN` | Optional Kaggle gateway token |

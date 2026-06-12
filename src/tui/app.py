@@ -123,7 +123,7 @@ def main() -> None:
     parser.add_argument("--auto-approve", action="store_true",
                         help="Auto-approve all tool permissions (dangerous)")
     parser.add_argument("--config", help="Path to a TOML config file")
-    parser.add_argument("--provider", choices=("anthropic", "openai"),
+    parser.add_argument("--provider", choices=("anthropic", "openai", "acp"),
                         help="API provider / wire format")
     parser.add_argument("--api-key", help="API key for the selected provider")
     parser.add_argument("--base-url", help="Custom API base URL for the selected provider")
@@ -147,6 +147,14 @@ def main() -> None:
                         help="Enable online competition self-evolution artifacts and promotion rules")
     parser.add_argument("--no-online-evolution", dest="online_evolution", action="store_false",
                         help="Disable online competition self-evolution")
+    parser.add_argument("--acp-agent", help="ACP agent name or command for acpx, e.g. codex or claude")
+    parser.add_argument("--acp-cwd", help="Working directory passed to acpx --cwd")
+    parser.add_argument("--acp-session", help="Persistent acpx session name")
+    parser.add_argument("--acp-command", help="acpx command path, default: acpx")
+    parser.add_argument("--acp-timeout", type=int, help="acpx turn timeout in seconds")
+    parser.add_argument("--acp-approve-all", action="store_true", default=None,
+                        help="Pass --approve-all to acpx")
+    parser.add_argument("--acp-model", help="Model id passed to acpx --model")
     parser.add_argument("--dream-interval", type=float,
                         help="Hours between auto-dream runs (default: 24)")
     parser.add_argument("--dream-min-sessions", type=int,
@@ -232,6 +240,7 @@ def main() -> None:
             provider=app_config.provider,
             api_key=app_config.api_key,
             base_url=app_config.base_url,
+            acp=app_config.acp,
             model=app_config.model,
             max_tokens=app_config.max_tokens,
             effort=app_config.effort,
@@ -250,6 +259,7 @@ def main() -> None:
             provider=app_config.provider,
             api_key=app_config.api_key,
             base_url=app_config.base_url,
+            acp=app_config.acp,
             model=app_config.model,
             max_tokens=app_config.max_tokens,
             effort=app_config.effort,
@@ -302,6 +312,7 @@ def main() -> None:
         provider=app_config.provider,
         api_key=app_config.api_key,
         base_url=app_config.base_url,
+        acp=app_config.acp,
         model=app_config.model,
         max_tokens=app_config.max_tokens,
         effort=app_config.effort,

@@ -32,6 +32,13 @@ def _args(**overrides):
         "no_auto_dream": False,
         "use_gpu": None,
         "online_evolution": None,
+        "acp_agent": None,
+        "acp_cwd": None,
+        "acp_session": None,
+        "acp_command": None,
+        "acp_timeout": None,
+        "acp_approve_all": None,
+        "acp_model": None,
         "dream_interval": None,
         "dream_min_sessions": None,
     }
@@ -285,3 +292,64 @@ def test_online_evolution_env_overrides_file(tmp_path: Path, monkeypatch: pytest
     config = load_app_config(_args(config=str(config_path)))
 
     assert config.online_evolution is True
+
+
+def test_load_app_config_reads_acp_section(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.delenv("AUTODS_ACP_AGENT", raising=False)
+    config_path = tmp_path / "autods.toml"
+    config_path.write_text(
+        'provider = "acp"\n'
+        '[acp]\n'
+        'agent = "claude"\n'
+        'cwd = "."\n'
+        'session = "kaggle-titanic"\n'
+        'command = "npx acpx@latest"\n'
+        'timeout = 2400\n'
+        'approve_all = true\n'
+        'model = "claude-sonnet-4"\n',
+        encoding="utf-8",
+    )
+
+    config = load_app_config(_args(config=str(config_path)))
+
+    assert config.provider == "acp"
+    assert config.api_key is None
+    assert config.base_url is None
+    assert config.acp.agent == "claude"
+    assert config.acp.cwd == "."
+    assert config.acp.session == "kaggle-titanic"
+    assert config.acp.command == "npx acpx@latest"
+    assert config.acp.timeout == 2400
+    assert config.acp.approve_all is True
+    assert config.acp.model == "claude-sonnet-4"
+
+
+def test_acp_env_overrides_file(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setenv("AUTODS_ACP_AGENT", "codex")
+    monkeypatch.setenv("AUTODS_ACP_SESSION", "env-session")
+    config_path = tmp_path / "autods.toml"
+    config_path.write_text(
+        'provider = "acp"\n'
+        '[acp]\n'
+        'agent = "claude"\n'
+        'session = "file-session"\n',
+        encoding="utf-8",
+    )
+
+    config = load_app_config(_args(config=str(config_path)))
+
+    assert config.acp.agent == "codex"
+    assert config.acp.session == "env-session"
+
+
+def test_load_app_config_infers_acp_provider_from_section(tmp_path: Path):
+    config_path = tmp_path / "autods.toml"
+    config_path.write_text(
+        '[acp]\n'
+        'agent = "codex"\n',
+        encoding="utf-8",
+    )
+
+    config = load_app_config(_args(config=str(config_path)))
+
+    assert config.provider == "acp"

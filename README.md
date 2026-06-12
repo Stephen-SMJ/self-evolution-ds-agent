@@ -249,6 +249,34 @@ key = "<your-official-kaggle-api-key>"
 enabled = false
 ```
 
+ACP backend is also supported. Use this when you want AutoDS to call an
+ACP-compatible coding agent through `acpx` instead of using API keys directly:
+
+```toml
+provider = "acp"
+use_gpu = true
+online-evolution = true
+
+[acp]
+agent = "codex"          # codex, claude, gemini, opencode, kimi, or a raw ACP command
+cwd = "."                # working directory passed to acpx --cwd
+session = "autods"       # persistent acpx session name
+command = "acpx"         # or "npx acpx@latest"
+timeout = 1800
+approve_all = false
+# model = "gpt-5.2[high]"  # optional acpx --model value
+
+[kaggle]
+username = "<your-kaggle-username>"
+key = "<your-official-kaggle-api-key>"
+```
+
+In ACP mode, AutoDS does not need `api_key` or `base_url`; the selected ACP agent
+uses its own local authentication. The external ACP agent owns tool execution and
+session state, while AutoDS keeps its local session logs and Kaggle evolution
+artifacts. Install acpx globally with `npm install -g acpx@latest`, or set
+`command = "npx acpx@latest"`.
+
 For a gateway-token Kaggle environment:
 
 ```toml
@@ -279,6 +307,8 @@ export AUTODS_BASE_URL=<your-openai-compatible-base-url>
 export AUTODS_MODEL=mimo-v2.5-pro
 export AUTODS_USE_GPU=true
 export AUTODS_ONLINE_EVOLUTION=true
+export AUTODS_ACP_AGENT=codex
+export AUTODS_ACP_SESSION=autods
 export KAGGLE_USERNAME=<your-kaggle-username>
 export KAGGLE_KEY=<your-kaggle-api-key>
 ```

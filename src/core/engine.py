@@ -5,7 +5,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import TYPE_CHECKING, Any, Iterator
 from .config import DEFAULT_MODEL, default_max_tokens_for_model, resolve_model
-from .llm import LLMClient
+from .llm import ACPConfig, LLMClient
 from .tool import Tool, ToolResult
 from .permissions import PermissionChecker
 
@@ -60,6 +60,7 @@ class Engine:
                  max_tokens: int | None = None,
                  api_key: str | None = None,
                  base_url: str | None = None,
+                 acp: ACPConfig | None = None,
                  effort: str | None = None,
                  session_store: SessionStore | None = None,
                  cost_tracker: CostTracker | None = None,
@@ -76,6 +77,7 @@ class Engine:
             provider=provider,
             api_key=api_key,
             base_url=base_url,
+            acp=acp,
         )
         self._tools = {t.name: t for t in tools}
         self._system_prompt = system_prompt
@@ -226,8 +228,8 @@ class Engine:
                 for attempt in range(_MAX_RETRIES):
                     try:
                         _api_t0 = time.monotonic()
-                        tools = [t.to_api_schema() for t in self._tools.values()]
-                        if self._advisor_enabled:
+                        tools = [] if self._provider == "acp" else [t.to_api_schema() for t in self._tools.values()]
+                        if self._advisor_enabled and self._provider != "acp":
                             tools.append({
                                 "type": "advisor_20260301",
                                 "name": "advisor",

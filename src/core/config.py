@@ -11,12 +11,13 @@ else:
     except ModuleNotFoundError:
         import tomli as tomllib  # type: ignore[no-redef]
 from argparse import Namespace
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
 from dotenv import load_dotenv
 from .llm import (
+    ACPConfig,
     default_companion_model,
     default_max_tokens_for_provider,
     default_model_for_provider,
@@ -101,6 +102,7 @@ class AppConfig:
     auto_dream: bool = True
     use_gpu: bool = False
     online_evolution: bool = False
+    acp: ACPConfig = field(default_factory=ACPConfig)
     advisor_model: str = "claude-opus-4-6"
     advisor_max_uses: int = 3
     config_paths: tuple[Path, ...] = ()
@@ -234,6 +236,50 @@ def load_app_config(args: Namespace) -> AppConfig:
     )
     advisor_max_uses = int(raw_advisor_max_uses) if raw_advisor_max_uses is not None else 3
 
+    acp_values = file_values["providers"].get("acp", {})
+    acp = ACPConfig(
+        agent=str(
+            getattr(args, "acp_agent", None)
+            or env_values.get("acp_agent")
+            or acp_values.get("agent")
+            or "codex"
+        ),
+        cwd=(
+            getattr(args, "acp_cwd", None)
+            or env_values.get("acp_cwd")
+            or acp_values.get("cwd")
+        ),
+        session=str(
+            getattr(args, "acp_session", None)
+            or env_values.get("acp_session")
+            or acp_values.get("session")
+            or "autods"
+        ),
+        command=str(
+            getattr(args, "acp_command", None)
+            or env_values.get("acp_command")
+            or acp_values.get("command")
+            or "acpx"
+        ),
+        timeout=int(
+            getattr(args, "acp_timeout", None)
+            or env_values.get("acp_timeout")
+            or acp_values.get("timeout")
+            or 1800
+        ),
+        approve_all=_parse_bool(
+            getattr(args, "acp_approve_all", None)
+            if getattr(args, "acp_approve_all", None) is not None
+            else env_values.get("acp_approve_all", acp_values.get("approve_all")),
+            default=False,
+        ),
+        model=(
+            getattr(args, "acp_model", None)
+            or env_values.get("acp_model")
+            or acp_values.get("model")
+        ),
+    )
+
     return AppConfig(
         provider=provider,
         api_key=(
@@ -258,6 +304,7 @@ def load_app_config(args: Namespace) -> AppConfig:
         auto_dream=auto_dream,
         use_gpu=use_gpu,
         online_evolution=online_evolution,
+        acp=acp,
         advisor_model=advisor_model,
         advisor_max_uses=advisor_max_uses,
         config_paths=config_paths,
@@ -267,7 +314,7 @@ def load_app_config(args: Namespace) -> AppConfig:
 def _load_file_values(explicit_path: str | None) -> tuple[dict[str, Any], tuple[Path, ...]]:
     values: dict[str, Any] = {
         "top": {},
-        "providers": {"anthropic": {}, "openai": {}},
+        "providers": {"anthropic": {}, "openai": {}, "acp": {}},
         "kaggle": {},
     }
     loaded_paths: list[Path] = []
@@ -300,11 +347,11 @@ def _read_config_file(path: Path) -> dict[str, Any]:
 
     values: dict[str, Any] = {
         "top": {},
-        "providers": {"anthropic": {}, "openai": {}},
+        "providers": {"anthropic": {}, "openai": {}, "acp": {}},
         "kaggle": {},
     }
 
-    for provider in ("anthropic", "openai"):
+    for provider in ("anthropic", "openai", "acp"):
         section = data.get(provider, {})
         if isinstance(section, dict):
             values["providers"][provider].update(section)
@@ -371,6 +418,20 @@ def _load_env_values() -> dict[str, Any]:
         values["use_gpu"] = os.environ[_ENV_USE_GPU]
     if os.getenv(_ENV_ONLINE_EVOLUTION):
         values["online_evolution"] = os.environ[_ENV_ONLINE_EVOLUTION]
+    if os.getenv("AUTODS_ACP_AGENT"):
+        values["acp_agent"] = os.environ["AUTODS_ACP_AGENT"]
+    if os.getenv("AUTODS_ACP_CWD"):
+        values["acp_cwd"] = os.environ["AUTODS_ACP_CWD"]
+    if os.getenv("AUTODS_ACP_SESSION"):
+        values["acp_session"] = os.environ["AUTODS_ACP_SESSION"]
+    if os.getenv("AUTODS_ACP_COMMAND"):
+        values["acp_command"] = os.environ["AUTODS_ACP_COMMAND"]
+    if os.getenv("AUTODS_ACP_TIMEOUT"):
+        values["acp_timeout"] = os.environ["AUTODS_ACP_TIMEOUT"]
+    if os.getenv("AUTODS_ACP_APPROVE_ALL"):
+        values["acp_approve_all"] = os.environ["AUTODS_ACP_APPROVE_ALL"]
+    if os.getenv("AUTODS_ACP_MODEL"):
+        values["acp_model"] = os.environ["AUTODS_ACP_MODEL"]
     return values
 
 
@@ -413,16 +474,19 @@ def _parse_bool(raw_value: Any, default: bool = False) -> bool:
 def _infer_provider(provider_values: dict[str, dict[str, Any]]) -> str:
     openai_values = provider_values.get("openai", {})
     anthropic_values = provider_values.get("anthropic", {})
-    if openai_values and not anthropic_values:
+    acp_values = provider_values.get("acp", {})
+    if acp_values and not openai_values and not anthropic_values:
+        return "acp"
+    if openai_values and not anthropic_values and not acp_values:
         return "openai"
-    if anthropic_values and not openai_values:
+    if anthropic_values and not openai_values and not acp_values:
         return "anthropic"
     return DEFAULT_PROVIDER
 
 
 def _merge_file_values(target: dict[str, Any], incoming: dict[str, Any]) -> None:
     target["top"].update(incoming.get("top", {}))
-    for provider in ("anthropic", "openai"):
+    for provider in ("anthropic", "openai", "acp"):
         target["providers"][provider].update(incoming.get("providers", {}).get(provider, {}))
     target.setdefault("kaggle", {}).update(incoming.get("kaggle", {}))
 
@@ -456,6 +520,8 @@ def _apply_kaggle_env(kaggle_values: dict[str, Any]) -> None:
 
 def _provider_env_values(env_values: dict[str, Any], provider: str) -> dict[str, Any]:
     provider = validate_provider(provider)
+    if provider == "acp":
+        return {"api_key": None, "base_url": None}
     if provider == "openai":
         return {
             "api_key": env_values.get("openai_api_key"),

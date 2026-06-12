@@ -73,6 +73,32 @@ key = "<your-official-kaggle-api-key>"
 enabled = false
 ```
 
+ACP mode can be used instead of direct API keys:
+
+```toml
+provider = "acp"
+use_gpu = true
+online-evolution = true
+
+[acp]
+agent = "codex"
+cwd = "."
+session = "autods"
+command = "acpx"
+timeout = 1800
+approve_all = false
+# model = "gpt-5.2[high]"
+
+[kaggle]
+username = "<your-kaggle-username>"
+key = "<your-official-kaggle-api-key>"
+```
+
+In ACP mode, AutoDS calls `acpx --format json` and keeps a persistent named acpx
+session. No LLM `api_key` or `base_url` is required in `.autods.toml`; the
+selected ACP-compatible agent handles its own authentication and tool execution.
+Use `command = "npx acpx@latest"` if `acpx` is not installed globally.
+
 For a gateway-token Kaggle environment, use this instead of `username`/`key` if
 that is how your local gateway is configured:
 
@@ -117,6 +143,8 @@ export AUTODS_API_KEY=<your-openai-compatible-api-key>
 export AUTODS_BASE_URL=<your-openai-compatible-base-url>
 export AUTODS_MODEL=mimo-v2.5-pro
 export AUTODS_ONLINE_EVOLUTION=true
+export AUTODS_ACP_AGENT=codex
+export AUTODS_ACP_SESSION=autods
 export KAGGLE_USERNAME=<your-kaggle-username>
 export KAGGLE_KEY=<your-kaggle-api-key>
 ```
@@ -130,6 +158,8 @@ export AUTODS_BUDDY_MODEL=<optional-companion-model>
 export AUTODS_MEMORY_DIR=$HOME/.config/autods/memory
 export AUTODS_USE_GPU=true
 export AUTODS_ONLINE_EVOLUTION=true
+export AUTODS_ACP_COMMAND=acpx
+export AUTODS_ACP_TIMEOUT=1800
 ```
 
 Install Kaggle dependencies before using `/kaggle`:

@@ -1,7 +1,12 @@
 from __future__ import annotations
 
 import json
+import os
+import shlex
+import subprocess
+import tempfile
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Iterator
 
 import anthropic
@@ -23,7 +28,8 @@ ProviderName = str
 
 _ANTHROPIC_PROVIDER = "anthropic"
 _OPENAI_PROVIDER = "openai"
-_VALID_PROVIDERS = {_ANTHROPIC_PROVIDER, _OPENAI_PROVIDER}
+_ACP_PROVIDER = "acp"
+_VALID_PROVIDERS = {_ANTHROPIC_PROVIDER, _OPENAI_PROVIDER, _ACP_PROVIDER}
 
 MODEL_CONTEXT_WINDOW_DEFAULT = 200_000
 
@@ -74,6 +80,21 @@ class LLMMessage:
     stop_reason: str | None = None  # "end_turn", "max_tokens", "tool_use", etc.
 
 
+@dataclass(frozen=True)
+class ACPConfig:
+    agent: str = "codex"
+    cwd: str | None = None
+    session: str = "autods"
+    command: str = "acpx"
+    timeout: int = 1800
+    approve_all: bool = False
+    model: str | None = None
+
+
+class ACPError(RuntimeError):
+    pass
+
+
 def validate_provider(provider: str | None) -> ProviderName:
     normalized = (provider or _ANTHROPIC_PROVIDER).strip().lower()
     if normalized not in _VALID_PROVIDERS:
@@ -85,19 +106,21 @@ def default_model_for_provider(provider: str) -> str:
     provider = validate_provider(provider)
     if provider == _OPENAI_PROVIDER:
         return "mimo-v2.5-pro"
+    if provider == _ACP_PROVIDER:
+        return "acp-agent"
     return "claude-sonnet-4-6"
 
 
 def default_companion_model(provider: str, model: str) -> str:
     provider = validate_provider(provider)
-    if provider == _OPENAI_PROVIDER:
+    if provider in (_OPENAI_PROVIDER, _ACP_PROVIDER):
         return model
     return "claude-haiku-4-5-20251001"
 
 
 def default_max_tokens_for_provider(provider: str) -> int:
     provider = validate_provider(provider)
-    if provider == _OPENAI_PROVIDER:
+    if provider in (_OPENAI_PROVIDER, _ACP_PROVIDER):
         return 8192
     return 32000
 
@@ -116,10 +139,12 @@ class LLMClient:
         provider: str = _ANTHROPIC_PROVIDER,
         api_key: str | None = None,
         base_url: str | None = None,
+        acp: ACPConfig | None = None,
     ):
         self.provider = validate_provider(provider)
         self._api_key = api_key
         self._base_url = base_url
+        self._acp = acp or ACPConfig()
         if self.provider == _OPENAI_PROVIDER:
             if OpenAI is None:
                 message = "OpenAI support requires the `openai` package to be installed."
@@ -127,6 +152,8 @@ class LLMClient:
                     message += f" Import failed: {_OPENAI_IMPORT_ERROR}"
                 raise ValueError(message)
             self._client = OpenAI(api_key=api_key, base_url=base_url)
+        elif self.provider == _ACP_PROVIDER:
+            self._client = None
         else:
             self._client = anthropic.Anthropic(
                 api_key=api_key,
@@ -144,6 +171,18 @@ class LLMClient:
         tools: list[dict[str, Any]] | None = None,
         effort: str | None = None,
     ) -> LLMMessage:
+        if self.provider == _ACP_PROVIDER:
+            with self.stream_messages(
+                model=model,
+                max_tokens=max_tokens,
+                messages=messages,
+                system=system,
+                tools=tools,
+                effort=effort,
+            ) as stream:
+                for _ in stream.text_stream:
+                    pass
+                return stream.get_final_message()
         if self.provider == _OPENAI_PROVIDER:
             return self._openai_create_message(
                 model=model,
@@ -171,6 +210,13 @@ class LLMClient:
         tools: list[dict[str, Any]] | None = None,
         effort: str | None = None,
     ):
+        if self.provider == _ACP_PROVIDER:
+            return _ACPXStream(
+                config=self._acp,
+                model=model,
+                messages=messages,
+                system=system,
+            )
         if self.provider == _OPENAI_PROVIDER:
             return _OpenAIStream(
                 client=self._client,
@@ -191,11 +237,15 @@ class LLMClient:
         )
 
     def is_authentication_error(self, exc: Exception) -> bool:
+        if self.provider == _ACP_PROVIDER:
+            return False
         if self.provider == _OPENAI_PROVIDER:
             return openai is not None and isinstance(exc, openai.AuthenticationError)
         return isinstance(exc, anthropic.AuthenticationError)
 
     def is_retryable_error(self, exc: Exception) -> bool:
+        if self.provider == _ACP_PROVIDER:
+            return False
         if isinstance(exc, (httpx.RemoteProtocolError, httpx.ReadError, httpx.ConnectError)):
             return True
         if self.provider == _OPENAI_PROVIDER:
@@ -217,6 +267,8 @@ class LLMClient:
         )
 
     def is_api_error(self, exc: Exception) -> bool:
+        if self.provider == _ACP_PROVIDER:
+            return isinstance(exc, ACPError)
         if self.provider == _OPENAI_PROVIDER:
             return openai is not None and isinstance(exc, openai.APIError)
         return isinstance(exc, anthropic.APIError)
@@ -426,6 +478,147 @@ class _OpenAIStream:
             usage=self._usage,
             stop_reason=_normalize_openai_stop_reason(self._finish_reason),
         )
+
+
+class _ACPXStream:
+    """Run one AutoDS turn through an ACP-compatible agent via acpx.
+
+    acpx owns the ACP connection, tool execution, and persistent session. AutoDS
+    treats the ACP agent as an external backend and consumes assistant text from
+    the raw ACP NDJSON stream.
+    """
+
+    def __init__(
+        self,
+        *,
+        config: ACPConfig,
+        model: str,
+        messages: list[dict[str, Any]],
+        system: str | None,
+    ):
+        self._config = config
+        self._model = model
+        self._prompt = _to_acp_prompt(system, messages)
+        self._process: subprocess.Popen[str] | None = None
+        self._prompt_file: tempfile.NamedTemporaryFile[str] | None = None
+        self._text_parts: list[str] = []
+        self._stop_reason: str | None = None
+        self.text_stream: Iterator[str] = iter(())
+
+    def __enter__(self):
+        self._prompt_file = tempfile.NamedTemporaryFile(
+            "w",
+            encoding="utf-8",
+            suffix=".md",
+            prefix="autods-acp-",
+            delete=False,
+        )
+        self._prompt_file.write(self._prompt)
+        self._prompt_file.flush()
+        self._prompt_file.close()
+
+        cmd = self._build_command(self._prompt_file.name)
+        cwd = self._resolve_cwd()
+        self._process = subprocess.Popen(
+            cmd,
+            cwd=cwd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            bufsize=1,
+        )
+        self.text_stream = self._iter_text()
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        self.close()
+        self._cleanup_prompt_file()
+        return False
+
+    def close(self) -> None:
+        if self._process is not None and self._process.poll() is None:
+            try:
+                self._process.terminate()
+            except Exception:
+                pass
+
+    def _resolve_cwd(self) -> str | None:
+        if not self._config.cwd:
+            return None
+        return str(Path(self._config.cwd).expanduser())
+
+    def _build_command(self, prompt_file: str) -> list[str]:
+        cmd = shlex.split(self._config.command or "acpx")
+        cwd = self._resolve_cwd() or os.getcwd()
+        cmd.extend([
+            "--cwd",
+            cwd,
+            "--format",
+            "json",
+            "--json-strict",
+            "--timeout",
+            str(self._config.timeout),
+        ])
+        if self._config.approve_all:
+            cmd.append("--approve-all")
+        else:
+            cmd.append("--approve-reads")
+        model = self._config.model or (self._model if self._model != "acp-agent" else None)
+        if model:
+            cmd.extend(["--model", model])
+        cmd.extend([
+            self._config.agent or "codex",
+            "prompt",
+            "-s",
+            self._config.session or "autods",
+            "--file",
+            prompt_file,
+        ])
+        return cmd
+
+    def _iter_text(self) -> Iterator[str]:
+        if self._process is None or self._process.stdout is None:
+            return
+        for line in self._process.stdout:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                message = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            text = _extract_acp_text_chunk(message)
+            if text:
+                self._text_parts.append(text)
+                yield text
+            stop_reason = _extract_acp_stop_reason(message)
+            if stop_reason:
+                self._stop_reason = stop_reason
+        return_code = self._process.wait()
+        stderr = ""
+        if self._process.stderr is not None:
+            stderr = self._process.stderr.read().strip()
+        if return_code != 0:
+            detail = stderr or f"acpx exited with code {return_code}"
+            raise ACPError(detail)
+
+    def get_final_message(self) -> LLMMessage:
+        text = "".join(self._text_parts)
+        return LLMMessage(
+            content=[{"type": "text", "text": text}] if text else [],
+            usage=None,
+            stop_reason=self._stop_reason or "end_turn",
+        )
+
+    def _cleanup_prompt_file(self) -> None:
+        if self._prompt_file is None:
+            return
+        try:
+            os.unlink(self._prompt_file.name)
+        except OSError:
+            pass
 
 
 def _normalize_openai_stop_reason(reason: str | None) -> str | None:
@@ -670,6 +863,86 @@ def _tool_result_to_text(content: Any) -> str:
     if content is None:
         return ""
     return json.dumps(content, ensure_ascii=False)
+
+
+def _to_acp_prompt(system: str | None, messages: list[dict[str, Any]]) -> str:
+    sections: list[str] = []
+    if system:
+        sections.append("# AutoDS System Context\n\n" + system)
+    sections.append("# Conversation Turn\n")
+    for message in messages:
+        role = message.get("role", "user")
+        content = _message_content_to_text(message.get("content", ""))
+        sections.append(f"## {role}\n\n{content}")
+    return "\n\n".join(sections).strip() + "\n"
+
+
+def _message_content_to_text(content: Any) -> str:
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        parts: list[str] = []
+        for block in content:
+            if not isinstance(block, dict):
+                continue
+            block_type = block.get("type")
+            if block_type == "text":
+                parts.append(str(block.get("text", "")))
+            elif block_type == "tool_result":
+                parts.append("[tool result]\n" + _tool_result_to_text(block.get("content", "")))
+            elif block_type == "tool_use":
+                parts.append(
+                    "[tool use]\n"
+                    + json.dumps(
+                        {
+                            "name": block.get("name"),
+                            "input": block.get("input", {}),
+                        },
+                        ensure_ascii=False,
+                    )
+                )
+            elif block_type == "image":
+                parts.append("[image omitted for ACP backend]")
+        return "\n\n".join(part for part in parts if part)
+    if content is None:
+        return ""
+    return str(content)
+
+
+def _extract_acp_text_chunk(message: dict[str, Any]) -> str:
+    params = message.get("params")
+    if not isinstance(params, dict):
+        return ""
+
+    update = params.get("update")
+    if isinstance(update, dict):
+        if update.get("sessionUpdate") == "agent_message_chunk":
+            content = update.get("content")
+            if isinstance(content, dict) and content.get("type") == "text":
+                return str(content.get("text", ""))
+
+    if params.get("sessionUpdate") == "agent_message_chunk":
+        content = params.get("content")
+        if isinstance(content, dict) and content.get("type") == "text":
+            return str(content.get("text", ""))
+
+    return ""
+
+
+def _extract_acp_stop_reason(message: dict[str, Any]) -> str | None:
+    result = message.get("result")
+    if isinstance(result, dict):
+        stop = result.get("stopReason") or result.get("stop_reason")
+        if stop:
+            return str(stop)
+    params = message.get("params")
+    if isinstance(params, dict):
+        update = params.get("update")
+        if isinstance(update, dict):
+            stop = update.get("stopReason") or update.get("stop_reason")
+            if stop:
+                return str(stop)
+    return None
 
 
 def _value(obj: Any, key: str, default: Any = None) -> Any:
