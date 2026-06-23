@@ -11,6 +11,13 @@ def test_build_system_prompt_contains_base_instructions():
     assert "self-evolving" in prompt
 
 
+def test_build_system_prompt_instructs_long_training_timeouts():
+    prompt = build_system_prompt(cwd="/tmp")
+    assert "default is only 120 seconds" in prompt
+    assert "Use 1800 seconds as the normal default" in prompt
+    assert "900-3600 seconds" in prompt
+
+
 def test_build_system_prompt_contains_env_info():
     prompt = build_system_prompt(cwd="/tmp")
     assert "Primary working directory: /tmp" in prompt
