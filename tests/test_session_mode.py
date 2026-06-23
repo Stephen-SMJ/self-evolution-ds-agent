@@ -1,7 +1,7 @@
 import json
 
 from core.session import SessionStore, _sanitize_cwd
-from commands import find_session
+from commands import find_session, recent_conversation_preview
 
 
 def test_session_store_persists_mode(tmp_path, monkeypatch):
@@ -106,3 +106,40 @@ def test_find_session_matches_workspace_slug(tmp_path, monkeypatch):
 
     assert find_session(sessions, "spaceship-titanic").session_id == "session-4"
     assert find_session(sessions, "competitions/spaceship-titanic").session_id == "session-4"
+
+
+def test_recent_conversation_preview_shows_last_five_turns_only():
+    messages = []
+    for i in range(7):
+        messages.append({"role": "user", "content": f"user {i}"})
+        messages.append({"role": "assistant", "content": [{"type": "text", "text": f"assistant {i}"}]})
+
+    rows = recent_conversation_preview(messages, turns=5)
+
+    assert len(rows) == 10
+    assert rows[0] == ("User", "user 2")
+    assert rows[-1] == ("Mantis", "assistant 6")
+
+
+def test_recent_conversation_preview_skips_tool_results_and_truncates():
+    messages = [
+        {
+            "role": "user",
+            "content": [{"type": "tool_result", "content": "x" * 1000}],
+        },
+        {
+            "role": "assistant",
+            "content": [{"type": "tool_use", "name": "Bash", "input": {"command": "run"}}],
+        },
+        {
+            "role": "user",
+            "content": "y" * 300,
+        },
+    ]
+
+    rows = recent_conversation_preview(messages, turns=5)
+
+    assert rows[0] == ("Mantis", "[used tools: Bash]")
+    assert rows[1][0] == "User"
+    assert len(rows[1][1]) == 220
+    assert rows[1][1].endswith("…")

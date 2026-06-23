@@ -55,7 +55,14 @@ from features.memory import (
 )
 from features.skills import discover_skills, list_skills, build_skills_prompt_section
 from features.skills_bundled import register_bundled_skills
-from commands import parse_command, handle_command, CommandContext, find_session, short_session_title
+from commands import (
+    parse_command,
+    handle_command,
+    CommandContext,
+    find_session,
+    short_session_title,
+    print_resume_preview,
+)
 from tui.prompt import bordered_prompt, slash_completer
 from tui.query import run_query
 from tui.input_parser import parse_input
@@ -412,6 +419,7 @@ def main() -> None:
                 console.print(f"[green]✓[/green] Resumed: {short_session_title(target)}  "
                               f"[dim]{target.workspace or '-'}[/dim]  "
                               f"({len(msgs)} messages)")
+                print_resume_preview(console, msgs)
                 if warning:
                     console.print(f"[yellow]{warning}[/yellow]")
         else:

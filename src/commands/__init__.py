@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING
 
 from rich.console import Console
 from rich.table import Table
+from rich.text import Text
 
 from features.coordinator import current_session_mode, match_session_mode
 
@@ -185,6 +186,82 @@ def find_session(sessions, selector: str):
     return None
 
 
+def _message_text_preview(content, limit: int = 220) -> str:
+    """Return a compact, safe preview of message content."""
+    parts: list[str] = []
+
+    def visit(value) -> None:
+        if value is None:
+            return
+        if isinstance(value, str):
+            parts.append(value)
+            return
+        if isinstance(value, list):
+            tool_names: list[str] = []
+            for item in value:
+                if isinstance(item, dict):
+                    item_type = item.get("type")
+                    if item_type == "text":
+                        visit(item.get("text", ""))
+                    elif item_type == "tool_use":
+                        name = item.get("name")
+                        if name:
+                            tool_names.append(str(name))
+                elif hasattr(item, "text"):
+                    visit(getattr(item, "text", ""))
+            if not parts and tool_names:
+                parts.append("[used tools: " + ", ".join(tool_names[:3]) + "]")
+            return
+        if isinstance(value, dict):
+            if value.get("type") == "tool_result":
+                return
+            for key in ("text", "content", "command"):
+                if key in value:
+                    visit(value[key])
+                    return
+            return
+        parts.append(str(value))
+
+    visit(content)
+    text = " ".join(" ".join(parts).split())
+    if len(text) <= limit:
+        return text
+    return text[:limit - 1].rstrip() + "…"
+
+
+def recent_conversation_preview(messages: list[dict], turns: int = 5) -> list[tuple[str, str]]:
+    """Return recent user/assistant messages for resume context."""
+    rows: list[tuple[str, str]] = []
+    for message in messages:
+        role = message.get("role")
+        if role not in {"user", "assistant"}:
+            continue
+        text = _message_text_preview(message.get("content", ""))
+        if not text:
+            continue
+        label = "User" if role == "user" else "Mantis"
+        rows.append((label, text))
+    return rows[-max(1, turns) * 2:]
+
+
+def print_resume_preview(console: Console, messages: list[dict], turns: int = 5) -> None:
+    rows = recent_conversation_preview(messages, turns=turns)
+    if not rows:
+        return
+
+    table = Table(
+        title=f"Recent Conversation (last {turns} turns)",
+        show_header=True,
+        header_style="bold cyan",
+        expand=True,
+    )
+    table.add_column("Role", style="green", width=8, no_wrap=True)
+    table.add_column("Message")
+    for role, text in rows:
+        table.add_row(role, Text(text))
+    console.print(table)
+
+
 def _cmd_resume(ctx: CommandContext, args: str) -> None:
     from core.session import SessionStore
 
@@ -244,6 +321,7 @@ def _cmd_resume(ctx: CommandContext, args: str) -> None:
         f"{short_session_title(target_meta)}  "
         f"[dim]{target_meta.workspace or '-'}[/dim]  ({len(messages)} messages)"
     )
+    print_resume_preview(ctx.console, messages)
     if warning:
         ctx.console.print(f"[yellow]{warning}[/yellow]")
 
