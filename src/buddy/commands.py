@@ -251,11 +251,11 @@ def _render_help(console: Console) -> None:
         "            - Long idle time            ->  bored\n"
         "            Mood gradually decays back to neutral over time.\n"
         "\n"
-        "  [yellow]Talking[/yellow]  Your companion reacts after each AutoDS response.\n"
+        "  [yellow]Talking[/yellow]  Your companion reacts after each Mantis response.\n"
         "            Address it by name to chat directly (20-turn memory).\n"
         "            Its tone adapts to both stats and current mood.\n"
         "\n"
-        "  [yellow]Pikachu[/yellow]  Set AUTODS_BUDDY_SEED=pikachu-3361 before hatching\n"
+        "  [yellow]Pikachu[/yellow]  Set MANTIS_BUDDY_SEED=pikachu-3361 before hatching\n"
         "            to unlock the secret Legendary Pikachu species."
     )
 

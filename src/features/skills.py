@@ -1,13 +1,13 @@
 """Skill system — load, register, and execute SKILL.md-based skills.
 
-Modelled after AutoDS's ``src/skills/loadSkillsDir.ts`` and
+Modelled after Mantis's ``src/skills/loadSkillsDir.ts`` and
 ``src/tools/SkillTool/SkillTool.ts``.
 
 Skills are Markdown files with YAML frontmatter that define reusable prompts.
 They can be:
   1. **Bundled** — registered in code via ``register_skill()``
-  2. **Project** — discovered from ``.autods/skills/<name>/SKILL.md``
-  3. **User** — discovered from ``~/.autods/skills/<name>/SKILL.md``
+  2. **Project** — discovered from ``.mantis/skills/<name>/SKILL.md``
+  3. **User** — discovered from ``~/.mantis/skills/<name>/SKILL.md``
 
 Execution modes:
   - **inline** (default): prompt injected into current conversation
@@ -52,9 +52,10 @@ class Skill:
         if self._prompt_fn is not None:
             return self._prompt_fn(args)
         text = self._prompt_text
-        # Variable substitution (matches AutoDS's processPromptSlashCommand)
+        # Variable substitution (matches Mantis's processPromptSlashCommand)
         text = text.replace("$ARGUMENTS", args)
         if self.skill_root:
+            text = text.replace("${MANTIS_SKILL_DIR}", self.skill_root)
             text = text.replace("${AUTODS_SKILL_DIR}", self.skill_root)
         if args and self.argument_hint:
             text = text.replace(f"${{{self.argument_hint}}}", args)
@@ -189,7 +190,7 @@ def clear_skills(source: str | None = None) -> None:
 def load_skills_from_dir(skills_dir: Path, source: str = "project") -> list[Skill]:
     """Scan *skills_dir* for ``<name>/SKILL.md`` and register each skill.
 
-    Matches AutoDS's ``loadSkillsDir.ts`` directory-format loading:
+    Matches Mantis's ``loadSkillsDir.ts`` directory-format loading:
     only directories containing a ``SKILL.md`` file are recognised.
 
     Also supports single ``.md`` files directly in the directory (legacy
@@ -245,23 +246,23 @@ def load_skills_from_dir(skills_dir: Path, source: str = "project") -> list[Skil
 def discover_skills(cwd: str | None = None) -> list[Skill]:
     """Discover and register skills from standard locations.
 
-    Search order (matches AutoDS's four-tier hierarchy):
+    Search order (matches Mantis's four-tier hierarchy):
       1. Bundled skills (already registered via ``register_bundled_skills()``)
-      2. User skills:    ``~/.autods/skills/``
-      3. Project skills: ``{cwd}/.autods/skills/``
+      2. User skills:    ``~/.mantis/skills/`` plus legacy ``~/.autods/skills/``
+      3. Project skills: ``{cwd}/.mantis/skills/`` plus legacy ``{cwd}/.autods/skills/``
 
     Returns newly loaded skills (excludes already-registered bundled ones).
     """
     loaded: list[Skill] = []
 
-    # User-level skills
-    user_dir = Path.home() / ".autods" / "skills"
-    loaded.extend(load_skills_from_dir(user_dir, source="user"))
+    # User-level skills. Load legacy first so Mantis skills override by name.
+    loaded.extend(load_skills_from_dir(Path.home() / ".autods" / "skills", source="user"))
+    loaded.extend(load_skills_from_dir(Path.home() / ".mantis" / "skills", source="user"))
 
     # Project-level skills
     if cwd:
-        project_dir = Path(cwd) / ".autods" / "skills"
-        loaded.extend(load_skills_from_dir(project_dir, source="project"))
+        loaded.extend(load_skills_from_dir(Path(cwd) / ".autods" / "skills", source="project"))
+        loaded.extend(load_skills_from_dir(Path(cwd) / ".mantis" / "skills", source="project"))
 
     return loaded
 
@@ -273,7 +274,7 @@ def discover_skills(cwd: str | None = None) -> list[Skill]:
 def build_skills_prompt_section() -> str:
     """Build the skills listing for the system prompt.
 
-    Matches AutoDS's ``SkillTool/prompt.ts`` — lists available skills
+    Matches Mantis's ``SkillTool/prompt.ts`` — lists available skills
     so the model knows what it can invoke via ``/skill-name``.
     """
     skills = list_skills(user_invocable_only=False)

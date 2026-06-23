@@ -7,18 +7,18 @@ from features.plan import PlanModeManager, _get_plans_dir
 
 
 class TestPlanDir:
-    """Ensure plan files are stored under ~/.config/autods, not ~/.autods-legacy."""
+    """Ensure plan files are stored under ~/.config/mantis."""
 
-    def test_plans_dir_uses_config_autods(self, tmp_path):
+    def test_plans_dir_uses_config_mantis(self, tmp_path):
         fake_home = tmp_path / "home"
         fake_home.mkdir()
         with patch.object(Path, "home", return_value=fake_home):
             plans_dir = _get_plans_dir()
 
-        assert "autods" in plans_dir.parts
+        assert "mantis" in plans_dir.parts
         assert ".config" in plans_dir.parts
         assert ".autods-legacy" not in plans_dir.parts
-        assert plans_dir == fake_home / ".config" / "autods" / "plans"
+        assert plans_dir == fake_home / ".config" / "mantis" / "plans"
         assert plans_dir.exists()
 
     def test_plans_dir_does_not_create_dot_autods_legacy(self, tmp_path):
@@ -29,7 +29,7 @@ class TestPlanDir:
 
         dot_autods_legacy = fake_home / ".autods-legacy"
         assert not dot_autods_legacy.exists(), (
-            "~/.autods-legacy should not be created by autods"
+            "~/.autods-legacy should not be created by Mantis"
         )
 
 
@@ -42,7 +42,7 @@ class TestPlanModeManager:
         engine.system_prompt = "base prompt"
         return engine
 
-    def test_enter_creates_plan_file_under_config_autods(self, tmp_path):
+    def test_enter_creates_plan_file_under_config_mantis(self, tmp_path):
         fake_home = tmp_path / "home"
         fake_home.mkdir()
         manager = PlanModeManager()
@@ -52,7 +52,7 @@ class TestPlanModeManager:
             result = manager.enter()
 
         assert manager.is_active
-        assert ".config/autods" in result
+        assert ".config/mantis" in result
         assert ".autods-legacy/plans" not in result
 
     def test_exit_restores_state(self, tmp_path):

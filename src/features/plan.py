@@ -46,7 +46,7 @@ def _generate_slug() -> str:
 
 
 def _get_plans_dir() -> Path:
-    plans_dir = Path.home() / ".config" / "autods" / "plans"
+    plans_dir = Path.home() / ".config" / "mantis" / "plans"
     plans_dir.mkdir(parents=True, exist_ok=True)
     return plans_dir
 

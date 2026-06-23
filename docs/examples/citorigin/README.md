@@ -1,11 +1,11 @@
 # CitOrigin Custom Skill Example
 
-This example shows how to package a project-specific autods custom skill for a
+This example shows how to package a project-specific mantis custom skill for a
 claim-evidence auditing workflow.
 
 It is designed for the
 [CitOrigin](https://github.com/meijilin/TrustWorthyOfMAS/tree/main/CitOrigin)
-repository, not as a built-in autods skill.
+repository, not as a built-in mantis skill.
 
 ## What it does
 
@@ -18,16 +18,16 @@ The `citorigin` skill helps an agent:
 
 ## Install
 
-Copy the skill into one of autods's discovery locations:
+Copy the skill into one of mantis's discovery locations:
 
-- project-local: `<project>/.autods/skills/citorigin/SKILL.md`
-- user-global: `~/.autods/skills/citorigin/SKILL.md`
+- project-local: `<project>/.mantis/skills/citorigin/SKILL.md`
+- user-global: `~/.mantis/skills/citorigin/SKILL.md`
 
 Example for a project-local install:
 
 ```bash
-mkdir -p .autods/skills/citorigin
-cp docs/examples/citorigin/SKILL.md .autods/skills/citorigin/SKILL.md
+mkdir -p .mantis/skills/citorigin
+cp docs/examples/citorigin/SKILL.md .mantis/skills/citorigin/SKILL.md
 ```
 
 ## Repository assumptions
@@ -56,5 +56,5 @@ Example tasks this skill is designed to handle:
 ## Why this is an example, not a built-in skill
 
 `citorigin` is a domain-specific workflow tied to one repository layout and one
-set of CLI commands. It fits autods's custom skill mechanism well, but it is
+set of CLI commands. It fits mantis's custom skill mechanism well, but it is
 not broad enough to be a bundled built-in skill like `/review` or `/test`.

@@ -22,8 +22,11 @@ env/
 
 .env
 .env.local
+.mantis.toml
+.autods.toml
 data/
 submissions/
+MANTIS.md
 AUTODS.md
 
 plan.md

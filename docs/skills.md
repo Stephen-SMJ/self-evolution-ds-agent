@@ -44,10 +44,10 @@ Fixed: added negative check, type annotations, lru_cache...
 
 ## Custom Skills
 
-**Step 1**: Create a directory under `.autods/skills/`
+**Step 1**: Create a directory under `.mantis/skills/`
 
 ```bash
-mkdir -p .autods/skills/deploy
+mkdir -p .mantis/skills/deploy
 ```
 
 **Step 2**: Write a `SKILL.md` file
@@ -79,8 +79,8 @@ Running skill: /deploy…
 | Location | Scope |
 |----------|-------|
 | Built-in | 4 bundled skills, always available |
-| `~/.autods/skills/` | Personal skills, all projects |
-| `<project>/.autods/skills/` | Project skills, share with team |
+| `~/.mantis/skills/` | Personal skills, all projects |
+| `<project>/.mantis/skills/` | Project skills, share with team |
 
 ## Project-Specific Skill Examples
 

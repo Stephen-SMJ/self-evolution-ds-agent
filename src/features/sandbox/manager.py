@@ -121,5 +121,5 @@ class SandboxManager:
 
     def save(self, path: Path | None = None) -> None:
         """Persist current config to TOML file."""
-        target = path or (Path.cwd() / ".autods.toml")
+        target = path or (Path.cwd() / ".mantis.toml")
         save_sandbox_config(self._config, target)

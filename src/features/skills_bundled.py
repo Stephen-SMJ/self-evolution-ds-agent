@@ -1,6 +1,6 @@
-"""Bundled skills — built-in skills shipped with autods.
+"""Bundled skills — built-in skills shipped with mantis.
 
-Modelled after AutoDS's ``src/skills/bundled/`` directory.
+Modelled after Mantis's ``src/skills/bundled/`` directory.
 Each skill is registered via ``register_skill()`` during startup.
 """
 
@@ -185,7 +185,7 @@ def _test_prompt(args: str) -> str:
 _KAGGLE_PROMPT = """\
 # Kaggle Competition Workflow
 
-Use this skill to run the first version of AutoDS's general Kaggle competition workflow.
+Use this skill to run the first version of Mantis's general Kaggle competition workflow.
 The user may provide a Kaggle URL, competition slug, local competition folder, notebook,
 or a broad request such as "start this competition".
 
@@ -199,11 +199,11 @@ iterate toward stronger scores, and record reusable lessons as skills or memory.
 Before making non-trivial modeling decisions, check whether the project-local
 distilled skill exists:
 
-- `.autods/skills/autods-kaggle-distilled/SKILL.md`
-- `.autods/skills/autods-kaggle-distilled/references/general-workflow.md`
-- `.autods/skills/autods-kaggle-distilled/references/domain-playbooks.md`
-- `.autods/skills/autods-kaggle-distilled/references/evolution-rubric.md`
-- `.autods/skills/autods-kaggle-distilled/references/v2-distilled-recipes.md`
+- `.mantis/skills/mantis-kaggle-distilled/SKILL.md`
+- `.mantis/skills/mantis-kaggle-distilled/references/general-workflow.md`
+- `.mantis/skills/mantis-kaggle-distilled/references/domain-playbooks.md`
+- `.mantis/skills/mantis-kaggle-distilled/references/evolution-rubric.md`
+- `.mantis/skills/mantis-kaggle-distilled/references/v2-distilled-recipes.md`
 
 If present, use it as the default competition prior. In particular:
 
@@ -212,7 +212,7 @@ If present, use it as the default competition prior. In particular:
 - use `coverage_manifest.csv` / `coverage_files` only for missing domain/rank coverage
 - apply the domain playbook matching the competition type
 - use the evolution rubric to move from valid baseline to stronger solution
-- record which distilled lesson was used in `AUTODS.md`
+- record which distilled lesson was used in `MANTIS.md`
 
 ## Phase 1: Competition Intake
 
@@ -232,14 +232,14 @@ If present, use it as the default competition prior. In particular:
    - data files, train/test split, target column, ID columns, leakage risks
    - rules: internet, external data, notebook/code requirements, submission limits
 3. Create or reuse an isolated workspace:
-   - `competitions/<slug>/AUTODS.md`
+   - `competitions/<slug>/MANTIS.md`
    - `competitions/<slug>/data/`
    - `competitions/<slug>/src/`
    - `competitions/<slug>/notebooks/`
    - `competitions/<slug>/experiments/`
    - `competitions/<slug>/submissions/`
    - `competitions/<slug>/outputs/`
-4. Create or update a compact `competitions/<slug>/AUTODS.md` with:
+4. Create or update a compact `competitions/<slug>/MANTIS.md` with:
    - competition overview
    - metric and validation plan
    - data inventory
@@ -253,8 +253,35 @@ If present, use it as the default competition prior. In particular:
    - `competitions/<slug>/evolution/score_trends.md`
    - `competitions/<slug>/evolution/lessons.md`
    - `competitions/<slug>/evolution/hypotheses.json`
-   - `.autods/online_evolution/promotion_ledger.jsonl`
-   - `.autods/online_evolution/skill_patch_proposals.md`
+   - `.mantis/online_evolution/promotion_ledger.jsonl`
+   - `.mantis/online_evolution/skill_patch_proposals.md`
+
+## Reproducibility Requirement
+
+Inline commands such as `python -c "..."` are allowed only for tiny environment
+checks, package smoke tests, and one-off data-shape probes. They are not
+acceptable for meaningful modeling work.
+
+Before running any baseline, feature engineering step, validation experiment,
+model training, inference, ensembling, postprocessing, or submission generation,
+save the implementation as one of:
+
+- `competitions/<slug>/src/<run_name>.py`
+- `competitions/<slug>/notebooks/<run_name>.ipynb`
+
+Every meaningful experiment must be reproducible from a recorded command. Add
+or update `competitions/<slug>/MANTIS.md` with:
+
+- script or notebook path
+- exact command used to run it
+- input files and output files
+- random seed and validation split
+- CV score, public leaderboard score if available, and interpretation
+- failure notes for timeouts, package errors, format errors, or regressions
+
+If a quick inline probe discovers a useful feature or fix, immediately promote
+that logic into the appropriate script/notebook before treating the result as an
+experiment.
 
 ## Phase 2: Environment and Credentials
 
@@ -273,7 +300,7 @@ kaggle kernels pull <owner>/<kernel> -p competitions/<slug>/notebooks/<kernel> -
 Dependency policy:
 - Prefer packages already installed in the current project virtualenv.
 - If a dependency is missing, install only into the current project virtualenv:
-  `.venv/bin/python -m pip install <package>` from the AutoDS project root.
+  `.venv/bin/python -m pip install <package>` from the Mantis project root.
 - Do not use global `pip`, `pip3`, `sudo pip`, apt, conda, or
   `--break-system-packages` unless the user explicitly asks for system-level changes.
 - If `.venv` is unavailable, ask before changing the Python environment.
@@ -292,10 +319,10 @@ PY
 ```
 
 Credential safety:
-- Kaggle credentials are preconfigured by AutoDS from `.autods.toml` before the
+- Kaggle credentials are preconfigured by Mantis from `.mantis.toml` before the
   model receives this skill. Use `kaggle ...` directly; do not perform
   credential setup inside the workflow.
-- Never print, cat, or paste raw token values from `.autods.toml`,
+- Never print, cat, or paste raw token values from `.mantis.toml`,
   `~/.kaggle/kaggle.json`, `~/.kaggle/access_token`, or environment variables.
   Only print whether a variable/file exists.
 - Do not create or overwrite `~/.kaggle/kaggle.json` or `~/.kaggle/access_token`
@@ -308,7 +335,7 @@ Credential safety:
 - If `KGAT_API_TOKEN` or `KAGGLE_API_TOKEN` is present without `KAGGLE_KEY`, this
   is gateway auth. Use it only through the supported gateway/wrapper.
 - Shell exports inside one Bash call do not persist to later Bash calls.
-  Persistent credentials should come from AutoDS config/env, not ad-hoc exports
+  Persistent credentials should come from Mantis config/env, not ad-hoc exports
   during the workflow.
 
 If credentials are missing, tell the user that Kaggle CLI normally needs
@@ -326,7 +353,7 @@ Build the fastest valid baseline before optimizing:
 
 1. Load train/test/sample submission.
 2. Validate row counts, ID alignment, required columns, dtypes, missing values, and target.
-3. Create a simple baseline:
+3. Create a simple baseline as a saved script or notebook, not as inline Python:
    - tabular: constant/mean, LightGBM/XGBoost/CatBoost if available, or sklearn fallback
    - CV/audio/NLP: sample-submission-safe placeholder or lightweight feature baseline
    - time series: naive/grouped lag baseline
@@ -350,7 +377,7 @@ Before submitting, ask for confirmation unless the user explicitly allowed autom
 Prediction submission:
 
 ```bash
-kaggle competitions submit -c <slug> -f competitions/<slug>/submissions/submission_baseline.csv -m "AutoDS baseline"
+kaggle competitions submit -c <slug> -f competitions/<slug>/submissions/submission_baseline.csv -m "Mantis baseline"
 kaggle competitions submissions -c <slug>
 ```
 
@@ -405,12 +432,12 @@ Training runtime policy:
   rerun with an appropriate timeout. Do not blindly rerun the same command with
   only a slightly larger timeout.
 - Record training time, timeout, and any quick/full mode distinction in
-  `AUTODS.md` so later runs can make better compute decisions.
+  `MANTIS.md` so later runs can make better compute decisions.
 
 After each experiment, update the experiment log:
 
-| run | change | local CV | public score | status | lesson | next |
-|-----|--------|----------|--------------|--------|--------|------|
+| run | artifact | command | change | local CV | public score | status | lesson | next |
+|-----|----------|---------|--------|----------|--------------|--------|--------|------|
 
 If online evolution is enabled, every meaningful run must also append one JSON
 object to `competitions/<slug>/evolution/runs.jsonl`:
@@ -445,14 +472,14 @@ When a trigger fires, update:
 - `score_trends.md`: compact table of runs, OOF, LB, rank/percentile, and deltas.
 - `lessons.md`: promoted, rejected, inconclusive, and validation-risk lessons.
 - `hypotheses.json`: active hypotheses with evidence, next test, and stop rule.
-- `.autods/online_evolution/promotion_ledger.jsonl`: one record per reusable
+- `.mantis/online_evolution/promotion_ledger.jsonl`: one record per reusable
   tactic candidate with competition, domain, metric, evidence, and verdict.
 - The `/evolve <slug>` command can initialize or refresh these files from
   `runs.jsonl` when you need a deterministic local update.
 
 Skill promotion gate:
 - Local lesson: allowed after one competition if evidence is useful; write only
-  to `competitions/<slug>/evolution/lessons.md` and `AUTODS.md`.
+  to `competitions/<slug>/evolution/lessons.md` and `MANTIS.md`.
 - Domain memory candidate: allowed after a strong single-competition result or a
   clear repeated pattern inside one competition; write to the promotion ledger
   with verdict `domain_candidate`.
@@ -460,8 +487,8 @@ Skill promotion gate:
   evidence in at least two distinct competitions in the same domain, or one
   online competition plus matching offline V4 evidence and no contradicting
   online evidence. Write the proposed patch to
-  `.autods/online_evolution/skill_patch_proposals.md`.
-- Patch `.autods/skills/autods-kaggle-distilled/` only when the global gate is
+  `.mantis/online_evolution/skill_patch_proposals.md`.
+- Patch `.mantis/skills/mantis-kaggle-distilled/` only when the global gate is
   satisfied. The patch must name supporting competitions, score deltas, failure
   cases, and when not to use the tactic.
 - Never promote tactics based only on public-LB noise, hardcoded test labels,
@@ -475,7 +502,7 @@ Use a disciplined loop:
 2. Run one high-leverage change at a time.
 3. Compare local validation and public leaderboard.
 4. Keep winning changes, revert or isolate losing changes.
-5. Extract reusable lessons into `AUTODS.md`, a project skill, or memory.
+5. Extract reusable lessons into `MANTIS.md`, a project skill, or memory.
 6. Select and run the next experiment without asking the user unless it requires
    a new Kaggle submission or another risky external action.
 
@@ -607,7 +634,7 @@ def register_bundled_skills() -> None:
 
     register_skill(Skill(
         name="kaggle",
-        description="Run AutoDS's general Kaggle competition workflow",
+        description="Run Mantis's general Kaggle competition workflow",
         when_to_use="When starting or iterating on a Kaggle competition, submission, notebook, or leaderboard task",
         user_invocable=True,
         argument_hint="competition",

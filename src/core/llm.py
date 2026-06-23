@@ -84,7 +84,7 @@ class LLMMessage:
 class ACPConfig:
     agent: str = "codex"
     cwd: str | None = None
-    session: str = "autods"
+    session: str = "mantis"
     command: str = "acpx"
     timeout: int = 1800
     approve_all: bool = False
@@ -481,9 +481,9 @@ class _OpenAIStream:
 
 
 class _ACPXStream:
-    """Run one AutoDS turn through an ACP-compatible agent via acpx.
+    """Run one Mantis turn through an ACP-compatible agent via acpx.
 
-    acpx owns the ACP connection, tool execution, and persistent session. AutoDS
+    acpx owns the ACP connection, tool execution, and persistent session. Mantis
     treats the ACP agent as an external backend and consumes assistant text from
     the raw ACP NDJSON stream.
     """
@@ -510,7 +510,7 @@ class _ACPXStream:
             "w",
             encoding="utf-8",
             suffix=".md",
-            prefix="autods-acp-",
+            prefix="mantis-acp-",
             delete=False,
         )
         self._prompt_file.write(self._prompt)
@@ -572,7 +572,7 @@ class _ACPXStream:
             self._config.agent or "codex",
             "prompt",
             "-s",
-            self._config.session or "autods",
+            self._config.session or "mantis",
             "--file",
             prompt_file,
         ])
@@ -868,7 +868,7 @@ def _tool_result_to_text(content: Any) -> str:
 def _to_acp_prompt(system: str | None, messages: list[dict[str, Any]]) -> str:
     sections: list[str] = []
     if system:
-        sections.append("# AutoDS System Context\n\n" + system)
+        sections.append("# Mantis System Context\n\n" + system)
     sections.append("# Conversation Turn\n")
     for message in messages:
         role = message.get("role", "user")

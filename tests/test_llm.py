@@ -99,7 +99,7 @@ def test_acp_prompt_includes_system_and_messages():
         [{"role": "user", "content": "hello"}],
     )
 
-    assert "AutoDS System Context" in prompt
+    assert "Mantis System Context" in prompt
     assert "system instructions" in prompt
     assert "## user" in prompt
     assert "hello" in prompt

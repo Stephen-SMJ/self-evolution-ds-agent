@@ -1,7 +1,7 @@
 """Session persistence — JSONL-based conversation storage.
 
-Modelled after AutoDS's ``src/utils/sessionStorage.ts``.
-Each session is a pair of files under ``~/.config/autods/sessions/{sanitized_cwd}/``:
+Modelled after Mantis session storage.
+Each session is a pair of files under ``~/.config/mantis/sessions/{sanitized_cwd}/``:
 
 * ``{session_id}.jsonl``  — one JSON object per message
 * ``{session_id}.meta.json`` — lightweight metadata for fast listing
@@ -19,7 +19,8 @@ from pathlib import Path
 from typing import Any
 
 
-_SESSIONS_ROOT = Path.home() / ".config" / "autods" / "sessions"
+_SESSIONS_ROOT = Path.home() / ".config" / "mantis" / "sessions"
+_LEGACY_SESSIONS_ROOT = Path.home() / ".config" / "autods" / "sessions"
 
 
 # ---------------------------------------------------------------------------
@@ -220,8 +221,7 @@ class SessionStore:
     @classmethod
     def load_messages(cls, session_id: str, cwd: str) -> list[dict]:
         """Read all messages for *session_id* from disk."""
-        d = _SESSIONS_ROOT / _sanitize_cwd(cwd)
-        path = d / f"{session_id}.jsonl"
+        path = _session_path(session_id, cwd)
         if not path.exists():
             return []
         messages: list[dict] = []
@@ -241,28 +241,31 @@ class SessionStore:
     @classmethod
     def list_sessions(cls, cwd: str) -> list[SessionMeta]:
         """Return available sessions for *cwd*, most recent first."""
-        d = _SESSIONS_ROOT / _sanitize_cwd(cwd)
-        if not d.exists():
-            return []
         results: list[SessionMeta] = []
-        for meta_file in d.glob("*.meta.json"):
-            try:
-                with open(meta_file, encoding="utf-8") as fh:
-                    data = json.load(fh)
-                meta = SessionMeta(**data)
-                if meta.workspace is None:
-                    meta.workspace = cls.infer_workspace(meta.session_id, cwd)
-                results.append(meta)
-            except Exception:
+        seen: set[str] = set()
+        for d in _session_dirs(cwd):
+            if not d.exists():
                 continue
+            for meta_file in d.glob("*.meta.json"):
+                try:
+                    with open(meta_file, encoding="utf-8") as fh:
+                        data = json.load(fh)
+                    meta = SessionMeta(**data)
+                    if meta.session_id in seen:
+                        continue
+                    seen.add(meta.session_id)
+                    if meta.workspace is None:
+                        meta.workspace = cls.infer_workspace(meta.session_id, cwd)
+                    results.append(meta)
+                except Exception:
+                    continue
         results.sort(key=lambda m: m.updated_at, reverse=True)
         return results
 
     @classmethod
     def load_session(cls, session_id: str, cwd: str) -> tuple[SessionMeta | None, list[dict]]:
         """Load metadata + messages for *session_id*."""
-        d = _SESSIONS_ROOT / _sanitize_cwd(cwd)
-        meta_path = d / f"{session_id}.meta.json"
+        meta_path = _session_path(session_id, cwd).with_suffix(".meta.json")
         meta = None
         if meta_path.exists():
             with open(meta_path, encoding="utf-8") as fh:
@@ -308,3 +311,20 @@ def _generate_title(content: Any) -> str:
     if last_space > 40:
         truncated = truncated[:last_space]
     return truncated + "…"
+
+
+def _session_dirs(cwd: str) -> list[Path]:
+    safe = _sanitize_cwd(cwd)
+    dirs = [_SESSIONS_ROOT / safe]
+    legacy = _LEGACY_SESSIONS_ROOT / safe
+    if legacy != dirs[0]:
+        dirs.append(legacy)
+    return dirs
+
+
+def _session_path(session_id: str, cwd: str) -> Path:
+    for directory in _session_dirs(cwd):
+        path = directory / f"{session_id}.jsonl"
+        if path.exists():
+            return path
+    return _SESSIONS_ROOT / _sanitize_cwd(cwd) / f"{session_id}.jsonl"

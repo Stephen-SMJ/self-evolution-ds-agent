@@ -1,16 +1,16 @@
 # Coordinator Mode
 
-> This feature exists in the official AutoDS codebase but has not been fully released. autods implements and ships it.
+> This feature exists in the official Mantis codebase but has not been fully released. mantis implements and ships it.
 
 Coordinator mode turns the assistant into an orchestrator that can launch background workers for parallel research, implementation, and verification.
 
 ## Usage
 
 ```bash
-autods --coordinator
+mantis --coordinator
 # or
-export AUTODS_COORDINATOR=1
-autods
+export MANTIS_COORDINATOR=1
+mantis
 ```
 
 ## What It Adds
@@ -30,7 +30,7 @@ autods
 
 ## Typical Workflow
 
-1. Start `autods --coordinator`
+1. Start `mantis --coordinator`
 2. Ask for a larger task (research, implement, verify)
 3. Coordinator launches workers in background
 4. Worker results arrive as `<task-notification>` messages

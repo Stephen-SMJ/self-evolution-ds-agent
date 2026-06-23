@@ -54,7 +54,7 @@ Codex V3 semantic pass is available at:
 
 - `offline/distillation/v3/codex_semantic_distillation_v3.md`
 
-External-LLM V3 infrastructure is implemented, but the first smoke test returned `401 invalid_key` from the configured OpenAI-style endpoint. Full API-driven V3 semantic distillation requires a valid `AUTODS_API_KEY`/`OPENAI_API_KEY` and base URL.
+External-LLM V3 infrastructure is implemented, but the first smoke test returned `401 invalid_key` from the configured OpenAI-style endpoint. Full API-driven V3 semantic distillation requires a valid `MANTIS_API_KEY`/`OPENAI_API_KEY` and base URL.
 
 ## Run Command
 

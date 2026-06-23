@@ -149,13 +149,14 @@ def roll_with_seed(seed: str) -> Roll:
 def companion_user_id() -> str:
     """Derive a stable user identity for companion generation.
 
-    Since autods has no OAuth, use username@hostname as the seed.
+    Since Mantis has no OAuth, use username@hostname as the seed.
     Same user on same machine always gets the same companion.
 
-    Set AUTODS_BUDDY_SEED env var to override (useful for testing).
+    Set MANTIS_BUDDY_SEED env var to override (AUTODS_BUDDY_SEED remains
+    supported for legacy setups).
     """
     import os
-    override = os.environ.get('AUTODS_BUDDY_SEED')
+    override = os.environ.get("MANTIS_BUDDY_SEED") or os.environ.get("AUTODS_BUDDY_SEED")
     if override:
         return override
     try:

@@ -37,6 +37,6 @@ def test_refresh_online_evolution_creates_artifacts_and_ledger(tmp_path):
     assert "CatBoost depth/lr improved" in (evolution_dir / "lessons.md").read_text()
     assert "Ablate noisy features" in (evolution_dir / "hypotheses.json").read_text()
 
-    ledger = tmp_path / ".autods" / "online_evolution" / "promotion_ledger.jsonl"
+    ledger = tmp_path / ".mantis" / "online_evolution" / "promotion_ledger.jsonl"
     records = [json.loads(line) for line in ledger.read_text().splitlines()]
     assert records[0]["tactic_key"] == "tabular/catboost-depth-lr-tuning"

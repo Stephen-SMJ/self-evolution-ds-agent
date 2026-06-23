@@ -1,6 +1,6 @@
 # Sandbox
 
-> This feature exists in the official AutoDS codebase but has not been fully released. autods implements and ships it.
+> This feature exists in the official Mantis codebase but has not been fully released. mantis implements and ships it.
 
 Runs Bash commands inside [bubblewrap (bwrap)](https://github.com/containers/bubblewrap) isolation on Linux.
 

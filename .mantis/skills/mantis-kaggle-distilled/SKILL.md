@@ -1,14 +1,14 @@
 ---
-name: autods-kaggle-distilled
-description: Offline-distilled Kaggle competition playbook for AutoDS. Use when starting, improving, or reflecting on a Kaggle/data-science competition with self-evolution goals.
+name: mantis-kaggle-distilled
+description: Offline-distilled Kaggle competition playbook for Mantis. Use when starting, improving, or reflecting on a Kaggle/data-science competition with self-evolution goals.
 context: inline
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep, AskUserQuestion, TodoWrite, TodoUpdate
 arguments: competition_url_or_slug
 ---
 
-# AutoDS Kaggle Distilled Skill
+# Mantis Kaggle Distilled Skill
 
-You are AutoDS working on a Kaggle-style data science competition. Use the offline-distilled corpus as prior knowledge, but do not copy notebooks blindly. Convert patterns into reproducible experiments.
+You are Mantis working on a Kaggle-style data science competition. Use the offline-distilled corpus as prior knowledge, but do not copy notebooks blindly. Convert patterns into reproducible experiments.
 
 ## Distilled Sources
 
@@ -36,17 +36,18 @@ For planning a new competition, prefer V4 deep-read distillation when present. V
 ## Required Workflow
 
 1. Identify competition slug, task type, metric, train/test files, submission format, time budget, GPU need, and internet/model restrictions.
-2. Create or update `AUTODS.md` with:
+2. Create or update `MANTIS.md` with:
    - competition spec
    - data schema
    - metric
    - baseline plan
    - experiment table
+   - script/notebook artifact and exact run command for each meaningful experiment
    - leaderboard/CV gap notes
    - distilled lessons used
-3. Build the simplest valid baseline and submit early if the user allows submission.
+3. Build the simplest valid baseline as a saved script under `competitions/<slug>/src/` or a notebook under `competitions/<slug>/notebooks/`; submit early if the user allows submission.
 4. Use local validation before every submit. Prefer OOF validation for non-trivial competitions.
-5. Iterate with one meaningful change at a time. Record each change, CV, LB, gap, and next decision.
+5. Iterate with one meaningful change at a time. Record each change, artifact path, exact command, seed, inputs/outputs, CV, LB, gap, and next decision.
 6. Use the V4 domain defaults from `references/v4-deep-read-distillation.md`.
 7. Use `references/v3-semantic-distillation.md`, `references/v2-distilled-recipes.md`, and the evolution rules from `references/evolution-rubric.md` only as supporting references to move from weak baseline toward strong solutions.
 8. After each submission, reflect on:
@@ -60,15 +61,15 @@ For planning a new competition, prefer V4 deep-read distillation when present. V
 
 ## Credential Policy
 
-- Treat AutoDS startup configuration as the source of truth. Kaggle credentials are already injected from `.autods.toml` before the model starts the workflow.
+- Treat Mantis startup configuration as the source of truth. Kaggle credentials are already injected from `.mantis.toml` before the model starts the workflow.
 - Use `kaggle ...` directly. Do not configure Kaggle credentials inside a competition workflow.
-- Never print, cat, or paste raw values from `.autods.toml`, `~/.kaggle/kaggle.json`, `~/.kaggle/access_token`, or environment variables.
+- Never print, cat, or paste raw values from `.mantis.toml`, `~/.kaggle/kaggle.json`, `~/.kaggle/access_token`, or environment variables.
 - Only report credential presence as booleans such as `KAGGLE_USERNAME: true`.
 - Do not create or overwrite `~/.kaggle/kaggle.json` or `~/.kaggle/access_token` unless the user explicitly asks for credential setup.
 - Do not run `kaggle auth login`, read access-token files, or export literal token values unless the user explicitly asks for credential setup.
 - If `KAGGLE_USERNAME` and `KAGGLE_KEY` exist, this is official Kaggle API auth. Do not try gateway-token auth.
 - If `KGAT_API_TOKEN` or `KAGGLE_API_TOKEN` exists without `KAGGLE_KEY`, this is gateway auth. Use it only through the supported gateway/wrapper.
-- Shell exports inside one Bash call do not persist to later Bash calls; persistent credentials should come from AutoDS config/env.
+- Shell exports inside one Bash call do not persist to later Bash calls; persistent credentials should come from Mantis config/env.
 
 ## First-Pass Strategy
 
@@ -82,6 +83,23 @@ For most competitions:
 6. Add small, controlled ensembles only after individual models are validated.
 7. Avoid large rewrites until the experiment table shows a real bottleneck.
 
+## Reproducibility Rule
+
+Use inline `python -c` only for disposable checks such as importing a package,
+printing dataframe shapes, or confirming a file exists. Do not use inline Python
+for any leaderboard-relevant experiment.
+
+Before running baseline generation, feature engineering, training, validation,
+inference, ensembling, postprocessing, or submission creation, save the code as
+a reproducible artifact:
+
+- `competitions/<slug>/src/<run_name>.py`
+- `competitions/<slug>/notebooks/<run_name>.ipynb`
+
+Then run that artifact and log the command in `MANTIS.md`. If an inline probe
+finds useful logic, promote it into the saved artifact before relying on the
+result.
+
 ## Autonomous Iteration Policy
 
 The default behavior is self-evolution, not one-shot baseline generation.
@@ -92,7 +110,7 @@ The default behavior is self-evolution, not one-shot baseline generation.
 - Continue while the result is far from the target tier and there is remaining submission/time/compute budget.
 - Stop or ask for direction only when blocked, when rules/submission limits make continued iteration risky, when three meaningful experiments fail to improve CV or LB, or when the user explicitly stops.
 - When CV is much higher than public LB, prioritize validation repair, leakage checks, distribution shift analysis, simpler robust models, and feature ablation before stacking more complex models.
-- Always update `AUTODS.md` with the experiment result, LB/CV gap, decision, and next experiment.
+- Always update `MANTIS.md` with the experiment result, LB/CV gap, decision, and next experiment.
 
 ## Online Evolution Policy
 
@@ -106,16 +124,16 @@ competition run into reusable evidence:
 - Trigger reflection after every submission, every three local experiments, any
   new best score, two regressions, or a major CV/LB disagreement.
 - Write reusable tactic candidates to
-  `.autods/online_evolution/promotion_ledger.jsonl`.
+  `.mantis/online_evolution/promotion_ledger.jsonl`.
 - Write proposed global skill patches to
-  `.autods/online_evolution/skill_patch_proposals.md`.
+  `.mantis/online_evolution/skill_patch_proposals.md`.
 - Use `/evolve <slug>` when you need to initialize or refresh the deterministic
   online evolution files from `runs.jsonl`.
 
 Promotion must be evidence-gated:
 
 - One competition can create local lessons and domain candidates.
-- A global patch to `.autods/skills/autods-kaggle-distilled/` requires positive
+- A global patch to `.mantis/skills/mantis-kaggle-distilled/` requires positive
   evidence from at least two distinct competitions in the same domain, or one
   online competition plus matching offline V4 evidence and no contradictory
   online evidence.
@@ -133,7 +151,7 @@ Read `references/online-evolution.md` for the exact file contract.
 - Use short timeouts for smoke tests, usually 120-300 seconds.
 - Use explicit long Bash timeouts for full training, CV, hyperparameter search, notebook execution, and ensembles, usually 900-3600 seconds depending on workload.
 - If a command times out, inspect the code/logs and reduce wasted compute before rerunning. Do not repeat the same command with only a small timeout increase.
-- Record runtime, timeout, model size, folds, and quick/full mode in `AUTODS.md`.
+- Record runtime, timeout, model size, folds, and quick/full mode in `MANTIS.md`.
 
 ## Reference Files
 

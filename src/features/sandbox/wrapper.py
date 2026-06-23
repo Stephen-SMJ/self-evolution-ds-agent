@@ -126,18 +126,21 @@ def _get_protected_paths(cwd: str) -> list[str]:
     """Return paths that must be read-only protected inside sandbox.
 
     Corresponds to sandbox-adapter.ts:230-255:
-    - .autods.toml (project config)
-    - ~/.config/autods/config.toml (global config)
-    - AUTODS.md (should not be modified by sandbox)
+    - .mantis.toml / .autods.toml (project config)
+    - ~/.config/mantis/config.toml / ~/.config/autods/config.toml (global config)
+    - MANTIS.md / AUTODS.md (should not be modified by sandbox)
     """
     paths = []
-    local_config = Path(cwd) / ".autods.toml"
-    if local_config.exists():
-        paths.append(str(local_config))
-    global_config = Path.home() / ".config" / "autods" / "config.toml"
-    if global_config.exists():
-        paths.append(str(global_config))
-    autods_md = Path(cwd) / "AUTODS.md"
-    if autods_md.exists():
-        paths.append(str(autods_md))
+    for local_name in (".mantis.toml", ".autods.toml"):
+        local_config = Path(cwd) / local_name
+        if local_config.exists():
+            paths.append(str(local_config))
+    for config_dir in ("mantis", "autods"):
+        global_config = Path.home() / ".config" / config_dir / "config.toml"
+        if global_config.exists():
+            paths.append(str(global_config))
+    for md_name in ("MANTIS.md", "AUTODS.md"):
+        project_md = Path(cwd) / md_name
+        if project_md.exists():
+            paths.append(str(project_md))
     return paths

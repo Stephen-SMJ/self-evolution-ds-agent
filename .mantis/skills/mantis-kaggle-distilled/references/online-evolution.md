@@ -76,7 +76,7 @@ Reflection must update:
 Maintain:
 
 ```text
-.autods/online_evolution/
+.mantis/online_evolution/
   promotion_ledger.jsonl
   skill_patch_proposals.md
 ```
@@ -105,12 +105,12 @@ Each ledger record should contain:
 Local lesson:
 
 - One competition is enough.
-- Write to `competitions/<slug>/evolution/lessons.md` and `AUTODS.md`.
+- Write to `competitions/<slug>/evolution/lessons.md` and `MANTIS.md`.
 
 Domain candidate:
 
 - One strong competition result is enough if validation and LB agree.
-- Write to `.autods/online_evolution/promotion_ledger.jsonl`.
+- Write to `.mantis/online_evolution/promotion_ledger.jsonl`.
 - Do not patch global skills yet.
 
 Global skill patch proposal:
@@ -118,11 +118,11 @@ Global skill patch proposal:
 - Requires the same `tactic_key` to have positive evidence in at least two
   distinct competitions in the same domain, or one online competition plus
   matching offline V4 evidence and no contradictory online evidence.
-- Write a proposal to `.autods/online_evolution/skill_patch_proposals.md`.
+- Write a proposal to `.mantis/online_evolution/skill_patch_proposals.md`.
 
 Global skill patch:
 
-- Patch `.autods/skills/autods-kaggle-distilled/` only when the proposal names:
+- Patch `.mantis/skills/mantis-kaggle-distilled/` only when the proposal names:
   supporting competitions, score deltas, validation behavior, known failures,
   and when not to use the tactic.
 - The patch should change the smallest relevant reference file, usually

@@ -121,13 +121,20 @@ class TestResolvePaths:
 
 class TestProtectedPaths:
     def test_with_config_file(self, tmp_path: Path):
-        (tmp_path / ".autods.toml").touch()
+        (tmp_path / ".mantis.toml").touch()
         paths = _get_protected_paths(str(tmp_path))
-        assert str(tmp_path / ".autods.toml") in paths
+        assert str(tmp_path / ".mantis.toml") in paths
 
-    def test_with_autods_md(self, tmp_path: Path):
+    def test_with_mantis_md(self, tmp_path: Path):
+        (tmp_path / "MANTIS.md").touch()
+        paths = _get_protected_paths(str(tmp_path))
+        assert str(tmp_path / "MANTIS.md") in paths
+
+    def test_with_legacy_autods_files(self, tmp_path: Path):
+        (tmp_path / ".autods.toml").touch()
         (tmp_path / "AUTODS.md").touch()
         paths = _get_protected_paths(str(tmp_path))
+        assert str(tmp_path / ".autods.toml") in paths
         assert str(tmp_path / "AUTODS.md") in paths
 
     def test_no_files(self, tmp_path: Path):

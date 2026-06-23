@@ -47,7 +47,7 @@ Move through this ladder unless evidence says otherwise:
 
 ## Self-Evolution Log Template
 
-Append this to `AUTODS.md` for every meaningful attempt:
+Append this to `MANTIS.md` for every meaningful attempt:
 
 ```markdown
 | id | change | local CV | public LB | gap | decision | lesson |

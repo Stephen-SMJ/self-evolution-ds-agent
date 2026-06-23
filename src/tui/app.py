@@ -1,4 +1,4 @@
-"""autods entry point — argparse, engine setup, and interactive REPL."""
+"""Mantis entry point — argparse, engine setup, and interactive REPL."""
 from __future__ import annotations
 
 import argparse
@@ -62,11 +62,21 @@ from tui.input_parser import parse_input
 from tui.shell import run_shell, handle_sandbox_command
 
 console = Console()
-_HISTORY_FILE = Path.home() / ".config" / "autods" / "history"
+_HISTORY_FILE = Path.home() / ".config" / "mantis" / "history"
 os.environ.setdefault("PROMPT_TOOLKIT_NO_CPR", "1")
 
-# Match AutoDS: useDoublePress DOUBLE_PRESS_TIMEOUT_MS = 800
+# Match Mantis: useDoublePress DOUBLE_PRESS_TIMEOUT_MS = 800
 _DOUBLE_PRESS_TIMEOUT_MS = 0.8
+
+
+def _mantis_banner(config_note: str, session_note: str) -> str:
+    """Return a compact orchid mantis startup mark for the terminal."""
+    icon = (
+        "[bold magenta]  \\_/[/bold magenta]\n"
+        "[bold bright_magenta] (o o)[/bold bright_magenta]  [bold cyan]Mantis[/bold cyan]\n"
+        "[bold magenta] /|Y|╲[/bold magenta]"
+    )
+    return f"{icon}\n{config_note}  {session_note}"
 
 
 def _run_dream(engine: Engine, memory_dir: Path,
@@ -75,7 +85,7 @@ def _run_dream(engine: Engine, memory_dir: Path,
                session_ids: list[str] | None = None) -> None:
     """Run dream consolidation: snapshot messages, submit dream prompt, restore.
 
-    Mirrors TS autoDream.ts — auto-dream (quiet=True) gets permission isolation;
+    Mirrors Mantis auto-dream — auto-dream (quiet=True) gets permission isolation;
     manual /dream runs with normal permissions (matching TS behavior).
     """
     if not quiet:
@@ -114,8 +124,8 @@ def _run_dream(engine: Engine, memory_dir: Path,
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        prog="autods",
-        description="AutoDS self-evolving data science agent",
+        prog="mantis",
+        description="Mantis self-evolving data science agent",
     )
     parser.add_argument("prompt", nargs="?", help="Prompt to send (optional)")
     parser.add_argument("-p", "--print", action="store_true",
@@ -140,7 +150,7 @@ def main() -> None:
     parser.add_argument("--no-auto-dream", action="store_true",
                         help="Disable automatic dream consolidation")
     parser.add_argument("--use-gpu", dest="use_gpu", action="store_true", default=None,
-                        help="Tell AutoDS to inspect and prefer available GPU resources")
+                        help="Tell Mantis to inspect and prefer available GPU resources")
     parser.add_argument("--no-use-gpu", dest="use_gpu", action="store_false",
                         help="Disable GPU-aware prompting")
     parser.add_argument("--online-evolution", dest="online_evolution", action="store_true", default=None,
@@ -437,8 +447,7 @@ def main() -> None:
     if is_coordinator_mode():
         config_note += " [dim yellow]· coordinator[/dim yellow]"
     session_note = f"[dim]session {session_store.session_id[:8]}[/dim]" if session_store else ""
-    console.print("[bold cyan]AutoDS[/bold cyan]  "
-                  f"{config_note}  {session_note}")
+    console.print(_mantis_banner(config_note, session_note))
 
 
     _file_history = FileHistory(str(_HISTORY_FILE))
@@ -466,7 +475,7 @@ def main() -> None:
     def _set_reaction(text: str, print_to_terminal: bool = False) -> None:
         """Observer callback — delivers reaction to animator's toolbar bubble.
 
-        For normal mode (reacting to AutoDS): only shows in toolbar bubble.
+        For normal mode (reacting to Mantis): only shows in toolbar bubble.
         For direct address mode: also prints to terminal scroll history.
         """
         if animator:
@@ -656,7 +665,7 @@ def main() -> None:
             except Exception as e:
                 console.print(f"[dim red]Auto-compact failed: {e}[/dim red]")
 
-        # Check if user is talking directly to companion — skip AutoDS, let
+        # Check if user is talking directly to companion — skip Mantis, let
         # companion reply directly via observer (no awkward "." response)
         _companion_addressed = False
         try:

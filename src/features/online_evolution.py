@@ -40,7 +40,7 @@ def refresh_online_evolution(root: Path, competition_ref: str) -> EvolutionRefre
     slug = normalize_competition_ref(competition_ref)
     workspace = root / "competitions" / slug
     evolution_dir = workspace / "evolution"
-    online_dir = root / ".autods" / "online_evolution"
+    online_dir = root / ".mantis" / "online_evolution"
     evolution_dir.mkdir(parents=True, exist_ok=True)
     online_dir.mkdir(parents=True, exist_ok=True)
 

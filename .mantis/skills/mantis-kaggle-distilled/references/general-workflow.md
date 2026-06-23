@@ -1,8 +1,8 @@
-# General Kaggle Workflow Distilled for AutoDS
+# General Kaggle Workflow Distilled for Mantis
 
 ## Setup
 
-- Always create `AUTODS.md` before or during the first baseline.
+- Always create `MANTIS.md` before or during the first baseline.
 - Keep all competition files under `competitions/<slug>/` when possible.
 - Keep submissions under `submissions/<slug>/` or `competitions/<slug>/submissions/`.
 - Record every experiment. A forgotten experiment is not reusable self-evolution.
@@ -28,7 +28,7 @@ The baseline is successful only if it:
 - has deterministic seeds
 - has a local validation score
 - stores predictions and code
-- updates `AUTODS.md`
+- updates `MANTIS.md`
 
 Use small models first:
 
@@ -70,7 +70,7 @@ Each experiment should answer a question:
 - Validate row count, ID order, column names, dtypes, and value ranges.
 - Save each submission with experiment ID.
 - Use short meaningful submit messages.
-- After leaderboard score returns, update `AUTODS.md` with CV, LB, gap, and interpretation.
+- After leaderboard score returns, update `MANTIS.md` with CV, LB, gap, and interpretation.
 
 ## When To Ensemble
 

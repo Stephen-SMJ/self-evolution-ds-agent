@@ -4,7 +4,8 @@ import os
 from typing import Iterable
 
 
-COORDINATOR_ENV_VAR = "AUTODS_COORDINATOR"
+COORDINATOR_ENV_VAR = "MANTIS_COORDINATOR"
+LEGACY_COORDINATOR_ENV_VAR = "AUTODS_COORDINATOR"
 
 
 def _is_env_truthy(value: str | None) -> bool:
@@ -14,7 +15,10 @@ def _is_env_truthy(value: str | None) -> bool:
 
 
 def is_coordinator_mode() -> bool:
-    return _is_env_truthy(os.getenv(COORDINATOR_ENV_VAR))
+    return (
+        _is_env_truthy(os.getenv(COORDINATOR_ENV_VAR))
+        or _is_env_truthy(os.getenv(LEGACY_COORDINATOR_ENV_VAR))
+    )
 
 
 def set_coordinator_mode(enabled: bool) -> None:
@@ -22,6 +26,7 @@ def set_coordinator_mode(enabled: bool) -> None:
         os.environ[COORDINATOR_ENV_VAR] = "1"
     else:
         os.environ.pop(COORDINATOR_ENV_VAR, None)
+        os.environ.pop(LEGACY_COORDINATOR_ENV_VAR, None)
 
 
 def current_session_mode() -> str:
@@ -58,7 +63,7 @@ def get_coordinator_user_context(worker_tools: Iterable[str]) -> dict[str, str]:
 
 
 def get_coordinator_system_prompt() -> str:
-    return """You are AutoDS, an AI assistant that orchestrates software engineering tasks across multiple workers.
+    return """You are Mantis, an AI assistant that orchestrates software engineering tasks across multiple workers.
 
 ## 1. Your Role
 

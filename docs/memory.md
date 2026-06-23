@@ -1,6 +1,6 @@
 # KAIROS — Memory System
 
-> This feature exists in the official AutoDS codebase but has not been fully released. autods implements and ships it.
+> This feature exists in the official Mantis codebase but has not been fully released. mantis implements and ships it.
 
 The assistant can remember information across sessions and automatically consolidate memories over time.
 
@@ -23,15 +23,15 @@ Configurable: `--dream-interval`, `--dream-min-sessions`, `--no-auto-dream`
 ## Try It Out
 
 ```bash
-autods --auto-approve
+mantis --auto-approve
 > /remember I prefer Python over JavaScript
 > /remember Our project uses gRPC + PostgreSQL
 > /dream                    # consolidate into topic files
 > /memory                   # verify the index
 
 # New session — the model recalls your preferences
-autods
+mantis
 > What do you know about my preferences?
 ```
 
-Data stored in `~/.autods/` (memory in `memory/`, sessions in `sessions/`).
+Data stored in `~/.mantis/` (memory in `memory/`, sessions in `sessions/`).

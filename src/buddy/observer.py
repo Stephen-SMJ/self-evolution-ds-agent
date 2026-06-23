@@ -1,7 +1,7 @@
 """Companion observer — generates reactions after each turn.
 
 Two modes:
-1. Normal: witty one-liner reacting to AutoDS's response
+1. Normal: witty one-liner reacting to Mantis's response
 2. Direct address: user spoke to the companion by name, companion replies
    with conversation history so it remembers recent exchanges
 

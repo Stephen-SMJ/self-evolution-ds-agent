@@ -2,8 +2,8 @@
 
 Corpus prepared from:
 
-- `/home/ubuntu/proj/autods/self-evolution-ds-agent/distillation/core_manifest.csv`
-- `/home/ubuntu/proj/autods/self-evolution-ds-agent/distillation/coverage_manifest.csv`
+- `/home/ubuntu/proj/mantis/self-evolution-ds-agent/distillation/core_manifest.csv`
+- `/home/ubuntu/proj/mantis/self-evolution-ds-agent/distillation/coverage_manifest.csv`
 
 ## Prepared Sets
 

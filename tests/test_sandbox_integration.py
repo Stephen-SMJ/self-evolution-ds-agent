@@ -79,7 +79,7 @@ class TestSandboxedExecution:
 
     def test_protected_config(self, tmp_path: Path):
         """Config file should be read-only protected."""
-        config_file = tmp_path / ".autods.toml"
+        config_file = tmp_path / ".mantis.toml"
         config_file.write_text("[sandbox]\nenabled = true\n")
         cfg = SandboxConfig(enabled=True)
         result = _run_sandboxed(

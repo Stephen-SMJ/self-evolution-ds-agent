@@ -8,8 +8,8 @@ from datetime import date, datetime
 from pathlib import Path
 from typing import Any
 
-MEMORY_DIR = Path.home() / ".config" / "autods" / "memory"
-SESSIONS_DIR = Path.home() / ".config" / "autods" / "sessions"
+MEMORY_DIR = Path.home() / ".config" / "mantis" / "memory"
+SESSIONS_DIR = Path.home() / ".config" / "mantis" / "sessions"
 MAX_MEMORY_INDEX_CHARS = 10_000
 MAX_ENTRYPOINT_LINES = 200
 ENTRYPOINT_NAME = "MEMORY.md"
@@ -258,7 +258,7 @@ Pointers to where information lives in external systems. \
 - Code patterns, architecture, file paths — derivable from reading the project
 - Git history, recent changes — `git log` / `git blame` are authoritative
 - Debugging solutions — the fix is in the code; the commit message has context
-- Anything already documented in AUTODS.md files
+- Anything already documented in MANTIS.md files
 - Ephemeral task details or current conversation context
 
 ## How to save memories

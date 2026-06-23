@@ -76,18 +76,18 @@ def test_build_system_prompt_includes_git_status_when_available():
     assert "main" in prompt
 
 
-def test_build_system_prompt_includes_autods_md(tmp_path):
-    autods_md = tmp_path / "AUTODS.md"
-    autods_md.write_text("# Test Project\nSome instructions here.")
+def test_build_system_prompt_includes_mantis_md(tmp_path):
+    mantis_md = tmp_path / "MANTIS.md"
+    mantis_md.write_text("# Test Project\nSome instructions here.")
 
     prompt = build_system_prompt(cwd=str(tmp_path))
-    assert "AUTODS.md" in prompt
+    assert "MANTIS.md" in prompt
     assert "Test Project" in prompt
 
 
-def test_build_system_prompt_without_autods_md(tmp_path):
+def test_build_system_prompt_without_mantis_md(tmp_path):
     prompt = build_system_prompt(cwd=str(tmp_path))
-    # Should not have the AUTODS.md section header (beyond the base prompt)
+    # Should not have the MANTIS.md section header (beyond the base prompt)
     assert "# Test Project" not in prompt
 
 
@@ -129,13 +129,22 @@ def test_get_git_section_returns_empty_on_exception():
     assert status == ""
 
 
-def test_get_autods_md_section_reads_file(tmp_path):
-    autods_md = tmp_path / "AUTODS.md"
-    autods_md.write_text("hello world")
+def test_get_autods_md_section_reads_mantis_file(tmp_path):
+    mantis_md = tmp_path / "MANTIS.md"
+    mantis_md.write_text("hello world")
 
     result = _get_autods_md_section(str(tmp_path))
     assert "hello world" in result
-    assert "AUTODS.md" in result
+    assert "MANTIS.md" in result
+
+
+def test_get_autods_md_section_reads_legacy_file(tmp_path):
+    autods_md = tmp_path / "AUTODS.md"
+    autods_md.write_text("legacy hello")
+
+    result = _get_autods_md_section(str(tmp_path))
+    assert "legacy hello" in result
+    assert "AUTODS.md (legacy)" in result
 
 
 def test_get_autods_md_section_returns_empty_when_missing(tmp_path):
@@ -144,8 +153,8 @@ def test_get_autods_md_section_returns_empty_when_missing(tmp_path):
 
 
 def test_get_autods_md_section_truncates_large_file(tmp_path):
-    autods_md = tmp_path / "AUTODS.md"
-    autods_md.write_text("x" * 20_000)
+    mantis_md = tmp_path / "MANTIS.md"
+    mantis_md.write_text("x" * 20_000)
 
     result = _get_autods_md_section(str(tmp_path))
     # Section includes header, so content is truncated to fit within 10k chars

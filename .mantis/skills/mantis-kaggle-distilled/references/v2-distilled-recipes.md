@@ -10,10 +10,10 @@ V2 adds structured evolution traces over the full coverage set:
 
 Source files:
 
-- `/home/ubuntu/proj/autods/self-evolution-ds-agent/distillation/v2/domain_recipes.json`
-- `/home/ubuntu/proj/autods/self-evolution-ds-agent/distillation/v2/domain_recipes.md`
-- `/home/ubuntu/proj/autods/self-evolution-ds-agent/distillation/v2/competition_evolution_traces.json`
-- `/home/ubuntu/proj/autods/self-evolution-ds-agent/distillation/v2/competition_trace_index.md`
+- `/home/ubuntu/proj/mantis/self-evolution-ds-agent/distillation/v2/domain_recipes.json`
+- `/home/ubuntu/proj/mantis/self-evolution-ds-agent/distillation/v2/domain_recipes.md`
+- `/home/ubuntu/proj/mantis/self-evolution-ds-agent/distillation/v2/competition_evolution_traces.json`
+- `/home/ubuntu/proj/mantis/self-evolution-ds-agent/distillation/v2/competition_trace_index.md`
 
 ## How To Use V2
 
@@ -22,7 +22,7 @@ Source files:
 3. Select 1-3 same-domain competition traces from `competition_trace_index.md`.
 4. Use the `70pct` and `40pct` buckets to build a valid baseline and first serious model.
 5. Use the `20pct`, `10pct`, and `1st` buckets to choose upgrade steps.
-6. Record the chosen trace and recipe in `AUTODS.md`.
+6. Record the chosen trace and recipe in `MANTIS.md`.
 
 ## Interpretation
 

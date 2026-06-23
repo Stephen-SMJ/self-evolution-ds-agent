@@ -113,6 +113,13 @@ class TestSkill:
     def test_skill_dir_substitution(self):
         skill = Skill(
             name="s", skill_root="/my/root",
+            _prompt_text="dir=${MANTIS_SKILL_DIR}/scripts",
+        )
+        assert "/my/root/scripts" in skill.get_prompt()
+
+    def test_legacy_skill_dir_substitution(self):
+        skill = Skill(
+            name="s", skill_root="/my/root",
             _prompt_text="dir=${AUTODS_SKILL_DIR}/scripts",
         )
         assert "/my/root/scripts" in skill.get_prompt()
@@ -209,7 +216,7 @@ class TestBundledSkills:
         register_bundled_skills()
         p = get_skill("kaggle").get_prompt("https://www.kaggle.com/competitions/playground-series")
         assert "Kaggle Competition Workflow" in p
-        assert "AutoDS baseline" in p
+        assert "Mantis baseline" in p
         assert "competitions/<slug>" in p
         assert ".venv/bin/python -m pip install" in p
         assert "--break-system-packages" in p
@@ -219,7 +226,7 @@ class TestBundledSkills:
         assert "Training runtime policy" in p
         assert "900-3600 seconds" in p
         assert "Never print, cat, or paste raw token values" in p
-        assert "Kaggle credentials are preconfigured by AutoDS" in p
+        assert "Kaggle credentials are preconfigured by Mantis" in p
         assert "Do not run `kaggle auth login`" in p
         assert "runs.jsonl" in p
         assert "promotion_ledger.jsonl" in p
@@ -321,6 +328,13 @@ class TestLoadFromDisk:
 
 class TestDiscoverSkills:
     def test_project_level(self, tmp_path):
+        sd = tmp_path / ".mantis" / "skills" / "check"
+        sd.mkdir(parents=True)
+        (sd / "SKILL.md").write_text("---\ndescription: Check\n---\nRun check.")
+        loaded = discover_skills(str(tmp_path))
+        assert any(s.name == "check" and s.source == "project" for s in loaded)
+
+    def test_legacy_project_level(self, tmp_path):
         sd = tmp_path / ".autods" / "skills" / "check"
         sd.mkdir(parents=True)
         (sd / "SKILL.md").write_text("---\ndescription: Check\n---\nRun check.")

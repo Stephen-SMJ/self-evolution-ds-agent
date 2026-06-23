@@ -1,13 +1,13 @@
-# AutoDS
+# Mantis
 
-AutoDS is an experimental self-evolving data science agent for Kaggle-style competitions.
+Mantis is an experimental self-evolving data science agent for Kaggle-style competitions.
 
 This repository contains two parts:
 
-- **Agent system**: the runnable AutoDS terminal agent, tools, slash commands, project skills, and tests.
+- **Agent system**: the runnable Mantis terminal agent, tools, slash commands, project skills, and tests.
 - **Offline evolution corpus**: collected Kaggle notebooks and V1-V4 distillation artifacts under `offline/`.
 
-The project goal is to turn competition experience into reusable agent behavior. AutoDS should be able to receive a Kaggle competition link, understand the task and metric, download data, build baselines, run experiments, submit predictions, inspect scores, reflect on failures, and improve its strategy over time.
+The project goal is to turn competition experience into reusable agent behavior. Mantis should be able to receive a Kaggle competition link, understand the task and metric, download data, build baselines, run experiments, submit predictions, inspect scores, reflect on failures, and improve its strategy over time.
 
 ## Why This Exists
 
@@ -21,7 +21,7 @@ Most data-science agents fail because they treat every competition as a generic 
 - disciplined ensembling
 - knowing when a public notebook is low-quality or not transferable
 
-AutoDS is built around those details. The offline corpus is used as prior knowledge, while the agent runtime is used to execute and iterate on real competitions.
+Mantis is built around those details. The offline corpus is used as prior knowledge, while the agent runtime is used to execute and iterate on real competitions.
 
 ## Current Status
 
@@ -30,21 +30,21 @@ This is an active research codebase, not a polished product.
 Current version: **online evolution v1**.
 
 This version adds the first real online self-evolution mechanism. It does not
-make AutoDS magically learn from every competition in the background yet; it
+make Mantis magically learn from every competition in the background yet; it
 creates the durable state and promotion rules that make online learning
 auditable and reusable:
 
-- `online-evolution = true` enables online evolution mode in `.autods.toml`.
+- `online-evolution = true` enables online evolution mode in `.mantis.toml`.
 - The system prompt exposes whether online evolution is enabled.
 - Kaggle runs maintain structured evolution artifacts under
   `competitions/<slug>/evolution/`.
 - `/evolve <slug>` initializes or refreshes score trends, lessons, hypotheses,
   and global promotion candidates from `runs.jsonl`.
-- `.autods/online_evolution/promotion_ledger.jsonl` tracks reusable tactic
+- `.mantis/online_evolution/promotion_ledger.jsonl` tracks reusable tactic
   evidence across competitions.
-- `.autods/online_evolution/skill_patch_proposals.md` is the staging area for
+- `.mantis/online_evolution/skill_patch_proposals.md` is the staging area for
   proposed global skill updates.
-- Global patches to `.autods/skills/autods-kaggle-distilled/` are evidence-gated
+- Global patches to `.mantis/skills/mantis-kaggle-distilled/` are evidence-gated
   and require cross-competition support, not a single lucky leaderboard gain.
 
 Implemented:
@@ -72,15 +72,15 @@ Still evolving:
 
 ```text
 .
-├── src/                         # AutoDS agent runtime
+├── src/                         # Mantis agent runtime
 │   ├── core/                    # config, LLM client, engine, sessions
 │   ├── tools/                   # Read/Edit/Write/Grep/Glob/Bash/etc.
 │   ├── features/                # skills, memory, planner, coordinator, sandbox
 │   ├── commands/                # slash command handlers
 │   ├── tui/                     # terminal UI
 │   └── buddy/                   # optional terminal companion feature
-├── .autods/skills/              # project-local skills used by AutoDS
-│   └── autods-kaggle-distilled/ # Kaggle/self-evolution skill
+├── .mantis/skills/              # project-local skills used by Mantis
+│   └── mantis-kaggle-distilled/ # Kaggle/self-evolution skill
 ├── docs/                        # agent runtime docs
 ├── tests/                       # runtime tests
 ├── offline/                     # offline self-evolution corpus
@@ -191,18 +191,18 @@ The most important V4 lesson:
 
 ## Agent Runtime
 
-AutoDS runs as a terminal agent. It can read and edit files, run shell commands with permission checks, search the repository, ask the user questions, use project skills, and maintain session context.
+Mantis runs as a terminal agent. It can read and edit files, run shell commands with permission checks, search the repository, ask the user questions, use project skills, and maintain session context.
 
 The Kaggle workflow is implemented as a project-local skill:
 
 ```text
-.autods/skills/autods-kaggle-distilled/SKILL.md
+.mantis/skills/mantis-kaggle-distilled/SKILL.md
 ```
 
-When `/kaggle <competition>` is used, the skill points AutoDS to the offline V4 playbooks and asks the agent to:
+When `/kaggle <competition>` is used, the skill points Mantis to the offline V4 playbooks and asks the agent to:
 
 1. identify competition slug, task type, metric, files, and submission format
-2. create or update `AUTODS.md`
+2. create or update `MANTIS.md`
 3. build the simplest valid baseline
 4. choose leakage-aware validation
 5. record CV/LB gaps and experiment decisions
@@ -227,7 +227,7 @@ as `numpy`, `pandas`, and `scikit-learn`.
 
 ## Local Configuration
 
-Keep the LLM API and Kaggle credentials together in a local `.autods.toml`:
+Keep the LLM API and Kaggle credentials together in a local `.mantis.toml`:
 
 ```toml
 provider = "openai"
@@ -249,7 +249,7 @@ key = "<your-official-kaggle-api-key>"
 enabled = false
 ```
 
-ACP backend is also supported. Use this when you want AutoDS to call an
+ACP backend is also supported. Use this when you want Mantis to call an
 ACP-compatible coding agent through `acpx` instead of using API keys directly:
 
 ```toml
@@ -260,7 +260,7 @@ online-evolution = true
 [acp]
 agent = "codex"          # codex, claude, gemini, opencode, kimi, or a raw ACP command
 cwd = "."                # working directory passed to acpx --cwd
-session = "autods"       # persistent acpx session name
+session = "mantis"       # persistent acpx session name
 command = "acpx"         # or "npx acpx@latest"
 timeout = 1800
 approve_all = false
@@ -271,9 +271,9 @@ username = "<your-kaggle-username>"
 key = "<your-official-kaggle-api-key>"
 ```
 
-In ACP mode, AutoDS does not need `api_key` or `base_url`; the selected ACP agent
+In ACP mode, Mantis does not need `api_key` or `base_url`; the selected ACP agent
 uses its own local authentication. The external ACP agent owns tool execution and
-session state, while AutoDS keeps its local session logs and Kaggle evolution
+session state, while Mantis keeps its local session logs and Kaggle evolution
 artifacts. Install acpx globally with `npm install -g acpx@latest`, or set
 `command = "npx acpx@latest"`.
 
@@ -288,12 +288,12 @@ Do not put a `KGAT_...` token in `key`. `key` is for the official Kaggle API key
 from Kaggle settings or `~/.kaggle/kaggle.json`; `KGAT_...` belongs in
 `kgat_api_token`.
 
-When AutoDS starts, it exports `[kaggle]` values into the process environment as
+When Mantis starts, it exports `[kaggle]` values into the process environment as
 `KAGGLE_USERNAME`, `KAGGLE_KEY`, `KGAT_API_TOKEN`, and `KAGGLE_API_TOKEN`, so the
 `/kaggle` workflow and child shell commands can use them.
 
-For Kaggle credentials, `.autods.toml` is the source of truth. If `[kaggle]`
-contains `username` and official API `key`, AutoDS overwrites any old inherited
+For Kaggle credentials, `.mantis.toml` is the source of truth. If `[kaggle]`
+contains `username` and official API `key`, Mantis overwrites any old inherited
 Kaggle gateway variables before the model runs. The model should only use
 `kaggle ...` commands; it should not run auth setup, write credential files, read
 `~/.kaggle/access_token`, or export token values during a competition workflow.
@@ -301,14 +301,14 @@ Kaggle gateway variables before the model runs. The model should only use
 Environment variables also work:
 
 ```bash
-export AUTODS_PROVIDER=openai
-export AUTODS_API_KEY=<your-openai-compatible-api-key>
-export AUTODS_BASE_URL=<your-openai-compatible-base-url>
-export AUTODS_MODEL=mimo-v2.5-pro
-export AUTODS_USE_GPU=true
-export AUTODS_ONLINE_EVOLUTION=true
-export AUTODS_ACP_AGENT=codex
-export AUTODS_ACP_SESSION=autods
+export MANTIS_PROVIDER=openai
+export MANTIS_API_KEY=<your-openai-compatible-api-key>
+export MANTIS_BASE_URL=<your-openai-compatible-base-url>
+export MANTIS_MODEL=mimo-v2.5-pro
+export MANTIS_USE_GPU=true
+export MANTIS_ONLINE_EVOLUTION=true
+export MANTIS_ACP_AGENT=codex
+export MANTIS_ACP_SESSION=mantis
 export KAGGLE_USERNAME=<your-kaggle-username>
 export KAGGLE_KEY=<your-kaggle-api-key>
 ```
@@ -319,15 +319,15 @@ Install the Kaggle CLI dependency before using `/kaggle`:
 pip install -e ".[dev]"
 ```
 
-Do not commit `.autods.toml`, `.env`, Kaggle credential files, API keys, or
+Do not commit `.mantis.toml`, `.env`, Kaggle credential files, API keys, or
 tokens.
 
-`use_gpu = true` tells AutoDS to inspect available NVIDIA GPUs at startup and add
+`use_gpu = true` tells Mantis to inspect available NVIDIA GPUs at startup and add
 the detected GPU names, memory, and driver version to the system prompt. Keep it
 `false` or omit it on CPU-only machines.
 
 Sandbox is disabled by default. Keeping `[sandbox] enabled = false` in
-`.autods.toml` makes that explicit and lets Bash commands run directly in the
+`.mantis.toml` makes that explicit and lets Bash commands run directly in the
 local workspace.
 
 Full configuration guide:
@@ -338,25 +338,25 @@ CONFIGURATION.md
 
 ## Full-Access Mode
 
-For exploratory experiments where you do not want AutoDS to ask for every tool permission, start it with automatic approval:
+For exploratory experiments where you do not want Mantis to ask for every tool permission, start it with automatic approval:
 
 ```bash
-autods --auto-approve
+mantis --auto-approve
 ```
 
 For a Kaggle workflow:
 
 ```bash
-autods --auto-approve
+mantis --auto-approve
 ```
 
-Then run inside the AutoDS terminal:
+Then run inside the Mantis terminal:
 
 ```text
 /kaggle <competition-url-or-slug>
 ```
 
-`--auto-approve` means AutoDS will approve tool calls without prompting you. To also run Bash commands without sandbox isolation, keep sandbox disabled:
+`--auto-approve` means Mantis will approve tool calls without prompting you. To also run Bash commands without sandbox isolation, keep sandbox disabled:
 
 ```toml
 [sandbox]
@@ -369,20 +369,20 @@ The same setting can be changed in the interactive terminal:
 /sandbox mode disabled
 ```
 
-This is the closest local equivalent of full-access mode: no permission prompts from AutoDS and no sandbox wrapping for shell commands.
+This is the closest local equivalent of full-access mode: no permission prompts from Mantis and no sandbox wrapping for shell commands.
 
-## Running AutoDS
+## Running Mantis
 
 Interactive mode:
 
 ```bash
-autods
+mantis
 ```
 
 One-shot mode:
 
 ```bash
-autods "summarize the offline V4 distillation"
+mantis "summarize the offline V4 distillation"
 ```
 
 Kaggle workflow:
@@ -391,7 +391,7 @@ Kaggle workflow:
 /kaggle https://www.kaggle.com/competitions/titanic
 ```
 
-Competition sub-pages work too. AutoDS routes `/kaggle` commands through the
+Competition sub-pages work too. Mantis routes `/kaggle` commands through the
 Kaggle skill and normalizes URLs like this to the competition slug `titanic`:
 
 ```text
@@ -401,20 +401,20 @@ Kaggle skill and normalizes URLs like this to the competition slug `titanic`:
 The same normalization handles common Kaggle competition pages such as `/data`,
 `/code`, `/rules`, `/discussion`, and `/submissions`.
 
-After a baseline is submitted and scored, AutoDS should continue the
+After a baseline is submitted and scored, Mantis should continue the
 self-evolution loop by default: inspect the CV/LB gap, read any matching offline
 distillation evidence, run the next high-ROI experiment, and update
-`competitions/<slug>/AUTODS.md`. It should not stop with "Want me to continue?"
+`competitions/<slug>/MANTIS.md`. It should not stop with "Want me to continue?"
 unless it is blocked, at a submission/rules risk point, or the user explicitly
 asks it to pause.
 
-For non-trivial model training, tuning, notebook execution, and ensembles, AutoDS
+For non-trivial model training, tuning, notebook execution, and ensembles, Mantis
 should first run a quick smoke test and then run the full job with an explicit
 long Bash timeout, typically 900-3600 seconds. If a training command times out,
 it should inspect and optimize the script before rerunning, not simply repeat the
 same command with a tiny timeout increase.
 
-When `online-evolution = true`, AutoDS also keeps structured online evolution
+When `online-evolution = true`, Mantis also keeps structured online evolution
 state:
 
 ```text
@@ -422,12 +422,12 @@ competitions/<slug>/evolution/runs.jsonl
 competitions/<slug>/evolution/score_trends.md
 competitions/<slug>/evolution/lessons.md
 competitions/<slug>/evolution/hypotheses.json
-.autods/online_evolution/promotion_ledger.jsonl
-.autods/online_evolution/skill_patch_proposals.md
+.mantis/online_evolution/promotion_ledger.jsonl
+.mantis/online_evolution/skill_patch_proposals.md
 ```
 
 Skill updates are evidence-gated. A single competition can create local lessons
-and domain candidates, but patching `.autods/skills/autods-kaggle-distilled/`
+and domain candidates, but patching `.mantis/skills/mantis-kaggle-distilled/`
 requires either positive evidence from at least two distinct competitions in the
 same domain, or one online competition plus matching offline V4 evidence with no
 contradicting online evidence.
@@ -454,10 +454,10 @@ parallel competition runs are easier to distinguish, and you can resume by slug:
 /resume competitions/house-prices-advanced-regression-techniques
 ```
 
-Terminal note: AutoDS disables prompt-toolkit cursor-position requests by
+Terminal note: Mantis disables prompt-toolkit cursor-position requests by
 default (`PROMPT_TOOLKIT_NO_CPR=1`) because some terminals, tmux panes, and web
 consoles do not support CPR and may print warnings such as `your terminal
-doesn't support cursor position requests`. To exit AutoDS, use `/exit`, `/quit`,
+doesn't support cursor position requests`. To exit Mantis, use `/exit`, `/quit`,
 or press `Ctrl+D` on an empty prompt. If a terminal is already stuck, press
 `Ctrl+C` twice; if the display remains broken after exit, run `reset` or
 `stty sane`.

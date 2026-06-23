@@ -69,19 +69,21 @@ _MODEL_MAX_TOKENS = (
     ("claude-3-5-haiku", 8192),
     ("claude-3-haiku", 4096),
 )
-_ENV_MODEL = "AUTODS_MODEL"
-_ENV_MAX_TOKENS = "AUTODS_MAX_TOKENS"
-_ENV_MEMORY_DIR = "AUTODS_MEMORY_DIR"
-_ENV_PROVIDER = "AUTODS_PROVIDER"
-_ENV_API_KEY = "AUTODS_API_KEY"
-_ENV_BASE_URL = "AUTODS_BASE_URL"
-_ENV_EFFORT = "AUTODS_EFFORT"
-_ENV_BUDDY_MODEL = "AUTODS_BUDDY_MODEL"
-_ENV_ADVISOR_MODEL = "AUTODS_ADVISOR_MODEL"
-_ENV_ADVISOR_MAX_USES = "AUTODS_ADVISOR_MAX_USES"
-_ENV_USE_GPU = "AUTODS_USE_GPU"
-_ENV_ONLINE_EVOLUTION = "AUTODS_ONLINE_EVOLUTION"
+_ENV_MODEL = ("MANTIS_MODEL", "AUTODS_MODEL")
+_ENV_MAX_TOKENS = ("MANTIS_MAX_TOKENS", "AUTODS_MAX_TOKENS")
+_ENV_MEMORY_DIR = ("MANTIS_MEMORY_DIR", "AUTODS_MEMORY_DIR")
+_ENV_PROVIDER = ("MANTIS_PROVIDER", "AUTODS_PROVIDER")
+_ENV_API_KEY = ("MANTIS_API_KEY", "AUTODS_API_KEY")
+_ENV_BASE_URL = ("MANTIS_BASE_URL", "AUTODS_BASE_URL")
+_ENV_EFFORT = ("MANTIS_EFFORT", "AUTODS_EFFORT")
+_ENV_BUDDY_MODEL = ("MANTIS_BUDDY_MODEL", "AUTODS_BUDDY_MODEL")
+_ENV_ADVISOR_MODEL = ("MANTIS_ADVISOR_MODEL", "AUTODS_ADVISOR_MODEL")
+_ENV_ADVISOR_MAX_USES = ("MANTIS_ADVISOR_MAX_USES", "AUTODS_ADVISOR_MAX_USES")
+_ENV_USE_GPU = ("MANTIS_USE_GPU", "AUTODS_USE_GPU")
+_ENV_ONLINE_EVOLUTION = ("MANTIS_ONLINE_EVOLUTION", "AUTODS_ONLINE_EVOLUTION")
 _DEFAULT_CONFIG_PATHS = (
+    Path.home() / ".config" / "mantis" / "config.toml",
+    Path.cwd() / ".mantis.toml",
     Path.home() / ".config" / "autods" / "config.toml",
     Path.cwd() / ".autods.toml",
 )
@@ -96,7 +98,7 @@ class AppConfig:
     max_tokens: int
     effort: str | None = None
     buddy_model: str | None = None
-    memory_dir: Path = Path.home() / ".config" / "autods" / "memory"
+    memory_dir: Path = Path.home() / ".config" / "mantis" / "memory"
     dream_interval_hours: float = 24.0
     dream_min_sessions: int = 5
     auto_dream: bool = True
@@ -194,7 +196,7 @@ def load_app_config(args: Namespace) -> AppConfig:
         or env_values.get("memory_dir")
         or _file_value("memory_dir")
     )
-    memory_dir = Path(raw_memory_dir).expanduser() if raw_memory_dir else Path.home() / ".config" / "autods" / "memory"
+    memory_dir = Path(raw_memory_dir).expanduser() if raw_memory_dir else Path.home() / ".config" / "mantis" / "memory"
 
     raw_dream_interval = getattr(args, "dream_interval", None)
     if raw_dream_interval is None:
@@ -253,7 +255,7 @@ def load_app_config(args: Namespace) -> AppConfig:
             getattr(args, "acp_session", None)
             or env_values.get("acp_session")
             or acp_values.get("session")
-            or "autods"
+            or "mantis"
         ),
         command=str(
             getattr(args, "acp_command", None)
@@ -386,12 +388,12 @@ def _read_config_file(path: Path) -> dict[str, Any]:
 
 def _load_env_values() -> dict[str, Any]:
     values: dict[str, Any] = {}
-    if os.getenv(_ENV_PROVIDER):
-        values["provider"] = os.environ[_ENV_PROVIDER]
-    if os.getenv(_ENV_API_KEY):
-        values["openai_api_key"] = os.environ[_ENV_API_KEY]
-    if os.getenv(_ENV_BASE_URL):
-        values["openai_base_url"] = os.environ[_ENV_BASE_URL]
+    if _getenv_any(_ENV_PROVIDER):
+        values["provider"] = _getenv_any(_ENV_PROVIDER)
+    if _getenv_any(_ENV_API_KEY):
+        values["openai_api_key"] = _getenv_any(_ENV_API_KEY)
+    if _getenv_any(_ENV_BASE_URL):
+        values["openai_base_url"] = _getenv_any(_ENV_BASE_URL)
     if os.getenv("OPENAI_API_KEY"):
         values["openai_api_key"] = os.environ["OPENAI_API_KEY"]
     if os.getenv("OPENAI_BASE_URL"):
@@ -400,39 +402,47 @@ def _load_env_values() -> dict[str, Any]:
         values["anthropic_api_key"] = os.environ["ANTHROPIC_API_KEY"]
     if os.getenv("ANTHROPIC_BASE_URL"):
         values["anthropic_base_url"] = os.environ["ANTHROPIC_BASE_URL"]
-    if os.getenv(_ENV_MODEL):
-        values["model"] = os.environ[_ENV_MODEL]
-    if os.getenv(_ENV_MAX_TOKENS):
-        values["max_tokens"] = os.environ[_ENV_MAX_TOKENS]
-    if os.getenv(_ENV_MEMORY_DIR):
-        values["memory_dir"] = os.environ[_ENV_MEMORY_DIR]
-    if os.getenv(_ENV_EFFORT):
-        values["effort"] = os.environ[_ENV_EFFORT]
-    if os.getenv(_ENV_BUDDY_MODEL):
-        values["buddy_model"] = os.environ[_ENV_BUDDY_MODEL]
-    if os.getenv(_ENV_ADVISOR_MODEL):
-        values["advisor_model"] = os.environ[_ENV_ADVISOR_MODEL]
-    if os.getenv(_ENV_ADVISOR_MAX_USES):
-        values["advisor_max_uses"] = os.environ[_ENV_ADVISOR_MAX_USES]
-    if os.getenv(_ENV_USE_GPU):
-        values["use_gpu"] = os.environ[_ENV_USE_GPU]
-    if os.getenv(_ENV_ONLINE_EVOLUTION):
-        values["online_evolution"] = os.environ[_ENV_ONLINE_EVOLUTION]
-    if os.getenv("AUTODS_ACP_AGENT"):
-        values["acp_agent"] = os.environ["AUTODS_ACP_AGENT"]
-    if os.getenv("AUTODS_ACP_CWD"):
-        values["acp_cwd"] = os.environ["AUTODS_ACP_CWD"]
-    if os.getenv("AUTODS_ACP_SESSION"):
-        values["acp_session"] = os.environ["AUTODS_ACP_SESSION"]
-    if os.getenv("AUTODS_ACP_COMMAND"):
-        values["acp_command"] = os.environ["AUTODS_ACP_COMMAND"]
-    if os.getenv("AUTODS_ACP_TIMEOUT"):
-        values["acp_timeout"] = os.environ["AUTODS_ACP_TIMEOUT"]
-    if os.getenv("AUTODS_ACP_APPROVE_ALL"):
-        values["acp_approve_all"] = os.environ["AUTODS_ACP_APPROVE_ALL"]
-    if os.getenv("AUTODS_ACP_MODEL"):
-        values["acp_model"] = os.environ["AUTODS_ACP_MODEL"]
+    if _getenv_any(_ENV_MODEL):
+        values["model"] = _getenv_any(_ENV_MODEL)
+    if _getenv_any(_ENV_MAX_TOKENS):
+        values["max_tokens"] = _getenv_any(_ENV_MAX_TOKENS)
+    if _getenv_any(_ENV_MEMORY_DIR):
+        values["memory_dir"] = _getenv_any(_ENV_MEMORY_DIR)
+    if _getenv_any(_ENV_EFFORT):
+        values["effort"] = _getenv_any(_ENV_EFFORT)
+    if _getenv_any(_ENV_BUDDY_MODEL):
+        values["buddy_model"] = _getenv_any(_ENV_BUDDY_MODEL)
+    if _getenv_any(_ENV_ADVISOR_MODEL):
+        values["advisor_model"] = _getenv_any(_ENV_ADVISOR_MODEL)
+    if _getenv_any(_ENV_ADVISOR_MAX_USES):
+        values["advisor_max_uses"] = _getenv_any(_ENV_ADVISOR_MAX_USES)
+    if _getenv_any(_ENV_USE_GPU):
+        values["use_gpu"] = _getenv_any(_ENV_USE_GPU)
+    if _getenv_any(_ENV_ONLINE_EVOLUTION):
+        values["online_evolution"] = _getenv_any(_ENV_ONLINE_EVOLUTION)
+    if _getenv_any(("MANTIS_ACP_AGENT", "AUTODS_ACP_AGENT")):
+        values["acp_agent"] = _getenv_any(("MANTIS_ACP_AGENT", "AUTODS_ACP_AGENT"))
+    if _getenv_any(("MANTIS_ACP_CWD", "AUTODS_ACP_CWD")):
+        values["acp_cwd"] = _getenv_any(("MANTIS_ACP_CWD", "AUTODS_ACP_CWD"))
+    if _getenv_any(("MANTIS_ACP_SESSION", "AUTODS_ACP_SESSION")):
+        values["acp_session"] = _getenv_any(("MANTIS_ACP_SESSION", "AUTODS_ACP_SESSION"))
+    if _getenv_any(("MANTIS_ACP_COMMAND", "AUTODS_ACP_COMMAND")):
+        values["acp_command"] = _getenv_any(("MANTIS_ACP_COMMAND", "AUTODS_ACP_COMMAND"))
+    if _getenv_any(("MANTIS_ACP_TIMEOUT", "AUTODS_ACP_TIMEOUT")):
+        values["acp_timeout"] = _getenv_any(("MANTIS_ACP_TIMEOUT", "AUTODS_ACP_TIMEOUT"))
+    if _getenv_any(("MANTIS_ACP_APPROVE_ALL", "AUTODS_ACP_APPROVE_ALL")):
+        values["acp_approve_all"] = _getenv_any(("MANTIS_ACP_APPROVE_ALL", "AUTODS_ACP_APPROVE_ALL"))
+    if _getenv_any(("MANTIS_ACP_MODEL", "AUTODS_ACP_MODEL")):
+        values["acp_model"] = _getenv_any(("MANTIS_ACP_MODEL", "AUTODS_ACP_MODEL"))
     return values
+
+
+def _getenv_any(names: tuple[str, ...]) -> str | None:
+    for name in names:
+        value = os.getenv(name)
+        if value is not None:
+            return value
+    return None
 
 
 def _parse_max_tokens(raw_value: Any, default: int) -> int:
