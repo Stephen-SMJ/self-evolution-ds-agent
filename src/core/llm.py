@@ -654,6 +654,7 @@ class _ACPXStream:
         self._prompt_file: tempfile.NamedTemporaryFile[str] | None = None
         self._text_parts: list[str] = []
         self._stop_reason: str | None = None
+        self._seen_acp_notes: set[str] = set()
         self.text_stream: Iterator[str] = iter(())
 
     def __enter__(self):
@@ -716,8 +717,15 @@ class _ACPXStream:
                 continue
             text = _extract_acp_text_chunk(message)
             if text:
-                self._text_parts.append(text)
-                yield text
+                chunk = _format_acp_text_chunk(text)
+                self._text_parts.append(chunk)
+                yield chunk
+            note = _extract_acp_event_note(message)
+            if note and note not in self._seen_acp_notes:
+                self._seen_acp_notes.add(note)
+                formatted_note = f"\n\n`ACP` {note}\n\n"
+                self._text_parts.append(formatted_note)
+                yield formatted_note
             stop_reason = _extract_acp_stop_reason(message)
             if stop_reason:
                 self._stop_reason = stop_reason
@@ -1052,6 +1060,135 @@ def _extract_acp_text_chunk(message: dict[str, Any]) -> str:
             return str(content.get("text", ""))
 
     return ""
+
+
+def _format_acp_text_chunk(text: str) -> str:
+    """Keep ACP status chunks readable when acpx emits sentence-sized updates."""
+    if not text:
+        return text
+    if text.endswith(("\n", " ")):
+        return text
+    # acpx/codex commonly emits whole status sentences as chunks. Without a
+    # separator they render as one huge paragraph in Mantis.
+    if len(text) >= 40 and text[-1] in ".:;!?":
+        return text + "\n\n"
+    return text
+
+
+def _extract_acp_event_note(message: dict[str, Any]) -> str:
+    payload = _acp_update_payload(message)
+    if not payload:
+        return ""
+
+    event_kind = _first_str(
+        payload,
+        "sessionUpdate",
+        "type",
+        "kind",
+        "event",
+        "status",
+        "phase",
+    ).lower()
+
+    content = payload.get("content")
+    if isinstance(content, dict):
+        content_type = str(content.get("type") or "").lower()
+        if content_type and content_type not in event_kind:
+            event_kind = f"{event_kind} {content_type}".strip()
+        nested_note = _toolish_note(content, event_kind)
+        if nested_note:
+            return nested_note
+
+    note = _toolish_note(payload, event_kind)
+    if note:
+        return note
+    return ""
+
+
+def _acp_update_payload(message: dict[str, Any]) -> dict[str, Any]:
+    params = message.get("params")
+    if isinstance(params, dict):
+        update = params.get("update")
+        if isinstance(update, dict):
+            return update
+        return params
+    result = message.get("result")
+    if isinstance(result, dict):
+        return result
+    return {}
+
+
+def _toolish_note(payload: dict[str, Any], event_kind: str) -> str:
+    haystack = event_kind.lower()
+    if not any(word in haystack for word in ("tool", "command", "exec", "file", "patch")):
+        # Some agents omit a typed event but include obvious tool fields.
+        if not any(key in payload for key in ("tool", "toolName", "name", "command", "file_path", "path", "result")):
+            return ""
+
+    name = _first_str(payload, "toolName", "tool_name", "tool", "name", "commandName") or "tool"
+    args = _first_dict(payload, "input", "arguments", "args", "params")
+    command = _first_str(payload, "command", "cmd")
+    path = _first_str(payload, "file_path", "filepath", "path", "file")
+    if not command and args:
+        command = _first_str(args, "command", "cmd")
+    if not path and args:
+        path = _first_str(args, "file_path", "filepath", "path", "file")
+
+    result_text = _first_str(payload, "result", "output", "message", "summary", "error")
+    if not result_text and isinstance(payload.get("content"), str):
+        result_text = str(payload.get("content"))
+
+    is_result = any(word in haystack for word in ("result", "completed", "finished", "error", "failed"))
+    is_start = any(word in haystack for word in ("call", "start", "running", "exec", "command"))
+    prefix = "result" if is_result else ("running" if is_start else "event")
+
+    detail = command or path or _summarize_mapping(args)
+    if result_text:
+        detail = f"{detail} -> {_truncate_one_line(result_text, 180)}" if detail else _truncate_one_line(result_text, 180)
+    if detail:
+        return f"{prefix} {name}: {_truncate_one_line(detail, 220)}"
+    return f"{prefix} {name}"
+
+
+def _first_str(mapping: dict[str, Any], *keys: str) -> str:
+    for key in keys:
+        value = mapping.get(key)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+        if value is not None and not isinstance(value, (dict, list)):
+            text = str(value).strip()
+            if text:
+                return text
+    return ""
+
+
+def _first_dict(mapping: dict[str, Any], *keys: str) -> dict[str, Any]:
+    for key in keys:
+        value = mapping.get(key)
+        if isinstance(value, dict):
+            return value
+    return {}
+
+
+def _summarize_mapping(value: dict[str, Any]) -> str:
+    if not value:
+        return ""
+    parts: list[str] = []
+    for key in ("description", "file_path", "path", "pattern", "url", "timeout"):
+        if key in value:
+            parts.append(f"{key}={value[key]!r}")
+    if not parts:
+        for key, item in list(value.items())[:3]:
+            if isinstance(item, (str, int, float, bool)):
+                parts.append(f"{key}={item!r}")
+    return ", ".join(parts)
+
+
+def _truncate_one_line(text: str, limit: int) -> str:
+    one_line = " ".join(str(text).split())
+    if len(one_line) <= limit:
+        return one_line
+    return one_line[:limit - 1].rstrip() + "…"
 
 
 def _extract_acp_stop_reason(message: dict[str, Any]) -> str | None:

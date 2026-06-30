@@ -2,7 +2,9 @@ from core.llm import (
     ACPConfig,
     _ACPXStream,
     _extract_acp_stop_reason,
+    _extract_acp_event_note,
     _extract_acp_text_chunk,
+    _format_acp_text_chunk,
     _to_acp_prompt,
     _to_openai_messages,
     _tool_schema_to_openai,
@@ -133,6 +135,34 @@ def test_acp_extracts_text_chunk_from_update_shapes():
 
 def test_acp_extracts_stop_reason():
     assert _extract_acp_stop_reason({"result": {"stopReason": "end_turn"}}) == "end_turn"
+
+
+def test_acp_formats_sentence_sized_status_chunks():
+    text = "I am checking Kaggle access and listing the competition files now."
+    assert _format_acp_text_chunk(text) == text + "\n\n"
+    assert _format_acp_text_chunk("partial") == "partial"
+
+
+def test_acp_extracts_tool_event_note():
+    message = {
+        "jsonrpc": "2.0",
+        "method": "session/update",
+        "params": {
+            "update": {
+                "sessionUpdate": "tool_call",
+                "toolName": "Bash",
+                "input": {
+                    "command": "python3 competitions/orbit-wars/src/package_submission.py",
+                    "timeout": 1800,
+                },
+            },
+        },
+    }
+
+    note = _extract_acp_event_note(message)
+
+    assert note.startswith("running Bash:")
+    assert "package_submission.py" in note
 
 
 def test_acpx_stream_builds_command():
