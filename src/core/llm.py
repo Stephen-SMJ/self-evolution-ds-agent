@@ -95,6 +95,17 @@ class ACPError(RuntimeError):
     pass
 
 
+def build_acpx_session_new_command(config: ACPConfig) -> list[str]:
+    """Build the acpx command that creates the configured ACP session."""
+    return shlex.split(config.command or "acpx") + [
+        config.agent or "codex",
+        "sessions",
+        "new",
+        "--name",
+        config.session or "mantis",
+    ]
+
+
 def build_acpx_command(config: ACPConfig, model: str, prompt_file: str) -> list[str]:
     """Build the acpx command used for ACP turns."""
     cmd = shlex.split(config.command or "acpx")
@@ -131,7 +142,7 @@ def run_acp_preflight(config: ACPConfig, model: str, timeout: int = 45) -> None:
     preflight_config = ACPConfig(
         agent=config.agent,
         cwd=config.cwd,
-        session=f"{config.session or 'mantis'}-preflight",
+        session=config.session or "mantis",
         command=config.command,
         timeout=min(max(timeout, 1), max(config.timeout, 1)),
         approve_all=config.approve_all,
@@ -154,16 +165,10 @@ def run_acp_preflight(config: ACPConfig, model: str, timeout: int = 45) -> None:
         prompt_file.flush()
         prompt_file.close()
         cmd = build_acpx_command(preflight_config, model, prompt_file.name)
-        proc = subprocess.run(
-            cmd,
-            cwd=str(Path(config.cwd).expanduser()) if config.cwd else None,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            timeout=preflight_config.timeout + 5,
-        )
+        proc = _run_acpx_preflight_command(cmd, config, preflight_config.timeout)
+        if proc.returncode != 0 and _is_acpx_no_session(proc):
+            _create_acpx_session(config)
+            proc = _run_acpx_preflight_command(cmd, config, preflight_config.timeout)
     except FileNotFoundError as exc:
         raise ACPError(
             f"ACP command not found: {shlex.split(config.command or 'acpx')[0]}. "
@@ -184,6 +189,61 @@ def run_acp_preflight(config: ACPConfig, model: str, timeout: int = 45) -> None:
     if proc.returncode != 0:
         detail = (proc.stderr or proc.stdout or f"acpx exited with code {proc.returncode}").strip()
         raise ACPError(detail)
+
+
+def _run_acpx_preflight_command(
+    cmd: list[str],
+    config: ACPConfig,
+    timeout: int,
+) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        cmd,
+        cwd=str(Path(config.cwd).expanduser()) if config.cwd else None,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        timeout=timeout + 5,
+    )
+
+
+def _is_acpx_no_session(proc: subprocess.CompletedProcess[str]) -> bool:
+    output = (proc.stderr or "") + "\n" + (proc.stdout or "")
+    if "NO_SESSION" in output or "No acpx session found" in output:
+        return True
+    try:
+        payload = json.loads((proc.stderr or proc.stdout or "").strip())
+    except json.JSONDecodeError:
+        return False
+    data = payload.get("error", {}).get("data", {})
+    return data.get("acpxCode") == "NO_SESSION"
+
+
+def _create_acpx_session(config: ACPConfig) -> None:
+    cmd = build_acpx_session_new_command(config)
+    try:
+        proc = subprocess.run(
+            cmd,
+            cwd=str(Path(config.cwd).expanduser()) if config.cwd else None,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=60,
+        )
+    except FileNotFoundError as exc:
+        raise ACPError(
+            f"ACP command not found: {shlex.split(config.command or 'acpx')[0]}. "
+            "Install acpx or set [acp] command = \"npx acpx@latest\"."
+        ) from exc
+    except subprocess.TimeoutExpired as exc:
+        raise ACPError("ACP session creation timed out after 60s.") from exc
+
+    if proc.returncode != 0:
+        detail = (proc.stderr or proc.stdout or f"acpx exited with code {proc.returncode}").strip()
+        raise ACPError(f"ACP session auto-create failed: {detail}")
 
 
 def validate_provider(provider: str | None) -> ProviderName:

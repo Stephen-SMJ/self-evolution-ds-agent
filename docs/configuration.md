@@ -50,7 +50,8 @@ session. No LLM `api_key` or `base_url` is needed; the selected ACP-compatible
 agent handles its own authentication and tool execution. Install acpx globally
 with `npm install -g acpx@latest`, or set `command = "npx acpx@latest"`.
 Mantis runs a short ACP preflight at startup so missing `acpx`, invalid auth, or
-agent setup errors are shown before the interactive REPL starts.
+agent setup errors are shown before the interactive REPL starts. If the configured
+acpx session does not exist, Mantis creates it automatically.
 
 For a gateway-token Kaggle environment:
 

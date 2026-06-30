@@ -277,7 +277,8 @@ session state, while Mantis keeps its local session logs and Kaggle evolution
 artifacts. Install acpx globally with `npm install -g acpx@latest`, or set
 `command = "npx acpx@latest"`.
 Mantis runs a short ACP preflight at startup and exits with the acpx/auth error
-before opening the REPL if the ACP agent is not ready.
+before opening the REPL if the ACP agent is not ready. If the configured acpx
+session does not exist, Mantis creates it automatically.
 
 For a gateway-token Kaggle environment:
 

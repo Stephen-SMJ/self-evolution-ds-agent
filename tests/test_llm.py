@@ -7,6 +7,7 @@ from core.llm import (
     _to_openai_messages,
     _tool_schema_to_openai,
     build_acpx_command,
+    build_acpx_session_new_command,
     default_companion_model,
     supports_reasoning_effort,
 )
@@ -190,3 +191,15 @@ def test_build_acpx_command_uses_acp_model_and_session():
     ]
     assert "gpt-5.5[medium]" in cmd
     assert cmd[-6:] == ["codex", "prompt", "-s", "mantis", "--file", "/tmp/prompt.md"]
+
+
+def test_build_acpx_session_new_command_uses_configured_session():
+    cmd = build_acpx_session_new_command(
+        ACPConfig(
+            agent="codex",
+            command="npx acpx@latest",
+            session="mantis",
+        )
+    )
+
+    assert cmd == ["npx", "acpx@latest", "codex", "sessions", "new", "--name", "mantis"]

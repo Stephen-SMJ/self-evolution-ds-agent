@@ -198,8 +198,9 @@ def main() -> None:
             console.print(str(exc))
             console.print(
                 "\n[dim]Fix the ACP agent authentication/setup, then run Mantis again. "
-                "For Codex, run the official Codex/acpx login flow shown above; "
-                "or set [acp] command = \"npx acpx@latest\" if acpx is missing.[/dim]"
+                "Mantis creates the configured acpx session automatically; "
+                "if authentication is required, follow the Codex/acpx login flow shown above. "
+                "Set [acp] command = \"npx acpx@latest\" if acpx is missing.[/dim]"
             )
             raise SystemExit(1) from exc
 
