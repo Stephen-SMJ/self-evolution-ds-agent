@@ -84,8 +84,6 @@ _ENV_ONLINE_EVOLUTION = ("MANTIS_ONLINE_EVOLUTION", "AUTODS_ONLINE_EVOLUTION")
 _DEFAULT_CONFIG_PATHS = (
     Path.home() / ".config" / "mantis" / "config.toml",
     Path.cwd() / ".mantis.toml",
-    Path.home() / ".config" / "autods" / "config.toml",
-    Path.cwd() / ".autods.toml",
 )
 
 

@@ -61,14 +61,12 @@ def load_sandbox_config(
     """Load sandbox config from TOML [sandbox] section.
 
     Priority matches core/config.py.
-    Default search: Mantis config files, then legacy AutoDS config files.
+    Default search: Mantis config files only.
     """
     if not config_paths:
         config_paths = (
             Path.home() / ".config" / "mantis" / "config.toml",
             Path.cwd() / ".mantis.toml",
-            Path.home() / ".config" / "autods" / "config.toml",
-            Path.cwd() / ".autods.toml",
         )
     merged: dict[str, Any] = {}
 

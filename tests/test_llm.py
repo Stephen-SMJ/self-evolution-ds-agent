@@ -6,6 +6,7 @@ from core.llm import (
     _to_acp_prompt,
     _to_openai_messages,
     _tool_schema_to_openai,
+    build_acpx_command,
     default_companion_model,
     supports_reasoning_effort,
 )
@@ -158,3 +159,34 @@ def test_acpx_stream_builds_command():
     assert "--model" in cmd
     assert "claude-sonnet-4" in cmd
     assert cmd[-6:] == ["claude", "prompt", "-s", "autods-test", "--file", "/tmp/prompt.md"]
+
+
+def test_build_acpx_command_uses_acp_model_and_session():
+    cmd = build_acpx_command(
+        ACPConfig(
+            agent="codex",
+            cwd=".",
+            session="mantis",
+            command="acpx",
+            timeout=1800,
+            approve_all=False,
+            model="gpt-5.5[medium]",
+        ),
+        "acp-agent",
+        "/tmp/prompt.md",
+    )
+
+    assert cmd[:10] == [
+        "acpx",
+        "--cwd",
+        ".",
+        "--format",
+        "json",
+        "--json-strict",
+        "--timeout",
+        "1800",
+        "--approve-reads",
+        "--model",
+    ]
+    assert "gpt-5.5[medium]" in cmd
+    assert cmd[-6:] == ["codex", "prompt", "-s", "mantis", "--file", "/tmp/prompt.md"]

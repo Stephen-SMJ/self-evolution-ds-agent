@@ -15,6 +15,7 @@ from rich.console import Console
 from core.config import load_app_config
 from core.context import build_system_prompt
 from core.engine import AbortedError, Engine
+from core.llm import ACPError, run_acp_preflight
 from tools import AskUserQuestionTool
 from tools import AgentTool, SendMessageTool, TaskStopTool
 from tools import BashTool
@@ -184,6 +185,23 @@ def main() -> None:
         app_config = load_app_config(args)
     except ValueError as exc:
         parser.error(str(exc))
+
+    if app_config.provider == "acp":
+        console.print(
+            f"[dim]Checking ACP backend: {app_config.acp.agent} via "
+            f"{app_config.acp.command}…[/dim]"
+        )
+        try:
+            run_acp_preflight(app_config.acp, app_config.model)
+        except ACPError as exc:
+            console.print("[red]ACP setup failed before Mantis started.[/red]")
+            console.print(str(exc))
+            console.print(
+                "\n[dim]Fix the ACP agent authentication/setup, then run Mantis again. "
+                "For Codex, run the official Codex/acpx login flow shown above; "
+                "or set [acp] command = \"npx acpx@latest\" if acpx is missing.[/dim]"
+            )
+            raise SystemExit(1) from exc
 
     # Sandbox initialization
     sandbox_config = load_sandbox_config(app_config.config_paths)
@@ -448,10 +466,19 @@ def main() -> None:
         return
 
     # Interactive REPL
-    config_note = (
-        f"[dim]{app_config.provider}:{app_config.model} · "
-        f"max_tokens={app_config.max_tokens}[/dim]"
-    )
+    model_label = app_config.model
+    if app_config.provider == "acp":
+        model_label = app_config.acp.model or app_config.model
+        config_note = (
+            f"[dim]acp:{app_config.acp.agent}"
+            f"{f'/{model_label}' if model_label else ''} · "
+            f"timeout={app_config.acp.timeout}s[/dim]"
+        )
+    else:
+        config_note = (
+            f"[dim]{app_config.provider}:{model_label} · "
+            f"max_tokens={app_config.max_tokens}[/dim]"
+        )
     if is_coordinator_mode():
         config_note += " [dim yellow]· coordinator[/dim yellow]"
     session_note = f"[dim]session {session_store.session_id[:8]}[/dim]" if session_store else ""

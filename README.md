@@ -276,6 +276,8 @@ uses its own local authentication. The external ACP agent owns tool execution an
 session state, while Mantis keeps its local session logs and Kaggle evolution
 artifacts. Install acpx globally with `npm install -g acpx@latest`, or set
 `command = "npx acpx@latest"`.
+Mantis runs a short ACP preflight at startup and exits with the acpx/auth error
+before opening the REPL if the ACP agent is not ready.
 
 For a gateway-token Kaggle environment:
 

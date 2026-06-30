@@ -95,6 +95,97 @@ class ACPError(RuntimeError):
     pass
 
 
+def build_acpx_command(config: ACPConfig, model: str, prompt_file: str) -> list[str]:
+    """Build the acpx command used for ACP turns."""
+    cmd = shlex.split(config.command or "acpx")
+    cwd = str(Path(config.cwd).expanduser()) if config.cwd else os.getcwd()
+    cmd.extend([
+        "--cwd",
+        cwd,
+        "--format",
+        "json",
+        "--json-strict",
+        "--timeout",
+        str(config.timeout),
+    ])
+    if config.approve_all:
+        cmd.append("--approve-all")
+    else:
+        cmd.append("--approve-reads")
+    selected_model = config.model or (model if model != "acp-agent" else None)
+    if selected_model:
+        cmd.extend(["--model", selected_model])
+    cmd.extend([
+        config.agent or "codex",
+        "prompt",
+        "-s",
+        config.session or "mantis",
+        "--file",
+        prompt_file,
+    ])
+    return cmd
+
+
+def run_acp_preflight(config: ACPConfig, model: str, timeout: int = 45) -> None:
+    """Run a short ACP turn so auth/setup failures surface before the REPL starts."""
+    preflight_config = ACPConfig(
+        agent=config.agent,
+        cwd=config.cwd,
+        session=f"{config.session or 'mantis'}-preflight",
+        command=config.command,
+        timeout=min(max(timeout, 1), max(config.timeout, 1)),
+        approve_all=config.approve_all,
+        model=config.model,
+    )
+    prompt_file: tempfile.NamedTemporaryFile[str] | None = None
+    try:
+        if config.cwd:
+            cwd_path = Path(config.cwd).expanduser()
+            if not cwd_path.exists():
+                raise ACPError(f"ACP working directory does not exist: {cwd_path}")
+        prompt_file = tempfile.NamedTemporaryFile(
+            "w",
+            encoding="utf-8",
+            suffix=".md",
+            prefix="mantis-acp-preflight-",
+            delete=False,
+        )
+        prompt_file.write("Mantis ACP preflight. Reply with exactly: OK\n")
+        prompt_file.flush()
+        prompt_file.close()
+        cmd = build_acpx_command(preflight_config, model, prompt_file.name)
+        proc = subprocess.run(
+            cmd,
+            cwd=str(Path(config.cwd).expanduser()) if config.cwd else None,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=preflight_config.timeout + 5,
+        )
+    except FileNotFoundError as exc:
+        raise ACPError(
+            f"ACP command not found: {shlex.split(config.command or 'acpx')[0]}. "
+            "Install acpx or set [acp] command = \"npx acpx@latest\"."
+        ) from exc
+    except subprocess.TimeoutExpired as exc:
+        raise ACPError(
+            f"ACP preflight timed out after {preflight_config.timeout}s. "
+            "Check acpx authentication or increase [acp] timeout."
+        ) from exc
+    finally:
+        if prompt_file is not None:
+            try:
+                os.unlink(prompt_file.name)
+            except OSError:
+                pass
+
+    if proc.returncode != 0:
+        detail = (proc.stderr or proc.stdout or f"acpx exited with code {proc.returncode}").strip()
+        raise ACPError(detail)
+
+
 def validate_provider(provider: str | None) -> ProviderName:
     normalized = (provider or _ANTHROPIC_PROVIDER).strip().lower()
     if normalized not in _VALID_PROVIDERS:
@@ -550,33 +641,7 @@ class _ACPXStream:
         return str(Path(self._config.cwd).expanduser())
 
     def _build_command(self, prompt_file: str) -> list[str]:
-        cmd = shlex.split(self._config.command or "acpx")
-        cwd = self._resolve_cwd() or os.getcwd()
-        cmd.extend([
-            "--cwd",
-            cwd,
-            "--format",
-            "json",
-            "--json-strict",
-            "--timeout",
-            str(self._config.timeout),
-        ])
-        if self._config.approve_all:
-            cmd.append("--approve-all")
-        else:
-            cmd.append("--approve-reads")
-        model = self._config.model or (self._model if self._model != "acp-agent" else None)
-        if model:
-            cmd.extend(["--model", model])
-        cmd.extend([
-            self._config.agent or "codex",
-            "prompt",
-            "-s",
-            self._config.session or "mantis",
-            "--file",
-            prompt_file,
-        ])
-        return cmd
+        return build_acpx_command(self._config, self._model, prompt_file)
 
     def _iter_text(self) -> Iterator[str]:
         if self._process is None or self._process.stdout is None:

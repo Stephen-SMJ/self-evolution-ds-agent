@@ -49,6 +49,8 @@ In ACP mode, Mantis calls `acpx --format json` and keeps a persistent named acpx
 session. No LLM `api_key` or `base_url` is needed; the selected ACP-compatible
 agent handles its own authentication and tool execution. Install acpx globally
 with `npm install -g acpx@latest`, or set `command = "npx acpx@latest"`.
+Mantis runs a short ACP preflight at startup so missing `acpx`, invalid auth, or
+agent setup errors are shown before the interactive REPL starts.
 
 For a gateway-token Kaggle environment:
 
@@ -165,6 +167,7 @@ Loaded in order (later overrides earlier):
 2. `.mantis.toml` in the current working directory
 
 Point to a specific file with `--config`.
+Legacy `.autods.toml` files are not loaded automatically.
 
 ### Alternative OpenAI Example
 
